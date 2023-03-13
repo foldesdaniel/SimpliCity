@@ -1,0 +1,15 @@
+# IntelliJ project files
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# Compiled class files
+target/
+bin/
+out/
+
+# Dependency directories
+lib/
+libs/
+jars/
