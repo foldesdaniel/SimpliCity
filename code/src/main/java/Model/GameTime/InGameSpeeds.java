@@ -1,4 +1,4 @@
-package Model;
+package Model.GameTime;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
