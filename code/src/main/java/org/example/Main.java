@@ -9,7 +9,7 @@ import java.awt.*;
 
 public class Main {
     public static void main(String[] args) {
-        InGameTime t = new InGameTime();
+        /*InGameTime t = new InGameTime();
         t.startInGameTime(InGameSpeeds.FASTEST);
         try {
             Thread.sleep(3000);
@@ -18,7 +18,7 @@ public class Main {
             t.startInGameTime(InGameSpeeds.NORMAL);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
-        }
+        }*/
 
         //*********************************
         JFrame gameWindow = new JFrame();

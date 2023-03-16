@@ -140,6 +140,7 @@ public class MainMenu extends JPanel {
      */
     private void displaySettings(boolean displayResolutions, boolean firstTime) {
         this.removeAll();
+        this.revalidate();
         this.repaint();
 
         int gap = windowHeight/8;
