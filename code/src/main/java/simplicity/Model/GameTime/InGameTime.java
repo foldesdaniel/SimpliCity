@@ -14,6 +14,8 @@ public class InGameTime {
 
     private Timer inGameElapsedTime;
 
+    private InGameTimeListener inGameTimeListener;
+
     public void startInGameTime(InGameSpeeds speed) {
         inGameElapsedTime = new Timer();
         TimerTask inGameElapsedTimeAction = new TimerTask() {
@@ -28,10 +30,15 @@ public class InGameTime {
                         inGameYear++;
                     }
                 }
-                System.out.println("Year: " + inGameYear + ", day: " + inGameDay + ", hour: " + inGameHour);
+                String str = "Year: " + inGameYear + ", day: " + inGameDay + ", hour: " + inGameHour;
+                inGameTimeListener.timeChanged(str);
             }
         };
         inGameElapsedTime.scheduleAtFixedRate(inGameElapsedTimeAction, 0, speed.getSpeed());
+    }
+
+    public void setInGameTimeListener(InGameTimeListener inGameTimeListener){
+        this.inGameTimeListener = inGameTimeListener;
     }
 
     public void stopInGameTime() {

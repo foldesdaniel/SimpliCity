@@ -116,10 +116,8 @@ public class PlayingFieldView extends JPanel implements MouseListener, MouseMoti
 
     @Override
     public void mouseClicked(MouseEvent e) {
-        if(hoverField != NO_SELECTION){
-            fieldClickListener.fieldClicked(grid[hoverField.x][hoverField.y]);
-        }
-        repaint();
+        fieldClickListener.fieldClicked(hoverField != NO_SELECTION ? grid[hoverField.x][hoverField.y] : null);
+        this.repaint();
     }
 
     @Override public void mousePressed(MouseEvent e) {}
