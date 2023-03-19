@@ -1,4 +1,4 @@
-package View.Menu;
+package simplicity.View.Menu;
 
 import javax.swing.*;
 

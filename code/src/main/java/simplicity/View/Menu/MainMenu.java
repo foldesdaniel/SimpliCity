@@ -1,4 +1,6 @@
-package View.Menu;
+package simplicity.View.Menu;
+
+import simplicity.View.PlayingField.GamePanel;
 
 import javax.swing.*;
 import java.awt.*;
@@ -34,7 +36,7 @@ public class MainMenu extends JPanel {
     }
 
     /**
-     * Displays the Main Menu buttons.
+     * Displays the simplicity.Main Menu buttons.
      */
     private void displayButtons() {
         this.removeAll();
@@ -112,7 +114,7 @@ public class MainMenu extends JPanel {
         x = windowWidth/2 - width/2;
         y = windowHeight/2 - height/2;
         start_btn.setBounds(x, y, width, height);
-        //TODO -> implement actionlistener to start the game
+        start_btn.addActionListener((ActionEvent) -> startGame());
         this.add(start_btn);
 
         //Back
@@ -125,6 +127,17 @@ public class MainMenu extends JPanel {
     }
 
     /**
+     * Displays the actual game panel
+     */
+    private void startGame(){
+        this.removeAll();
+        this.revalidate();
+        this.repaint();
+        GamePanel gamePanel = new GamePanel(windowWidth, windowHeight);
+        this.add(gamePanel);
+    }
+
+    /**
      * Displays the settings page after selecting Settings.
      *
      * @param displayResolutions
@@ -132,7 +145,7 @@ public class MainMenu extends JPanel {
      *            then it will not display the pickable resolutions, instead it
      *            will disable that ComboBox.
      * @param firstTime
-     *            Will be true if we called this method from the Main Menu page,
+     *            Will be true if we called this method from the simplicity.Main Menu page,
      *            so we can show the currently used display type and resolution.
      *            Will be false if we called this method inside this method,
      *            so we can show the changes we made previously (not the currently
@@ -224,16 +237,18 @@ public class MainMenu extends JPanel {
     }
 
     /**
-     * Sets Main Menu window size.
+     * Sets simplicity.Main Menu window size.
      *
      * @param width
-     *            Main Menu window will be resized to this width.
+     *            simplicity.Main Menu window will be resized to this width.
      * @param height
-     *            Main Menu window will be resized to this height.
+     *            simplicity.Main Menu window will be resized to this height.
      */
     private void setWindowSize(int width, int height) {
         this.windowWidth = width;
         this.windowHeight = height;
+        this.windowWidth = 1280;
+        this.windowHeight = 720;
         this.setSize(new Dimension(width, height));
         displayButtons();
     }
