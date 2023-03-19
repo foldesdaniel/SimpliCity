@@ -1,9 +1,9 @@
 package simplicity.View.PlayingField;
 
-import simplicity.Model.Events.FieldClickListener;
+import simplicity.Model.Listeners.FieldClickListener;
 import simplicity.Model.GameTime.InGameSpeeds;
 import simplicity.Model.GameTime.InGameTime;
-import simplicity.Model.GameTime.InGameTimeListener;
+import simplicity.Model.Listeners.InGameTimeListener;
 
 import javax.swing.*;
 import java.awt.*;
@@ -24,23 +24,22 @@ public class GamePanel extends JPanel implements FieldClickListener, InGameTimeL
 
     private final InGameTime inGameTime;
 
-    public GamePanel(int windowWidth, int windowHeight){
+    public GamePanel(int windowWidth, int windowHeight) {
         Dimension windowSize = new Dimension(windowWidth, windowHeight);
         this.setSize(windowSize);
         this.setPreferredSize(windowSize);
         this.setLayout(new FlowLayout(FlowLayout.LEFT, 0, 0));
-        //this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        this.inGameTime = new InGameTime();
-        this.inGameTime.setInGameTimeListener(this);
-        this.inGameTime.startInGameTime(InGameSpeeds.NORMAL);
 
         menuBar = new JMenuBar();
         topLeftBar = new JPanel();
         topRightBar = new JPanel();
         controlPanel = new JPanel();
-        playingField = new PlayingFieldView(20,20);
+        playingField = new PlayingFieldView(20, 20);
         bottomBar = new JPanel();
         timeLabel = new JLabel();
+        inGameTime = new InGameTime();
+        inGameTime.setInGameTimeListener(this);
+        inGameTime.startInGameTime(InGameSpeeds.NORMAL);
 
         JMenu menuCategory1 = new JMenu("File");
         JMenuItem menuItem1 = new JMenuItem("opt1");
@@ -55,13 +54,15 @@ public class GamePanel extends JPanel implements FieldClickListener, InGameTimeL
         JPanel mainPanel = new JPanel();
         GridBagLayout layout = new GridBagLayout();
         mainPanel.setLayout(layout);
-        topLeftBar.add(new JLabel("Top left panel")); topLeftBar.setBackground(new Color(255,0,0));
+        topLeftBar.add(new JLabel("Top left panel"));
+        topLeftBar.setBackground(new Color(255, 0, 0));
         mainPanel.add(topLeftBar, changeGbc(
-                0, 0,
-                1, 1,
-                0.3, 0
+            0, 0,
+            1, 1,
+            -1, 0
         ));
-        topRightBar.add(timeLabel); topRightBar.setBackground(new Color(150,0,0));
+        topRightBar.add(timeLabel);
+        topRightBar.setBackground(new Color(150, 0, 0));
         JButton btn1 = new JButton("Stop");
         btn1.addActionListener(new ActionListener() {
             @Override
@@ -98,60 +99,68 @@ public class GamePanel extends JPanel implements FieldClickListener, InGameTimeL
         topRightBar.add(btn3);
         topRightBar.add(btn4);
         mainPanel.add(topRightBar, changeGbc(
-                0, 1,
-                1, 1,
-                0.7, 0
+            0, 1,
+            1, 1,
+            0.7, 0
         ));
         controlPanel.add(new JLabel("nothing selected"));
         mainPanel.add(controlPanel, changeGbc(
-                1, 0,
-                2, 1,
-                0.3, 1
+            1, 0,
+            2, 1,
+            -1, 1
         ));
-        playingField.addInfoListener(this);
+        playingField.setInfoListener(this);
         mainPanel.add(playingField, changeGbc(
-                1, 1,
-                1, 1,
-                0.7, 1
+            1, 1,
+            1, 1,
+            0.7, 1
         ));
-        bottomBar.add(new JLabel("Bottom bar")); bottomBar.setBackground(new Color(255,0,0));
+        bottomBar.add(new JLabel("Bottom bar"));
+        bottomBar.setBackground(new Color(255, 0, 0));
         mainPanel.add(bottomBar, changeGbc(
-                2, 1,
-                1, 1,
-                1, 0
+            2, 1,
+            1, 1,
+            1, 0
         ));
         mainPanel.setSize(windowSize);
         mainPanel.setPreferredSize(windowSize);
         mainPanel.setBackground(new Color(255, 0, 0, 150));
 
-        //this.setLayout(new FlowLayout());
+        /* menuBar.setPreferredSize(new Dimension(menuBar.getWidth(), menuBar.getHeight()));
+        topLeftBar.setPreferredSize(new Dimension(topLeftBar.getWidth(), topLeftBar.getHeight()));
+        topRightBar.setPreferredSize(new Dimension(topRightBar.getWidth(), topRightBar.getHeight())); */
+        controlPanel.setPreferredSize(new Dimension((int)Math.round(this.getWidth() * 0.25), controlPanel.getHeight()));
+        /* playingField.setPreferredSize(new Dimension(playingField.getWidth(), playingField.getHeight()));
+        bottomBar.setPreferredSize(new Dimension(bottomBar.getWidth(), bottomBar.getHeight())); */
+
         this.add(mainPanel);
         this.setBackground(new Color(0, 255, 0));
+        this.repaint();
     }
 
     @Override
-    public void fieldClicked(FieldView f){
+    public void fieldClicked(FieldView f) {
         controlPanel.removeAll();
         controlPanel.revalidate();
         controlPanel.repaint();
-        if(f == null){
+        if (f == null) {
             controlPanel.add(new JLabel("nothing selected"));
-        }else{
+        } else {
             controlPanel.add(new JLabel(f.toString()));
         }
     }
 
     @Override
-    public void timeChanged(String str){
-        if(timeLabel != null) timeLabel.setText(str);
+    public void timeChanged(int inGameYear, int inGameDay, int inGameHour) {
+        timeLabel.setText("Year: " + inGameYear + ", day: " + inGameDay + ", hour: " + inGameHour);
     }
 
-    private GridBagConstraints changeGbc(int row, int col, int rowSpan, int colSpan, double weightX, double weightY){
+    private GridBagConstraints changeGbc(int row, int col, int rowSpan, int colSpan, double weightX, double weightY) {
         gbc.fill = GridBagConstraints.BOTH;
         gbc.anchor = GridBagConstraints.CENTER;
         gbc.ipady = 0;
-        gbc.weightx = weightX;
-        gbc.weighty = weightY;
+        gbc.weightx = weightX > 0 ? weightX : 0;
+        gbc.weighty = weightY > 0 ? weightY : 0;
         gbc.gridwidth = colSpan;
         gbc.gridx = col;
         gbc.gridy = row;

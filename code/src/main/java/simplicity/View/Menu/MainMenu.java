@@ -1,5 +1,7 @@
 package simplicity.View.Menu;
 
+import simplicity.Model.Listeners.MenuEventListener;
+import simplicity.View.GameWindow;
 import simplicity.View.PlayingField.GamePanel;
 
 import javax.swing.*;
@@ -10,29 +12,25 @@ import java.awt.event.ItemListener;
 import static java.lang.Integer.parseInt;
 
 public class MainMenu extends JPanel {
-    int windowWidth, windowHeight; //Current window sizes
-    int fullScreenWidth, fullScreenHeight; //Monitor maximum sizes (based on your current resolution)
+
+    private MenuEventListener menuEventListener;
 
     /**
-     * Constructor with initialized width and height.
-     *
-     * @param windowWidth
-     *            Current window width.
-     * @param windowHeight
-     *            Current window height.
+     * Constructor
      */
-    public MainMenu(int windowWidth, int windowHeight) {
-        this.windowWidth = windowWidth;
-        this.windowHeight = windowHeight;
-        this.fullScreenWidth = windowWidth;
-        this.fullScreenHeight = windowHeight;
-
+    public MainMenu() {
+        int windowWidth = GameWindow.getWindowWidth();
+        int windowHeight = GameWindow.getWindowHeight();
         this.setLayout(null);
         this.setSize(new Dimension(windowWidth, windowHeight));
         this.setBackground(new Color(100, 100, 100));
         this.setVisible(true);
 
         displayButtons();
+    }
+
+    public void setMenuEventListener(MenuEventListener menuEventListener){
+        this.menuEventListener = menuEventListener;
     }
 
     /**
@@ -42,6 +40,8 @@ public class MainMenu extends JPanel {
         this.removeAll();
         this.repaint();
 
+        int windowWidth = GameWindow.getWindowWidth();
+        int windowHeight = GameWindow.getWindowHeight();
         int gap = windowHeight/8;
         int width = windowWidth/5;
         int height = windowHeight/12;
@@ -87,6 +87,8 @@ public class MainMenu extends JPanel {
         this.removeAll();
         this.repaint();
 
+        int windowWidth = GameWindow.getWindowWidth();
+        int windowHeight = GameWindow.getWindowHeight();
         int gap = windowHeight/11;
         int width;
         int height = windowHeight/14;
@@ -133,6 +135,8 @@ public class MainMenu extends JPanel {
         this.removeAll();
         this.revalidate();
         this.repaint();
+        int windowWidth = GameWindow.getWindowWidth();
+        int windowHeight = GameWindow.getWindowHeight();
         GamePanel gamePanel = new GamePanel(windowWidth, windowHeight);
         this.add(gamePanel);
     }
@@ -156,6 +160,8 @@ public class MainMenu extends JPanel {
         this.revalidate();
         this.repaint();
 
+        int windowWidth = GameWindow.getWindowWidth();
+        int windowHeight = GameWindow.getWindowHeight();
         int gap = windowHeight/8;
         int width = windowWidth/5;
         int height = windowHeight/12;
@@ -177,6 +183,7 @@ public class MainMenu extends JPanel {
             res_type.setSelectedItem(display);
         }
         else {
+            int fullScreenWidth = Toolkit.getDefaultToolkit().getScreenSize().width;
             display = (windowWidth == fullScreenWidth) ? "Windowed Fullscreen" : "Windowed";
             res_type.setSelectedItem(display);
         }
@@ -219,12 +226,12 @@ public class MainMenu extends JPanel {
         if (display.equals("Windowed")) {
             apply_btn.addActionListener(e -> {
                 String res = String.valueOf(resolutions.getSelectedItem());
-                int windowWidth = parseInt(res.split("x")[0]);
-                int windowHeight = parseInt(res.split("x")[1]);
-                setWindowSize(windowWidth, windowHeight);
+                int newWidth = parseInt(res.split("x")[0]);
+                int newHeight = parseInt(res.split("x")[1]);
+                this.setWindowSize(newWidth, newHeight, false);
             });
         }
-        else apply_btn.addActionListener(e -> setWindowSize(this.fullScreenWidth, this.fullScreenHeight));
+        else apply_btn.addActionListener(e -> this.setWindowSize(windowWidth, windowHeight, true));
         this.add(apply_btn);
 
         //Back
@@ -244,12 +251,13 @@ public class MainMenu extends JPanel {
      * @param height
      *            simplicity.Main Menu window will be resized to this height.
      */
-    private void setWindowSize(int width, int height) {
-        this.windowWidth = width;
-        this.windowHeight = height;
-        this.windowWidth = 1280;
-        this.windowHeight = 720;
-        this.setSize(new Dimension(width, height));
+    private void setWindowSize(int width, int height, boolean fullscreen) {
+        if(fullscreen){
+            menuEventListener.changedFullscreen();
+        }else{
+            menuEventListener.changedWindowed(width, height);
+            System.out.println(width + " " + height);
+        }
         displayButtons();
     }
 }

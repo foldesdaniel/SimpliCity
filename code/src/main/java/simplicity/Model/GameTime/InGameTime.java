@@ -1,6 +1,7 @@
 package simplicity.Model.GameTime;
 
 import lombok.*;
+import simplicity.Model.Listeners.InGameTimeListener;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -21,6 +22,7 @@ public class InGameTime {
         TimerTask inGameElapsedTimeAction = new TimerTask() {
             @Override
             public void run() {
+                inGameTimeListener.timeChanged(inGameYear, inGameDay, inGameHour);
                 if (inGameHour < 23) inGameHour++;
                 else {
                     inGameHour = 0;
@@ -30,20 +32,17 @@ public class InGameTime {
                         inGameYear++;
                     }
                 }
-                String str = "Year: " + inGameYear + ", day: " + inGameDay + ", hour: " + inGameHour;
-                inGameTimeListener.timeChanged(str);
             }
         };
         inGameElapsedTime.scheduleAtFixedRate(inGameElapsedTimeAction, 0, speed.getSpeed());
     }
 
-    public void setInGameTimeListener(InGameTimeListener inGameTimeListener){
+    public void setInGameTimeListener(InGameTimeListener inGameTimeListener) {
         this.inGameTimeListener = inGameTimeListener;
     }
 
     public void stopInGameTime() {
         inGameElapsedTime.cancel();
     }
-
 
 }

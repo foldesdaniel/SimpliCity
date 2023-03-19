@@ -1,6 +1,6 @@
 package simplicity.View.PlayingField;
 
-import simplicity.Model.Events.FieldClickListener;
+import simplicity.Model.Listeners.FieldClickListener;
 import simplicity.Model.GameModel;
 
 import javax.swing.*;
@@ -43,28 +43,28 @@ public class PlayingFieldView extends JPanel implements MouseListener, MouseMoti
         }
     }
 
-    private boolean doesGridFitHorizontally(){
+    private boolean doesGridFitHorizontally() {
         int gridWidth = this.gridDimension.width;
         int panelWidth = this.getWidth();
-        return fieldSize*gridWidth*zoomFactor <= panelWidth;
+        return fieldSize * gridWidth <= panelWidth;
     }
 
-    private boolean doesGridFitVertically(){
+    private boolean doesGridFitVertically() {
         int gridHeight = this.gridDimension.height;
         int panelHeight = this.getHeight();
-        return fieldSize*gridHeight*zoomFactor <= panelHeight;
+        return fieldSize * gridHeight <= panelHeight;
     }
 
-    private boolean doesGridFit(){
+    private boolean doesGridFit() {
         return doesGridFitHorizontally() && doesGridFitVertically();
     }
 
-    private Point getDefaultOffset(){
+    private Point getDefaultOffset() {
         int gridWidth = this.gridDimension.width;
         int gridHeight = this.gridDimension.height;
         int panelWidth = this.getWidth();
         int panelHeight = this.getHeight();
-        return new Point((int)(panelWidth/2.0 - gridWidth*fieldSize/2.0), (int)(panelHeight/2.0 - gridHeight*fieldSize/2.0));
+        return new Point((int) (panelWidth / 2.0 - gridWidth * fieldSize / 2.0), (int) (panelHeight / 2.0 - gridHeight * fieldSize / 2.0));
     }
 
     @Override
@@ -74,43 +74,46 @@ public class PlayingFieldView extends JPanel implements MouseListener, MouseMoti
         int gridHeight = this.gridDimension.height;
         int panelWidth = this.getWidth();
         int panelHeight = this.getHeight();
-        g.setColor(new Color(255,200,200));
+        g.setColor(new Color(255, 200, 200));
         g.fillRect(0, 0, panelWidth, panelHeight);
-        Point defaultOffset = this.getDefaultOffset();
-        int gridOffsetX = 0;
-        int gridOffsetY = 0;
-        if(doesGridFitHorizontally() || !isGridDraggedX){
-            offsetX = defaultOffset.x;
+        Point centerOffset = this.getDefaultOffset();
+        if (doesGridFitHorizontally() || !isGridDraggedX) offsetX = centerOffset.x;
+        if (doesGridFitVertically() || !isGridDraggedY) offsetY = centerOffset.y;
+        int tempX1 = -(int) Math.ceil(offsetX / (double) fieldSize);
+        int tempX2 = (int) Math.ceil((this.getWidth() - (offsetX + gridWidth * fieldSize)) / (double) fieldSize);
+        int tempY1 = -(int) Math.ceil(offsetY / (double) fieldSize);
+        int tempY2 = (int) Math.ceil((this.getHeight() - (offsetY + gridHeight * fieldSize)) / (double) fieldSize);
+        for (int i = tempY1; i < gridHeight + tempY2; i++) {
+            for (int j = tempX1; j < gridWidth + tempX2; j++) {
+                Point coord = new Point(
+                    fieldSize * i,
+                    fieldSize * j
+                );
+                if ((i < 0 || i >= gridHeight) || (j < 0 || j >= gridWidth)) {
+                    g.drawImage(GameModel.GRASS_IMG, offsetX + coord.y, offsetY + coord.x, fieldSize, fieldSize, null);
+                }
+            }
         }
-        if(doesGridFitVertically() || !isGridDraggedY){
-            offsetY = defaultOffset.y;
-        }
-        gridOffsetX = offsetX;
-        gridOffsetY = offsetY;
         for (int i = 0; i < gridHeight; i++) {
             for (int j = 0; j < gridWidth; j++) {
                 Point coord = new Point(
-                        fieldSize * i,
-                        fieldSize * j
+                    fieldSize * i,
+                    fieldSize * j
                 );
-                //g.setColor(new Color(44, 99, 205));
-                //g.drawRect(coord.y-1, coord.x-1, fieldDims.width, fieldDims.height);
-                g.drawImage(grid[i][j].getImage(), gridOffsetX+coord.y, gridOffsetY+coord.x, fieldSize, fieldSize, null);
-                if(i == hoverField.y && j == hoverField.x){
-                    //g.setColor(new Color(255, 99, 205));
-                    //g.fillRect(coord.y, coord.x, fieldDims.width, fieldDims.height);
-                    g.drawImage(GameModel.SELECTION_IMG, gridOffsetX+coord.y, gridOffsetY+coord.x, fieldSize, fieldSize, null);
+                g.drawImage(grid[i][j].getImage(), offsetX + coord.y, offsetY + coord.x, fieldSize, fieldSize, null);
+                if (i == hoverField.y && j == hoverField.x) {
+                    g.drawImage(GameModel.SELECTION_IMG, offsetX + coord.y, offsetY + coord.x, fieldSize, fieldSize, null);
                 }
             }
         }
         g.setColor(new Color(44, 99, 205));
-        g.drawRect(gridOffsetX, gridOffsetY, fieldSize * gridWidth, fieldSize * gridHeight);
-        g.fillRoundRect(testPoint.x, testPoint.y, 5, 5, 5, 5);
+        g.drawRoundRect(offsetX, offsetY, fieldSize * gridWidth, fieldSize * gridHeight, 24, 24);
+        // g.fillRoundRect(testPoint.x, testPoint.y, 5, 5, 5, 5);
     }
 
     private FieldClickListener fieldClickListener;
 
-    public void addInfoListener(FieldClickListener fieldClickListener){
+    public void setInfoListener(FieldClickListener fieldClickListener) {
         this.fieldClickListener = fieldClickListener;
     }
 
@@ -120,17 +123,22 @@ public class PlayingFieldView extends JPanel implements MouseListener, MouseMoti
         this.repaint();
     }
 
-    @Override public void mousePressed(MouseEvent e) {}
-
-    @Override public void mouseReleased(MouseEvent e) {
-        if(SwingUtilities.isRightMouseButton(e) && isDraggingGrid) isDraggingGrid = false;
+    @Override
+    public void mousePressed(MouseEvent e) {
     }
 
-    @Override public void mouseEntered(MouseEvent e) {}
+    @Override
+    public void mouseReleased(MouseEvent e) {
+        if (SwingUtilities.isRightMouseButton(e) && isDraggingGrid) isDraggingGrid = false;
+    }
+
+    @Override
+    public void mouseEntered(MouseEvent e) {
+    }
 
     @Override
     public void mouseExited(MouseEvent e) {
-        if(hoverField != NO_SELECTION){
+        if (hoverField != NO_SELECTION) {
             hoverField = NO_SELECTION;
             this.repaint();
         }
@@ -144,92 +152,70 @@ public class PlayingFieldView extends JPanel implements MouseListener, MouseMoti
 
     @Override
     public void mouseDragged(MouseEvent e) {
-        if(SwingUtilities.isRightMouseButton(e)){
-            if(!isDraggingGrid){
+        if (SwingUtilities.isRightMouseButton(e)) {
+            if (!isDraggingGrid) {
                 isDraggingGrid = true;
                 isGridDraggedX = true;
                 isGridDraggedY = true;
                 dragStart = e.getPoint();
                 dragOffset = new Point(offsetX, offsetY);
             }
-            int gw = fieldSize*gridDimension.width;
-            int gh = fieldSize*gridDimension.height;
+            int gw = fieldSize * gridDimension.width;
+            int gh = fieldSize * gridDimension.height;
             Point defaultOffset = this.getDefaultOffset();
-            Point dragPointer = new Point(e.getPoint().x-dragStart.x, e.getPoint().y-dragStart.y);
+            Point dragPointer = new Point(e.getPoint().x - dragStart.x, e.getPoint().y - dragStart.y);
             int newOffsetX = dragOffset.x + dragPointer.x;
             int newOffsetY = dragOffset.y + dragPointer.y;
-            int feleX = (int)Math.round(gridDimension.width / 2.0);
-            int feleY = (int)Math.round(gridDimension.height / 2.0);
-            boolean canDragX = newOffsetX > -fieldSize*(gridDimension.width-feleX) && newOffsetX < this.getWidth() - fieldSize*feleX;
-            boolean canDragY = newOffsetY > -fieldSize*(gridDimension.height-feleY) && newOffsetY < this.getHeight() - fieldSize*feleY;
-            if(canDragX) offsetX = newOffsetX;
-            if(canDragY) offsetY = newOffsetY;
-            System.out.println(newOffsetX + " " + (this.getWidth() - fieldSize));
+            int feleX = (int) Math.round(this.getWidth() / 2.0);
+            int feleY = (int) Math.round(this.getHeight() / 2.0);
+            boolean canDragX = newOffsetX > -(fieldSize * gridDimension.width - feleX) && newOffsetX < feleX;
+            boolean canDragY = newOffsetY > -(fieldSize * gridDimension.height - feleY) && newOffsetY < feleY;
+            if (canDragX && !doesGridFitHorizontally()) offsetX = newOffsetX;
+            if (canDragY && !doesGridFitVertically()) offsetY = newOffsetY;
+            this.updateHover(e.getX(), e.getY(), false, false);
             this.repaint();
         }
     }
 
     @Override
     public void mouseMoved(MouseEvent e) {
-        this.mouseMoved(e.getX(), e.getY(), false, true);
+        this.updateHover(e.getX(), e.getY(), false, true);
     }
 
-    private void mouseMoved(int x, int y, boolean dragged, boolean repaint){
-        int xOffset = x-offsetX;
-        int yOffset = y-offsetY;
+    private void updateHover(int x, int y, boolean dragged, boolean repaint) {
+        int xOffset = x - offsetX;
+        int yOffset = y - offsetY;
         Point newHoverField = new Point(
             (xOffset >= 0) ? (xOffset / this.fieldSize) : -1,
             (yOffset >= 0) ? (yOffset / this.fieldSize) : -1
         );
-        if(
+        if (
             newHoverField.x >= 0 && newHoverField.x < this.gridDimension.width &&
             newHoverField.y >= 0 && newHoverField.y < this.gridDimension.height
-        ){
-            //if(newHoverField.x != hoverField.x || newHoverField.y != hoverField.y){
+        ) {
+            if (newHoverField.x != hoverField.x || newHoverField.y != hoverField.y) {
                 hoverField = newHoverField;
-                if(repaint) this.repaint();
+                if (repaint) this.repaint();
                 // System.out.println(x + " " + y);
-            //}
-        }else if(hoverField != NO_SELECTION){
+            }
+        } else if (hoverField != NO_SELECTION) {
             hoverField = NO_SELECTION;
-            if(repaint) this.repaint();
+            if (repaint) this.repaint();
         }
     }
 
     private static final int minFieldSize = 10;
     private static final int maxFieldSize = 64;
-    private double zoomFactor = 1;
-    private double prevZoomFactor = 1;
-    private static final double MIN_ZOOM_FACTOR = 0.1;
-    private static final double MAX_ZOOM_FACTOR = 5.0;
-
-    private Point testPoint = new Point(0,0);
-    private double prevZoomDiv = 1.0;
 
     @Override
     public void mouseWheelMoved(MouseWheelEvent e) {
         int amount = -e.getWheelRotation() * 4;
-        if((amount > 0 && fieldSize < maxFieldSize) || (amount < 0 && fieldSize > minFieldSize)){
-            Point anchor = e.getPoint();
+        if ((amount > 0 && fieldSize < maxFieldSize) || (amount < 0 && fieldSize > minFieldSize)) {
             fieldSize += amount;
-            double zoomDiv = fieldSize/(double)defaultFieldSize;
-            /*if(!doesGridFitHorizontally()) int newOffsetX = (int)Math.round(
-                    (amount > 0) ? (anchor.getX() - (anchor.getX() - offsetX)*zoomDiv) : ((offsetX - anchor.getX())/prevZoomDiv + anchor.getX())
-            );*/
-            /*if(!doesGridFitVertically()) int newOffsetY = (int)Math.round(
-                    (amount > 0) ? (anchor.getY() - (anchor.getY() - offsetY)*zoomDiv) : ((offsetY - anchor.getY())/prevZoomDiv + anchor.getY())
-            );*/
-            testPoint = new Point(
-                (int)Math.round(anchor.getX() - (anchor.getX() - offsetX)*zoomDiv),
-                (int)Math.round(anchor.getY() - (anchor.getY() - offsetY)*zoomDiv)
-            );
-            // offsetX = newOffsetX;
-            // offsetY = newOffsetY;
-            if(doesGridFitHorizontally()) isGridDraggedX = false;
-            if(doesGridFitVertically()) isGridDraggedY = false;
-            mouseMoved(e.getX(), e.getY(), false, true);
+            if (doesGridFitHorizontally()) isGridDraggedX = false;
+            if (doesGridFitVertically()) isGridDraggedY = false;
+            this.updateHover(e.getX(), e.getY(), false, false);
             this.repaint();
-            prevZoomDiv = zoomDiv;
         }
     }
 
