@@ -6,6 +6,9 @@ import simplicity.Model.GameModel;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.geom.AffineTransform;
+import java.awt.image.AffineTransformOp;
+import java.awt.image.BufferedImage;
 
 public class PlayingFieldView extends JPanel implements MouseListener, MouseMotionListener, MouseWheelListener {
 
@@ -100,15 +103,35 @@ public class PlayingFieldView extends JPanel implements MouseListener, MouseMoti
                     fieldSize * i,
                     fieldSize * j
                 );
-                g.drawImage(grid[i][j].getImage(), offsetX + coord.y, offsetY + coord.x, fieldSize, fieldSize, null);
+                //g.drawImage(grid[i][j].getImage(), offsetX + coord.y, offsetY + coord.x, fieldSize, fieldSize, null);
+                g.drawImage(GameModel.GRASS_IMG, offsetX + coord.y, offsetY + coord.x, fieldSize, fieldSize, null);
+                if(grid[j][i].getType().equals("road")){
+                    try{
+                        Image img = (grid[j][i-1].getType().equals("road") || grid[j][i+1].getType().equals("road")) ? rotateImage(GameModel.ROAD_IMG, -90) : GameModel.ROAD_IMG;
+                        g.drawImage(img, offsetX + coord.y, offsetY + coord.x, fieldSize, fieldSize, null);
+                    }catch(Exception ex){
+
+                    }
+                }
                 if (i == hoverField.y && j == hoverField.x) {
+
                     g.drawImage(GameModel.SELECTION_IMG, offsetX + coord.y, offsetY + coord.x, fieldSize, fieldSize, null);
                 }
             }
         }
-        g.setColor(new Color(44, 99, 205));
+        g.setColor(Color.BLACK);
         g.drawRoundRect(offsetX, offsetY, fieldSize * gridWidth, fieldSize * gridHeight, 24, 24);
+        g.drawRoundRect(offsetX + 1, offsetY + 1, fieldSize * gridWidth - 2, fieldSize * gridHeight - 2, 24, 22);
         // g.fillRoundRect(testPoint.x, testPoint.y, 5, 5, 5, 5);
+    }
+
+    private BufferedImage rotateImage(Image img, int degrees){
+        double rotationRequired = Math.toRadians(degrees);
+        double locationX = img.getWidth(null) / 2.0;
+        double locationY = img.getHeight(null) / 2.0;
+        AffineTransform tx = AffineTransform.getRotateInstance(rotationRequired, locationX, locationY);
+        AffineTransformOp op = new AffineTransformOp(tx, AffineTransformOp.TYPE_BILINEAR);
+        return op.filter((BufferedImage) img, null);
     }
 
     private FieldClickListener fieldClickListener;
@@ -119,7 +142,9 @@ public class PlayingFieldView extends JPanel implements MouseListener, MouseMoti
 
     @Override
     public void mouseClicked(MouseEvent e) {
-        fieldClickListener.fieldClicked(hoverField != NO_SELECTION ? grid[hoverField.x][hoverField.y] : null);
+        boolean fieldHit = hoverField != NO_SELECTION;
+        if(fieldHit) grid[hoverField.x][hoverField.y].toggleTeszt();
+        fieldClickListener.fieldClicked(fieldHit ? grid[hoverField.x][hoverField.y] : null);
         this.repaint();
     }
 
