@@ -1,7 +1,11 @@
-package simplicity.View.PlayingField;
+package simplicity.View.Game;
 
+import simplicity.Model.Game.FieldType;
+import simplicity.Model.Game.RoadType;
 import simplicity.Model.Listeners.FieldClickListener;
 import simplicity.Model.GameModel;
+import simplicity.Model.Game.FieldData;
+import simplicity.View.Style.InsetShadowBorder;
 
 import javax.swing.*;
 import java.awt.*;
@@ -12,7 +16,8 @@ import java.awt.image.BufferedImage;
 
 public class PlayingFieldView extends JPanel implements MouseListener, MouseMotionListener, MouseWheelListener {
 
-    private FieldView[][] grid;
+    // TODO: move to GameModel
+    private FieldData[][] grid;
     private final Dimension gridDimension;
     private int defaultFieldSize = 32;
     private int fieldSize;
@@ -32,15 +37,17 @@ public class PlayingFieldView extends JPanel implements MouseListener, MouseMoti
         this.addMouseListener(this);
         this.addMouseMotionListener(this);
         this.addMouseWheelListener(this);
+        InsetShadowBorder insetShadow = new InsetShadowBorder(16);
+        this.setBorder(insetShadow);
     }
 
     private void resetPlayingField() {
         int width = this.gridDimension.width;
         int height = this.gridDimension.height;
-        grid = new FieldView[height][width];
+        grid = new FieldData[height][width];
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {
-                FieldView fv = new FieldView(new Point(i, j), GameModel.GRASS_IMG);
+                FieldData fv = new FieldData(new Point(i, j), GameModel.GRASS_IMG);
                 grid[i][j] = fv;
             }
         }
@@ -105,13 +112,28 @@ public class PlayingFieldView extends JPanel implements MouseListener, MouseMoti
                 );
                 //g.drawImage(grid[i][j].getImage(), offsetX + coord.y, offsetY + coord.x, fieldSize, fieldSize, null);
                 g.drawImage(GameModel.GRASS_IMG, offsetX + coord.y, offsetY + coord.x, fieldSize, fieldSize, null);
-                if(grid[j][i].getType().equals("road")){
-                    try{
-                        Image img = (grid[j][i-1].getType().equals("road") || grid[j][i+1].getType().equals("road")) ? rotateImage(GameModel.ROAD_IMG, -90) : GameModel.ROAD_IMG;
-                        g.drawImage(img, offsetX + coord.y, offsetY + coord.x, fieldSize, fieldSize, null);
-                    }catch(Exception ex){
-
+                if(grid[j][i].getType() == FieldType.ROAD){
+                    FieldData leftNeighbor = (j > 0) ? grid[j-1][i] : null;
+                    FieldData rightNeighbor = (j < gridWidth-1) ? grid[j+1][i] : null;
+                    FieldData upNeighbor = (i > 0) ? grid[j][i-1] : null;
+                    FieldData downNeighbor = (i < gridHeight-1) ? grid[j][i+1] : null;
+                    RoadType type = RoadType.calc(leftNeighbor, rightNeighbor, upNeighbor, downNeighbor);
+                    Image roadImg;
+                    switch(type){
+                        case HORIZONTAL -> roadImg = GameModel.ROAD_STRAIGHT_IMG;
+                        case VERTICAL -> roadImg = rotateImage(GameModel.ROAD_STRAIGHT_IMG, 90);
+                        case DOWN_TO_LEFT -> roadImg = GameModel.ROAD_TURN_IMG;
+                        case DOWN_TO_RIGHT -> roadImg = rotateImage(GameModel.ROAD_TURN_IMG, -90);
+                        case UP_TO_RIGHT -> roadImg = rotateImage(GameModel.ROAD_TURN_IMG, 180);
+                        case UP_TO_LEFT -> roadImg = rotateImage(GameModel.ROAD_TURN_IMG, 90);
+                        case DOWN_T -> roadImg = GameModel.ROAD_T;
+                        case RIGHT_T -> roadImg = rotateImage(GameModel.ROAD_T, -90);
+                        case UP_T -> roadImg = rotateImage(GameModel.ROAD_T, 180);
+                        case LEFT_T -> roadImg = rotateImage(GameModel.ROAD_T, 90);
+                        case ALL -> roadImg = GameModel.ROAD_ALL;
+                        default -> roadImg = GameModel.MISSING_IMG;
                     }
+                    g.drawImage(roadImg, offsetX + coord.y, offsetY + coord.x, fieldSize, fieldSize, null);
                 }
                 if (i == hoverField.y && j == hoverField.x) {
 
@@ -126,6 +148,7 @@ public class PlayingFieldView extends JPanel implements MouseListener, MouseMoti
     }
 
     private BufferedImage rotateImage(Image img, int degrees){
+        if(img == null) return null;
         double rotationRequired = Math.toRadians(degrees);
         double locationX = img.getWidth(null) / 2.0;
         double locationY = img.getHeight(null) / 2.0;
@@ -155,6 +178,7 @@ public class PlayingFieldView extends JPanel implements MouseListener, MouseMoti
     @Override
     public void mouseReleased(MouseEvent e) {
         if (SwingUtilities.isRightMouseButton(e) && isDraggingGrid) isDraggingGrid = false;
+        if (isLeftDragging) isLeftDragging = false;
     }
 
     @Override
@@ -170,6 +194,7 @@ public class PlayingFieldView extends JPanel implements MouseListener, MouseMoti
     }
 
     private boolean isDraggingGrid = false;
+    private boolean isLeftDragging = false;
     private boolean isGridDraggedX = false;
     private boolean isGridDraggedY = false;
     private Point dragStart = NO_SELECTION;
@@ -199,6 +224,17 @@ public class PlayingFieldView extends JPanel implements MouseListener, MouseMoti
             if (canDragY && !doesGridFitVertically()) offsetY = newOffsetY;
             this.updateHover(e.getX(), e.getY(), false, false);
             this.repaint();
+        }else{
+            if(!isLeftDragging){
+                isLeftDragging = true;
+                dragStart = e.getPoint();
+            }
+            Point dragPointer = new Point(e.getPoint().x - dragStart.x, e.getPoint().y - dragStart.y);
+            double distance = Math.sqrt(Math.pow(dragPointer.x, 2) + Math.pow(dragPointer.y, 2));
+            if(distance <= 5){
+                isLeftDragging = false;
+                mouseClicked(e);
+            }
         }
     }
 
@@ -234,6 +270,7 @@ public class PlayingFieldView extends JPanel implements MouseListener, MouseMoti
 
     @Override
     public void mouseWheelMoved(MouseWheelEvent e) {
+        System.out.println("test");
         int amount = -e.getWheelRotation() * 4;
         if ((amount > 0 && fieldSize < maxFieldSize) || (amount < 0 && fieldSize > minFieldSize)) {
             fieldSize += amount;

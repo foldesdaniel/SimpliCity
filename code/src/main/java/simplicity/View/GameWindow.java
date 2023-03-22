@@ -21,6 +21,15 @@ public class GameWindow extends JFrame implements MenuEventListener {
         MainMenu mainMenu = new MainMenu();
         mainMenu.setMenuEventListener(this);
         this.add(mainMenu);
+        System.setProperty("apple.laf.useScreenMenuBar", "true");
+        JMenu menuCategory1 = new JMenu("File");
+        JMenuItem menuItem1 = new JMenuItem("opt1");
+        JMenuItem menuItem2 = new JMenuItem("opt2");
+        menuCategory1.add(menuItem1);
+        menuCategory1.add(menuItem2);
+        JMenuBar menuBar = new JMenuBar();
+        menuBar.add(menuCategory1);
+        this.setJMenuBar(menuBar);
         this.pack();
     }
 

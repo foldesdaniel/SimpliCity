@@ -2,7 +2,7 @@ package simplicity.View.Menu;
 
 import simplicity.Model.Listeners.MenuEventListener;
 import simplicity.View.GameWindow;
-import simplicity.View.PlayingField.GamePanel;
+import simplicity.View.Game.GamePanel;
 
 import javax.swing.*;
 import java.awt.*;

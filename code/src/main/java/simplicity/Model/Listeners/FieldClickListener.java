@@ -1,9 +1,9 @@
 package simplicity.Model.Listeners;
 
-import simplicity.View.PlayingField.FieldView;
+import simplicity.Model.Game.FieldData;
 
 public interface FieldClickListener {
 
-    void fieldClicked(FieldView f);
+    void fieldClicked(FieldData f);
 
 }

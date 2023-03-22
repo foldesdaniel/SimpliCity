@@ -1,9 +1,10 @@
-package simplicity.View.PlayingField;
+package simplicity.View.Game;
 
 import simplicity.Model.Listeners.FieldClickListener;
 import simplicity.Model.GameTime.InGameSpeeds;
 import simplicity.Model.GameTime.InGameTime;
 import simplicity.Model.Listeners.InGameTimeListener;
+import simplicity.Model.Game.FieldData;
 
 import javax.swing.*;
 import java.awt.*;
@@ -18,7 +19,7 @@ public class GamePanel extends JPanel implements FieldClickListener, InGameTimeL
     private final JPanel topLeftBar;
     private final JPanel topRightBar;
     private final JLabel timeLabel;
-    private final JPanel controlPanel;
+    private final ControlPanel controlPanel;
     private final PlayingFieldView playingField;
     private final JPanel bottomBar;
 
@@ -33,22 +34,13 @@ public class GamePanel extends JPanel implements FieldClickListener, InGameTimeL
         menuBar = new JMenuBar();
         topLeftBar = new JPanel();
         topRightBar = new JPanel();
-        controlPanel = new JPanel();
+        controlPanel = new ControlPanel();
         playingField = new PlayingFieldView(20, 20);
         bottomBar = new JPanel();
         timeLabel = new JLabel();
         inGameTime = new InGameTime();
         inGameTime.setInGameTimeListener(this);
         inGameTime.startInGameTime(InGameSpeeds.NORMAL);
-
-        JMenu menuCategory1 = new JMenu("File");
-        JMenuItem menuItem1 = new JMenuItem("opt1");
-        JMenuItem menuItem2 = new JMenuItem("opt2");
-
-        menuCategory1.add(menuItem1);
-        menuCategory1.add(menuItem2);
-        menuBar.add(menuCategory1);
-        //this.setJMenuBar(menuBar);
 
         this.gbc = new GridBagConstraints();
         JPanel mainPanel = new JPanel();
@@ -103,7 +95,6 @@ public class GamePanel extends JPanel implements FieldClickListener, InGameTimeL
             1, 1,
             0.7, 0
         ));
-        controlPanel.add(new JLabel("nothing selected"));
         mainPanel.add(controlPanel, changeGbc(
             1, 0,
             2, 1,
@@ -139,15 +130,8 @@ public class GamePanel extends JPanel implements FieldClickListener, InGameTimeL
     }
 
     @Override
-    public void fieldClicked(FieldView f) {
-        controlPanel.removeAll();
-        controlPanel.revalidate();
-        controlPanel.repaint();
-        if (f == null) {
-            controlPanel.add(new JLabel("nothing selected"));
-        } else {
-            controlPanel.add(new JLabel(f.toString()));
-        }
+    public void fieldClicked(FieldData f) {
+        controlPanel.updateInfo(f);
     }
 
     @Override
@@ -156,6 +140,10 @@ public class GamePanel extends JPanel implements FieldClickListener, InGameTimeL
     }
 
     private GridBagConstraints changeGbc(int row, int col, int rowSpan, int colSpan, double weightX, double weightY) {
+        return GamePanel.changeGbc(gbc, row, col, rowSpan, colSpan, weightX, weightY);
+    }
+
+    public static GridBagConstraints changeGbc(GridBagConstraints gbc, int row, int col, int rowSpan, int colSpan, double weightX, double weightY) {
         gbc.fill = GridBagConstraints.BOTH;
         gbc.anchor = GridBagConstraints.CENTER;
         gbc.ipady = 0;
