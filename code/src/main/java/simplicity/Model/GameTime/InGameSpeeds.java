@@ -1,4 +1,4 @@
-package Model;
+package simplicity.Model.GameTime;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
