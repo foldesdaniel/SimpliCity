@@ -9,13 +9,13 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.Collections;
 
-public class School extends Education implements InGameTimeTickListener {
+public class University extends Education implements InGameTimeTickListener {
 
-    private final EducationLevel levelOfEducation = EducationLevel.SECONDARY;
+    private final EducationLevel levelOfEducation = EducationLevel.UNIVERSITY;
 
     private final InGameTime inGameTime;
 
-    public School(FieldType type, Point position, int buildPrice, int maxPeople) {
+    public University(FieldType type, Point position, int buildPrice, int maxPeople) {
         super(type, position, buildPrice, maxPeople);
         inGameTime = InGameTimeManager.getInstance().getInGameTime();
         inGameTime.addInGameTimeTickListener(this);

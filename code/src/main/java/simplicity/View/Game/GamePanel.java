@@ -1,6 +1,7 @@
 package simplicity.View.Game;
 
 import simplicity.Model.Education.School;
+import simplicity.Model.Education.University;
 import simplicity.Model.Game.FieldData;
 import simplicity.Model.Game.FieldType;
 import simplicity.Model.GameTime.InGameSpeeds;
@@ -132,28 +133,30 @@ public class GamePanel extends JPanel implements FieldClickListener, InGameTimeL
         this.setBackground(new Color(0, 255, 0));
         this.repaint();
 
-        School s1 = new School(FieldType.EMPTY, new Point(1, 1), 0, 3);
         try {
+            School s1 = new School(FieldType.EMPTY, new Point(1, 1), 0, 3);
+            Thread.sleep(3000);
+            University u1 = new University(FieldType.EMPTY, new Point(1, 1), 0, 3);
             Person p1 = new Person();
-            System.out.println(p1.getBorn()[2]);
+//            System.out.println(p1.getBorn()[2]);
             p1.goToSchool(s1);
-            Thread.sleep(2000);
+//            Thread.sleep(2000);
             Person p2 = new Person();
-            System.out.println(p2.getBorn()[2]);
-            p2.goToSchool(s1);
-            Thread.sleep(2000);
+//            System.out.println(p2.getBorn()[2]);
+            p2.goToSchool(u1);
+//            Thread.sleep(2000);
             Person p3 = new Person();
-            System.out.println(p3.getBorn()[2]);
-            p3.goToSchool(s1);
+//            System.out.println(p3.getBorn()[2]);
+//            p3.goToSchool(u1);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
-        for (int i = 0; i < s1.getArrivalDates().size(); i++) {
-            for (int j = 0; j < 3; j++) {
-                System.out.println(s1.getArrivalDates().get(i)[j] + " ");
-            }
-            System.out.println("\n");
-        }
+//        for (int i = 0; i < s1.getArrivalDates().size(); i++) {
+//            for (int j = 0; j < 3; j++) {
+//                System.out.println(s1.getArrivalDates().get(i)[j] + " ");
+//            }
+//            System.out.println("\n");
+//        }
     }
 
     public static GridBagConstraints changeGbc(GridBagConstraints gbc, int row, int col, int rowSpan, int colSpan, double weightX, double weightY) {

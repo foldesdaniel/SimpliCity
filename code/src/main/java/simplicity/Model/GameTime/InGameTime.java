@@ -4,6 +4,7 @@ import lombok.Getter;
 import simplicity.Model.Listeners.InGameTimeListener;
 import simplicity.Model.Listeners.InGameTimeTickListener;
 
+import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -19,7 +20,7 @@ public class InGameTime {
     private Timer inGameElapsedTime;
 
     private InGameTimeListener inGameTimeListener;
-    private InGameTimeTickListener inGameTimeTickListener;
+    private final ArrayList<InGameTimeTickListener> inGameTimeTickListeners = new ArrayList<>();
 
     public InGameTime() {
     }
@@ -42,6 +43,9 @@ public class InGameTime {
             @Override
             public void run() {
                 inGameTimeListener.timeChanged(inGameYear, inGameDay, inGameHour);
+                for (InGameTimeTickListener inGameTimeTickListener : inGameTimeTickListeners) {
+                    inGameTimeTickListener.timeTick();
+                }
                 if (inGameHour < 23) inGameHour++;
                 else {
                     inGameHour = 0;
@@ -51,7 +55,7 @@ public class InGameTime {
                         inGameYear++;
                     }
                 }
-                inGameTimeTickListener.timeTick();
+//                inGameTimeTickListener.timeTick();
             }
         };
         inGameElapsedTime.scheduleAtFixedRate(inGameElapsedTimeAction, 0, speed.getSpeed());
@@ -61,8 +65,8 @@ public class InGameTime {
         this.inGameTimeListener = inGameTimeListener;
     }
 
-    public void setInGameTimeTickListener(InGameTimeTickListener inGameTimeTickListener) {
-        this.inGameTimeTickListener = inGameTimeTickListener;
+    public void addInGameTimeTickListener(InGameTimeTickListener inGameTimeTickListener) {
+        this.inGameTimeTickListeners.add(inGameTimeTickListener);
     }
 
     public void stopInGameTime() {
