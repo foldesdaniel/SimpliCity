@@ -6,6 +6,9 @@ public enum FieldType {
     ROAD,
     ZONE_LIVING,
     ZONE_SERVICE,
-    ZONE_INDUSTRIAL;
+    ZONE_INDUSTRIAL,
+    SCHOOL,
+    UNIVERSITY,
+    FOREST;
 
 }
