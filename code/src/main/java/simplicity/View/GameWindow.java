@@ -29,7 +29,7 @@ public class GameWindow extends JFrame implements MenuEventListener {
         menuCategory1.add(menuItem2);
         JMenuBar menuBar = new JMenuBar();
         menuBar.add(menuCategory1);
-        this.setJMenuBar(menuBar);
+//        this.setJMenuBar(menuBar);
         this.pack();
     }
 

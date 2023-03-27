@@ -15,8 +15,8 @@ public class School extends Education implements InGameTimeTickListener {
 
     private final InGameTime inGameTime;
 
-    public School(FieldType type, Point position, int buildPrice, int maxPeople) {
-        super(type, position, buildPrice, maxPeople);
+    public School( Point position) {
+        super(FieldType.SCHOOL, position, 1000, 20);
         inGameTime = InGameTimeManager.getInstance().getInGameTime();
         inGameTime.addInGameTimeTickListener(this);
     }
@@ -47,8 +47,8 @@ public class School extends Education implements InGameTimeTickListener {
             //this.getArrivalDates().get(i)[1] == inGameTime.getInGameDay() &&
             //this.getArrivalDates().get(i)[2] == inGameTime.getInGameHour()
             //to complete School it is 1 year
-            if (this.getArrivalDates().get(i)[1] + 1 == inGameTime.getInGameDay()
-                    && this.getArrivalDates().get(i)[2] == inGameTime.getInGameHour()) {
+            if (this.getArrivalDates().get(i).getDay() + 1 == inGameTime.getInGameDay()
+                    && this.getArrivalDates().get(i).getHour() == inGameTime.getInGameHour()) {
                 graduates.add(i);
             }
         }

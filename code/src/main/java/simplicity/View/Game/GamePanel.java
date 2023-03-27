@@ -45,7 +45,7 @@ public class GamePanel extends JPanel implements FieldClickListener, InGameTimeL
         inGameTime = inGameTimeManager.getInGameTime();
 //        inGameTime = new InGameTime();
         inGameTime.setInGameTimeListener(this);
-        inGameTime.startInGameTime(InGameSpeeds.NORMAL);
+        inGameTime.startInGameTime(InGameSpeeds.ULTRASONIC_DEV_ONLY);
 
         this.gbc = new GridBagConstraints();
         JPanel mainPanel = new JPanel();
@@ -134,9 +134,9 @@ public class GamePanel extends JPanel implements FieldClickListener, InGameTimeL
         this.repaint();
 
         try {
-            School s1 = new School(FieldType.EMPTY, new Point(1, 1), 0, 3);
+            School s1 = new School(new Point(1, 1));
             Thread.sleep(3000);
-            University u1 = new University(FieldType.EMPTY, new Point(1, 1), 0, 3);
+            University u1 = new University(new Point(1, 1));
             Person p1 = new Person();
 //            System.out.println(p1.getBorn()[2]);
             p1.goToSchool(s1);
