@@ -3,6 +3,7 @@ package simplicity.Model.Resource;
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 
 /**
@@ -23,6 +24,16 @@ public class ResourceLoader {
             ex.printStackTrace();
             return null;
         }
+    }
+
+    public static Font loadFont(String fileName) {
+        try{
+            InputStream fontRes = ResourceLoader.class.getClassLoader().getResourceAsStream(fileName);
+            return Font.createFont(Font.TRUETYPE_FONT, fontRes);
+        }catch(IOException | FontFormatException ex){
+            ex.printStackTrace();
+        }
+        return null;
     }
     
 }

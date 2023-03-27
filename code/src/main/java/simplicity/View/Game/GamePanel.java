@@ -1,10 +1,12 @@
 package simplicity.View.Game;
 
+import simplicity.Model.GameModel;
 import simplicity.Model.Listeners.FieldClickListener;
 import simplicity.Model.GameTime.InGameSpeeds;
 import simplicity.Model.GameTime.InGameTime;
 import simplicity.Model.Listeners.InGameTimeListener;
 import simplicity.Model.Game.FieldData;
+import simplicity.View.GameWindow;
 
 import javax.swing.*;
 import java.awt.*;
@@ -25,8 +27,8 @@ public class GamePanel extends JPanel implements FieldClickListener, InGameTimeL
 
     private final InGameTime inGameTime;
 
-    public GamePanel(int windowWidth, int windowHeight) {
-        Dimension windowSize = new Dimension(windowWidth, windowHeight);
+    public GamePanel() {
+        Dimension windowSize = new Dimension(GameWindow.getWindowWidth(), GameWindow.getWindowHeight());
         this.setSize(windowSize);
         this.setPreferredSize(windowSize);
         this.setLayout(new FlowLayout(FlowLayout.LEFT, 0, 0));
@@ -47,22 +49,22 @@ public class GamePanel extends JPanel implements FieldClickListener, InGameTimeL
         GridBagLayout layout = new GridBagLayout();
         mainPanel.setLayout(layout);
         topLeftBar.add(new JLabel("Top left panel"));
-        topLeftBar.setBackground(new Color(255, 0, 0));
+        topLeftBar.setBackground(new Color(50, 50, 50));
         mainPanel.add(topLeftBar, changeGbc(
             0, 0,
             1, 1,
             -1, 0
         ));
         topRightBar.add(timeLabel);
-        topRightBar.setBackground(new Color(150, 0, 0));
-        JButton btn1 = new JButton("Stop");
+        // topRightBar.setBackground(new Color(150, 0, 0));
+        JButton btn1 = new JButton("⏹");
         btn1.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 inGameTime.stopInGameTime();
             }
         });
-        JButton btn2 = new JButton(">");
+        JButton btn2 = new JButton("⏵");
         btn2.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -70,7 +72,7 @@ public class GamePanel extends JPanel implements FieldClickListener, InGameTimeL
                 inGameTime.startInGameTime(InGameSpeeds.NORMAL);
             }
         });
-        JButton btn3 = new JButton(">>");
+        JButton btn3 = new JButton("⏵⏵");
         btn3.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -78,7 +80,7 @@ public class GamePanel extends JPanel implements FieldClickListener, InGameTimeL
                 inGameTime.startInGameTime(InGameSpeeds.FAST);
             }
         });
-        JButton btn4 = new JButton(">>>");
+        JButton btn4 = new JButton("⏵⏵⏵");
         btn4.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -106,8 +108,11 @@ public class GamePanel extends JPanel implements FieldClickListener, InGameTimeL
             1, 1,
             0.7, 1
         ));
-        bottomBar.add(new JLabel("Bottom bar"));
-        bottomBar.setBackground(new Color(255, 0, 0));
+        JLabel bottomTestLabel = new JLabel("Bottom bar");
+        bottomTestLabel.setFont(GameModel.CUSTOM_FONT.deriveFont(Font.PLAIN, 18));
+        bottomTestLabel.setForeground(Color.GREEN);
+        bottomBar.add(bottomTestLabel);
+        bottomBar.setBackground(new Color(20, 20, 20));
         mainPanel.add(bottomBar, changeGbc(
             2, 1,
             1, 1,
