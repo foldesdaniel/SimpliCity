@@ -53,6 +53,7 @@ public class InGameTime {
                     else {
                         inGameDay = 0;
                         inGameYear++;
+
                     }
                 }
 //                inGameTimeTickListener.timeTick();
