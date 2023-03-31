@@ -25,7 +25,7 @@ public class School extends Education implements InGameTimeTickListener {
     public void graduate(ArrayList<Integer> studentIds) {
         for (int i = 0; i < studentIds.size(); i++) {
             this.getPeople().get(i).setEducationLevel(levelOfEducation);
-            System.out.println(this.getPeople().get(i).getEducationLevel() + " GRADUATED");
+//            System.out.println(this.getPeople().get(i).getEducationLevel() + " GRADUATED");
         }
         if (studentIds.size() > 0) {
             studentIds.sort(Collections.reverseOrder());

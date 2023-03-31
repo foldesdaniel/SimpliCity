@@ -133,24 +133,24 @@ public class GamePanel extends JPanel implements FieldClickListener, InGameTimeL
         this.setBackground(new Color(0, 255, 0));
         this.repaint();
 
-        try {
-            School s1 = new School(new Point(1, 1));
-            Thread.sleep(3000);
-            University u1 = new University(new Point(1, 1));
-            Person p1 = new Person();
-//            System.out.println(p1.getBorn()[2]);
-            p1.goToSchool(s1);
-//            Thread.sleep(2000);
-            Person p2 = new Person();
-//            System.out.println(p2.getBorn()[2]);
-            p2.goToSchool(u1);
-//            Thread.sleep(2000);
-            Person p3 = new Person();
-//            System.out.println(p3.getBorn()[2]);
-//            p3.goToSchool(u1);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
+//        try {
+//            School s1 = new School(new Point(1, 1));
+//            Thread.sleep(3000);
+//            University u1 = new University(new Point(1, 1));
+//            Person p1 = new Person();
+////            System.out.println(p1.getBorn()[2]);
+//            p1.goToSchool(s1);
+////            Thread.sleep(2000);
+//            Person p2 = new Person();
+////            System.out.println(p2.getBorn()[2]);
+//            p2.goToSchool(u1);
+////            Thread.sleep(2000);
+//            Person p3 = new Person();
+////            System.out.println(p3.getBorn()[2]);
+////            p3.goToSchool(u1);
+//        } catch (InterruptedException e) {
+//            throw new RuntimeException(e);
+//        }
 //        for (int i = 0; i < s1.getArrivalDates().size(); i++) {
 //            for (int j = 0; j < 3; j++) {
 //                System.out.println(s1.getArrivalDates().get(i)[j] + " ");

@@ -19,5 +19,8 @@ public abstract class Education extends Zone {
 
     public abstract void graduate(ArrayList<Integer> studentIds);
 
-
+    @Override
+    public int calculateTax() {
+        return 0;
+    }
 }
