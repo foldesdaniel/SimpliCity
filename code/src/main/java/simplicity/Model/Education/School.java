@@ -38,17 +38,17 @@ public class School extends Education implements InGameTimeTickListener {
 
     @Override
     public final void timeTick() {
-        System.out.println("time changed: " + inGameTime.getInGameYear() + inGameTime.getInGameDay() + inGameTime.getInGameHour());
+        System.out.println("time changed: " + this.inGameTime.getInGameYear() + this.inGameTime.getInGameDay() + this.inGameTime.getInGameHour());
         ArrayList<Integer> graduates = new ArrayList<>();
         for (int i = 0; i < this.getArrivalDates().size(); i++) {
             //[0] year, [1] day, [2] hour
             //change to
-            //this.getArrivalDates().get(i)[0] + 1 == inGameTime.getInGameYear() &&
-            //this.getArrivalDates().get(i)[1] == inGameTime.getInGameDay() &&
-            //this.getArrivalDates().get(i)[2] == inGameTime.getInGameHour()
+            //this.getArrivalDates().get(i).getYear() + 1 == inGameTime.getInGameYear() &&
+            //this.getArrivalDates().get(i).getDay() == inGameTime.getInGameDay() &&
+            //this.getArrivalDates().get(i).getHour() == inGameTime.getInGameHour()
             //to complete School it is 1 year
-            if (this.getArrivalDates().get(i).getDay() + 1 == inGameTime.getInGameDay()
-                    && this.getArrivalDates().get(i).getHour() == inGameTime.getInGameHour()) {
+            if (this.getArrivalDates().get(i).getDay() + 1 == this.inGameTime.getInGameDay()
+                    && this.getArrivalDates().get(i).getHour() == this.inGameTime.getInGameHour()) {
                 graduates.add(i);
             }
         }

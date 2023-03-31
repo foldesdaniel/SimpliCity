@@ -10,6 +10,7 @@ import simplicity.Model.GameTime.InGameTime;
 import simplicity.Model.GameTime.InGameTimeManager;
 import simplicity.Model.Listeners.InGameTimeTickListener;
 import simplicity.Model.Placeables.Workplace;
+import simplicity.Model.Zones.Residential;
 
 @AllArgsConstructor
 @Getter
@@ -28,9 +29,8 @@ public class Person implements InGameTimeTickListener {
     private EducationLevel educationLevel = EducationLevel.PRIMARY;
 
     private Workplace workplace = null;
-
+    private Residential home = null;
     private final InGameTime inGameTime;
-
 
     public Person() {
         inGameTime = InGameTimeManager.getInstance().getInGameTime();
@@ -54,15 +54,24 @@ public class Person implements InGameTimeTickListener {
         }
     }
 
+    public void moveIn(Residential home) {
+        if(home.getPeople().size() < home.getMaxPeople() && !home.getPeople().contains(this)) {
+            home.getPeople().add(this);
+            this.home = home;
+        }
+    }
+
     @Override
     public void timeTick() {
-        InGameTime igt = InGameTimeManager.getInstance().getInGameTime();
-        if(igt.getInGameDay() == 0 && igt.getInGameHour() == 0 && igt.getInGameYear() > 0){
-            this.age.setDate( this.age.getYear() + 1, 0, 0);
+        if(this.inGameTime.getInGameDay() == 0 && this.inGameTime.getInGameHour() == 0 && this.inGameTime.getInGameYear() > 0){
+            //aging process
+//            this.age.setDate( this.age.getYear() + 1, 0, 0);
+            this.age.addToYear(1);
             //if dead
             if(this.age.getYear() == this.lifeExpectancy) {
                 this.workplace.getPeople().remove(this);
                 this.workplace = null;
+                this.home = null;
                 this.lifeExpectancy = (int) (Math.random() * 25 + 60);
                 this.educationLevel = EducationLevel.PRIMARY;
                 this.age.setDate(18, 0, 0);
