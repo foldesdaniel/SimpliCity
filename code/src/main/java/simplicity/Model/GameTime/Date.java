@@ -15,4 +15,8 @@ public class Date {
         this.day = day;
         this.hour = hour;
     }
+
+    public void addToYear(int year) {
+        this.year += year;
+    }
 }
