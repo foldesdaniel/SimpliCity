@@ -17,4 +17,8 @@ public abstract class Zone extends Placeable {
         super(type, position, buildPrice);
         this.maxPeople = maxPeople;
     }
+
+    public void addPerson(Person person) {
+        people.add(person);
+    }
 }

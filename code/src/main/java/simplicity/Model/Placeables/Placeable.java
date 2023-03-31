@@ -1,9 +1,11 @@
 package simplicity.Model.Placeables;
 
+import lombok.Getter;
 import simplicity.Model.Game.FieldType;
 
 import java.awt.*;
 
+@Getter
 public abstract class Placeable {
 
     private FieldType type;
@@ -15,4 +17,6 @@ public abstract class Placeable {
         this.position = position;
         this.buildPrice = buildPrice;
     }
+
+    public abstract int calculateTax();
 }

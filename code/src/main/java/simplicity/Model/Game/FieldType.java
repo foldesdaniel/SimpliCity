@@ -9,6 +9,8 @@ public enum FieldType {
     ZONE_INDUSTRIAL,
     SCHOOL,
     UNIVERSITY,
+    STADIUM,
+    POLICE,
     FOREST;
 
 }

@@ -13,4 +13,8 @@ public class Finance {
     public Finance(int currentWealth) {
         this.currentWealth = currentWealth;
     }
+
+    public void removeMoney(int money) {
+        currentWealth -= money;
+    }
 }
