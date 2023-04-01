@@ -9,9 +9,10 @@ import java.awt.*;
 @Getter
 public class Residential extends Zone {
 
-    private int taxPerInhabitant;
+    private final int taxPerInhabitant;
+
     public Residential(Point position) {
-        super(FieldType.ZONE_LIVING, position, 1000, 20);
+        super(FieldType.ZONE_RESIDENTIAL, position, 1000, 20);
         this.taxPerInhabitant = 100;
     }
 
