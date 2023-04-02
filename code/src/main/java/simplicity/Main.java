@@ -12,9 +12,9 @@ public class Main {
 
     public static void main(String[] args) {
         System.setProperty("apple.awt.application.name", GameModel.GAME_TITLE);
-        try{
+        try {
             UIManager.setLookAndFeel(new FlatDarculaLaf());
-        }catch(Exception ex){
+        } catch (Exception ex) {
             System.err.println("Failed to initialize FlatLaf");
         }
         GameWindow gameWindow = new GameWindow();

@@ -16,15 +16,18 @@ import java.awt.event.WindowStateListener;
 
 public class GameWindow extends JFrame implements MenuEventListener, StartGameListener {
 
-    @Getter private static int windowWidth;
-    @Getter private static int windowHeight;
+    @Getter
+    private static int windowWidth;
+    @Getter
+    private static int windowHeight;
 
     private MainMenu mainMenu;
     private GamePanel gamePanel;
 
-    public GameWindow(){
+    public GameWindow() {
         this.setTitle(GameModel.GAME_TITLE);
         this.changedFullscreen();
+        // this.changedWindowed(960,480);
         this.setUndecorated(true);
         this.setLayout(null);
         this.setLocationRelativeTo(null);
@@ -66,7 +69,7 @@ public class GameWindow extends JFrame implements MenuEventListener, StartGameLi
         this.updateSize();
     }
 
-    public void updateSize(){
+    public void updateSize() {
         // called after setting the window size, so that
         // nothing will get cut off by e.g. the macOS menu bar
         windowWidth = this.getWidth();
@@ -79,7 +82,7 @@ public class GameWindow extends JFrame implements MenuEventListener, StartGameLi
         this.revalidate();
         this.repaint();
         this.updateSize(); // needs to be called here as well
-        if(gamePanel == null) gamePanel = new GamePanel();
+        if (gamePanel == null) gamePanel = new GamePanel();
         this.add(gamePanel);
     }
 
