@@ -1,24 +1,29 @@
 package simplicity.View.Menu;
 
 import simplicity.Model.Listeners.MenuEventListener;
+import simplicity.Model.Listeners.StartGameListener;
 import simplicity.View.GameWindow;
-import simplicity.View.Game.GamePanel;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.util.ArrayList;
 
 import static java.lang.Integer.parseInt;
 
 public class MainMenu extends JPanel {
 
-    private MenuEventListener menuEventListener;
+    private ArrayList<MenuEventListener> menuEventListeners;
+    private ArrayList<StartGameListener> startGameListeners;
 
     /**
      * Constructor
      */
     public MainMenu() {
+        this.menuEventListeners = new ArrayList<>();
+        this.startGameListeners = new ArrayList<>();
+
         int windowWidth = GameWindow.getWindowWidth();
         int windowHeight = GameWindow.getWindowHeight();
         this.setLayout(null);
@@ -29,8 +34,12 @@ public class MainMenu extends JPanel {
         displayButtons();
     }
 
-    public void setMenuEventListener(MenuEventListener menuEventListener){
-        this.menuEventListener = menuEventListener;
+    public void addMenuEventListener(MenuEventListener menuEventListener){
+        this.menuEventListeners.add(menuEventListener);
+    }
+
+    public void addStartGameListener(StartGameListener startGameListener){
+        this.startGameListeners.add(startGameListener);
     }
 
     /**
@@ -132,13 +141,9 @@ public class MainMenu extends JPanel {
      * Displays the actual game panel
      */
     private void startGame(){
-        this.removeAll();
-        this.revalidate();
-        this.repaint();
         int windowWidth = GameWindow.getWindowWidth();
         int windowHeight = GameWindow.getWindowHeight();
-        GamePanel gamePanel = new GamePanel(windowWidth, windowHeight);
-        this.add(gamePanel);
+        for(StartGameListener l : startGameListeners) l.onGameStart();
     }
 
     /**
@@ -253,10 +258,9 @@ public class MainMenu extends JPanel {
      */
     private void setWindowSize(int width, int height, boolean fullscreen) {
         if(fullscreen){
-            menuEventListener.changedFullscreen();
+            for(MenuEventListener l : menuEventListeners) l.changedFullscreen();
         }else{
-            menuEventListener.changedWindowed(width, height);
-            System.out.println(width + " " + height);
+            for(MenuEventListener l : menuEventListeners) l.changedWindowed(width, height);
         }
         displayButtons();
     }

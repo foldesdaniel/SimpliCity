@@ -11,9 +11,10 @@ import javax.swing.*;
 public class Main {
 
     public static void main(String[] args) {
-        try{
+        System.setProperty("apple.awt.application.name", GameModel.GAME_TITLE);
+        try {
             UIManager.setLookAndFeel(new FlatDarculaLaf());
-        }catch(Exception ex){
+        } catch (Exception ex) {
             System.err.println("Failed to initialize FlatLaf");
         }
         GameModel gameModel = new GameModel();
