@@ -1,19 +1,11 @@
 package simplicity.View.Game;
 
-import simplicity.Model.GameModel;
 import simplicity.Model.Listeners.FieldClickListener;
-import simplicity.Model.GameTime.InGameSpeeds;
-import simplicity.Model.GameTime.InGameTime;
-import simplicity.Model.GameTime.InGameTimeManager;
-import simplicity.Model.Listeners.FieldClickListener;
-import simplicity.Model.Listeners.InGameTimeListener;
 import simplicity.Model.Game.FieldData;
 import simplicity.View.GameWindow;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 public class GamePanel extends JPanel implements FieldClickListener {
 
@@ -23,6 +15,7 @@ public class GamePanel extends JPanel implements FieldClickListener {
     private final ControlPanel controlPanel;
     private final PlayingFieldView playingField;
     private final BottomBar bottomBar;
+    private final GridBagConstraints gbc;
 
     public GamePanel() {
         Dimension windowSize = new Dimension(GameWindow.getWindowWidth(), GameWindow.getWindowHeight());
@@ -81,10 +74,6 @@ public class GamePanel extends JPanel implements FieldClickListener {
         this.add(mainPanel);
         this.setBackground(new Color(0, 255, 0));
         this.repaint();
-
-    @Override
-    public void fieldClicked(FieldData f) {
-        controlPanel.updateInfo(f);
     }
 
     private GridBagConstraints changeGbc(int row, int col, int rowSpan, int colSpan, double weightX, double weightY) {
@@ -107,15 +96,6 @@ public class GamePanel extends JPanel implements FieldClickListener {
     @Override
     public void fieldClicked(FieldData f) {
         controlPanel.updateInfo(f);
-    }
-
-    @Override
-    public void timeChanged(int inGameYear, int inGameDay, int inGameHour) {
-        timeLabel.setText("Year: " + inGameYear + ", day: " + inGameDay + ", hour: " + inGameHour);
-    }
-
-    private GridBagConstraints changeGbc(int row, int col, int rowSpan, int colSpan, double weightX, double weightY) {
-        return GamePanel.changeGbc(gbc, row, col, rowSpan, colSpan, weightX, weightY);
     }
 
 }

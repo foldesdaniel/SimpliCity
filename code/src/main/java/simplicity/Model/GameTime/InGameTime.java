@@ -42,7 +42,7 @@ public class InGameTime {
         TimerTask inGameElapsedTimeAction = new TimerTask() {
             @Override
             public void run() {
-                inGameTimeListener.timeChanged(inGameYear, inGameDay, inGameHour);
+                if(inGameTimeListener != null) inGameTimeListener.timeChanged(inGameYear, inGameDay, inGameHour);
                 for (InGameTimeTickListener inGameTimeTickListener : inGameTimeTickListeners) {
                     inGameTimeTickListener.timeTick();
                 }
