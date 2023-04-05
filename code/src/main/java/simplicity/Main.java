@@ -17,6 +17,7 @@ public class Main {
         } catch (Exception ex) {
             System.err.println("Failed to initialize FlatLaf");
         }
+        GameModel gameModel = new GameModel();
         GameWindow gameWindow = new GameWindow();
         gameWindow.setVisible(true);
     }

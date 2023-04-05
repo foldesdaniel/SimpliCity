@@ -4,8 +4,13 @@ public enum FieldType {
 
     EMPTY,
     ROAD,
-    ZONE_LIVING,
+    ZONE_RESIDENTIAL,
     ZONE_SERVICE,
-    ZONE_INDUSTRIAL;
+    ZONE_INDUSTRIAL,
+    SCHOOL,
+    UNIVERSITY,
+    STADIUM,
+    POLICE,
+    FOREST;
 
 }
