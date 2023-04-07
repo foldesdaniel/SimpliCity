@@ -38,7 +38,7 @@ public class University extends Education implements InGameTimeTickListener {
 
     @Override
     public final void timeTick() {
-        System.out.println("time changed: " + this.inGameTime.getInGameYear() + this.inGameTime.getInGameDay() + this.inGameTime.getInGameHour());
+//        System.out.println("time changed: " + this.inGameTime.getInGameYear() + this.inGameTime.getInGameDay() + this.inGameTime.getInGameHour());
         ArrayList<Integer> graduates = new ArrayList<>();
         for (int i = 0; i < this.getArrivalDates().size(); i++) {
             //[0] year, [1] day, [2] hour

@@ -7,9 +7,11 @@ import simplicity.Model.GameTime.InGameSpeeds;
 import simplicity.Model.GameTime.InGameTime;
 import simplicity.Model.GameTime.InGameTimeManager;
 import simplicity.Model.Listeners.InGameTimeTickListener;
+import simplicity.Model.Person.Person;
 import simplicity.Model.Placeables.Placeable;
 import simplicity.Model.Placeables.Road;
 import simplicity.Model.Resource.ResourceLoader;
+import simplicity.Model.Zones.Residential;
 
 import java.awt.*;
 
@@ -29,51 +31,47 @@ public class GameModel implements InGameTimeTickListener {
     public static final Color BG_DARK = new Color(61, 63, 65); // default flatlaf dark
     private final InGameTime inGameTime = InGameTimeManager.getInstance().getInGameTime();
     //just for testing purposes
-    private final int gridSize = 3;
+    private final int gridSize = 2;
     private int mood;
     private Date nextDisaster;
     private int secondaryPercentage;
     private int uniPercentage;
+    private int cityMood;
     private Placeable grid[][];
     private Finance finance;
 
     public GameModel() {
         inGameTime.addInGameTimeTickListener(this);
-        inGameTime.startInGameTime(InGameSpeeds.NORMAL);
+        inGameTime.startInGameTime(InGameSpeeds.ULTRASONIC_DEV_ONLY);
         this.finance = new Finance(10000); //starting wealth
         this.secondaryPercentage = 70;
         this.uniPercentage = 22;
         this.mood = 0;
 
         //Initialize grid
-//        this.grid = new Placeable[this.gridSize][this.gridSize];
-//        for (int i = 0; i < this.gridSize; ++i) {
-//            for (int j = 0; j < this.gridSize; ++j) {
-//                this.grid[i][j] = null; //null == not initialized block
-//            }
-//        }
-//        this.grid = new Placeable[][]{
-//                {new School(new Point(0, 0)), new School(new Point(0, 1)), new School(new Point(0, 2))},
-//                {new School(new Point(1, 0)), new Road(new Point(1, 1)), new School(new Point(1, 2))},
-//                {new School(new Point(2, 0)), new School(new Point(2, 1)), new School(new Point(2, 2))}
-//        };
-//        this.grid = new Placeable[][]{
-//                {new School(new Point(0, 0)), new School(new Point(0, 1)), new School(new Point(0, 2))},
-//                {new School(new Point(1, 0)), new School(new Point(1, 1)), new School(new Point(1, 2))},
-//                {new School(new Point(2, 0)), new School(new Point(2, 1)), new School(new Point(2, 2))}
-//        };
 //        this.grid = new Placeable[][]{
 //                {new School(new Point(0, 0)), new School(new Point(0, 1)), new Road(new Point(0, 2))},
-//                {new School(new Point(1, 0)), new School(new Point(1, 1)), new Road(new Point(1, 2))},
+//                {new School(new Point(1, 0)), new Road(new Point(1, 1)), new Road(new Point(1, 2))},
 //                {new School(new Point(2, 0)), new School(new Point(2, 1)), new Road(new Point(2, 2))}
 //        };
         this.grid = new Placeable[][]{
-                {new School(new Point(0, 0)), new School(new Point(0, 1)), new Road(new Point(0, 2))},
-                {new School(new Point(1, 0)), new Road(new Point(1, 1)), new Road(new Point(1, 2))},
-                {new School(new Point(2, 0)), new School(new Point(2, 1)), new Road(new Point(2, 2))}
+                {new School(new Point(0, 0)), new Residential( new Point(0,1))},
+                {new Residential( new Point(1,0)), new Road(new Point(1, 1))}
         };
 
-        System.out.println(canRoadBeDestroyed(grid[0][1], grid[2][1], grid[1][1]));
+        Person p1 = new Person();
+        Person p2 = new Person();
+        Person p3 = new Person();
+        Person p4 = new Person();
+
+        p1.moveIn((Residential) grid[0][1]);
+        p2.moveIn((Residential) grid[0][1]);
+        p3.moveIn((Residential) grid[1][0]);
+        p3.moveIn((Residential) grid[1][0]);
+
+        System.out.println(((Residential) grid[0][1]).calculateZoneMood());
+        System.out.println(((Residential) grid[1][0]).calculateZoneMood());
+
     }
 
     public static boolean isSafe(int i, int j, int[][] matrix) {
@@ -151,19 +149,72 @@ public class GameModel implements InGameTimeTickListener {
         System.out.println(finance.getCurrentWealth());
     }
 
+    void calculateCityMood() {
+        int cityMood = 0;
+        int numOfZones = 0;
+        for(int i = 0; i < this.gridSize; i++) {
+            for(int j = 0; j < this.gridSize; j++) {
+                if(this.grid[i][j] instanceof Residential) {
+                    cityMood += ((Residential) this.grid[i][j]).calculateZoneMood();
+                    numOfZones++;
+                }
+            }
+        }
+        this.cityMood = (int) cityMood / numOfZones;
+    }
+
+    public void changeMoodOfPeople() {
+        //years can be -1, -2, -3 or +1, +2, +3
+
+        if (this.finance.getCurrentWealth() < -10000) {
+            this.finance.setProfitableYearsInARow(this.finance.getProfitableYearsInARow() -1);
+        } else {
+            this.finance.setProfitableYearsInARow(this.finance.getProfitableYearsInARow() + 1);
+        }
+
+        double multiplier = 1;
+        if(this.finance.getProfitableYearsInARow() < -3) {
+            //gameover
+            multiplier = 0.7;
+        } else if(this.finance.getProfitableYearsInARow() > 3) {
+            multiplier = 1.3;
+        } else {
+            multiplier = (10 + this.finance.getProfitableYearsInARow()) / 10.0;
+        }
+        for(int i = 0; i < this.gridSize; i++) {
+            for(int j = 0; j < this.gridSize; j++) {
+                if(this.grid[i][j] instanceof Residential) {
+                    for(int k = 0; k < ((Residential) this.grid[i][j]).getPeople().size(); k++ ) {
+                        ((Residential) this.grid[i][j])
+                        .getPeople()
+                        .get(k)
+                        .setMood((int) (((Residential) this.grid[i][j]).getPeople().get(k).getMood() * multiplier));
+                    }
+                }
+            }
+        }
+    }
+
+
     @Override
     public void timeTick() {
-        /*System.out.println("******************");
-        for (int i = 0; i < gridSize; ++i) {
-            for (int j = 0; j < gridSize; ++j) {
-                System.out.print(grid[i][j] + " ");
-            }
-            System.out.println();
+        if(inGameTime.getInGameHour() > 0) {
+            System.out.println("City mood: " + this.cityMood);
+            calculateCityMood();
         }
-        System.out.println("Current money : " + finance.getCurrentWealth());
+//        System.out.println("******************");
+//        for (int i = 0; i < gridSize; ++i) {
+//            for (int j = 0; j < gridSize; ++j) {
+//                System.out.print(grid[i][j] + " ");
+//            }
+//            System.out.println();
+//        }
+//        System.out.println("Current money : " + finance.getCurrentWealth());
         System.out.println("******************");
         if (inGameTime.getInGameYear() > 0 && inGameTime.getInGameDay() == 0 && inGameTime.getInGameHour() == 0) {
-            //triggers new year
-        }*/
+            //triggers new year tax collection
+            //and city mood change
+            changeMoodOfPeople();
+        }
     }
 }
