@@ -35,7 +35,7 @@ public class PlayingFieldView extends JPanel implements MouseListener, MouseMoti
         this.offsetX = 0;
         this.offsetY = 0;
         resetPlayingField();
-        MouseAdapter mouseAdapter = new MouseAdapter(){
+        MouseAdapter mouseAdapter = new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 System.out.println("clicked");
@@ -145,11 +145,11 @@ public class PlayingFieldView extends JPanel implements MouseListener, MouseMoti
             }
         }
         g.setColor(Color.BLACK);
-        if(hoverField != NO_SELECTION){
-            double mult = 26/16.0;
-            int multSize = (int)Math.round(fieldSize * mult);
-            double mult2 = 5/16.0;
-            int selOffset = (int)Math.round(fieldSize * mult2);
+        if (hoverField != NO_SELECTION) {
+            double mult = 26 / 16.0;
+            int multSize = (int) Math.round(fieldSize * mult);
+            double mult2 = 5 / 16.0;
+            int selOffset = (int) Math.round(fieldSize * mult2);
             g.drawImage(GameModel.SELECTION_2_IMG, offsetX + (fieldSize * hoverField.x) - selOffset, offsetY + (fieldSize * hoverField.y) - selOffset, multSize, multSize, null);
             g.drawRect(offsetX + (fieldSize * hoverField.x), offsetY + (fieldSize * hoverField.y), fieldSize, fieldSize);
         }
@@ -302,9 +302,9 @@ public class PlayingFieldView extends JPanel implements MouseListener, MouseMoti
         }
     }
 
-    private void onHoverChange(){
+    private void onHoverChange() {
         boolean fieldHit = hoverField != NO_SELECTION;
-        if(isLeftDragging) fieldClickListener.fieldClicked(fieldHit ? grid[hoverField.x][hoverField.y] : null);
+        if (isLeftDragging) fieldClickListener.fieldClicked(fieldHit ? grid[hoverField.x][hoverField.y] : null);
     }
 
     private static final int minFieldSize = 10;
