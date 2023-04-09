@@ -17,7 +17,8 @@ import simplicity.Model.Zones.Residential;
 @Setter
 public class Person implements InGameTimeTickListener {
 
-    private int mood = 5;
+    @Setter
+    private int mood = (int) (Math.random() * 15 + 70);
     private Date age = new Date(18,0,0);
 
     private int[] born = new int[]{

@@ -22,6 +22,14 @@ public class Residential extends Zone {
         this.addPerson(new Person(this));
     }
 
+    public int calculateZoneMood() {
+        int mood = 0;
+        for (Person p: this.getPeople()) {
+            mood += p.getMood();
+        }
+        return (int) mood / this.getPeople().size();
+    }
+
     @Override
     public int calculateTax() {
         return this.getPeople().size() * this.taxPerInhabitant;

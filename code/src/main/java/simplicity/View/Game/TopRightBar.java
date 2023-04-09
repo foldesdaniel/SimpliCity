@@ -3,6 +3,7 @@ package simplicity.View.Game;
 import simplicity.Model.GameModel;
 import simplicity.Model.GameTime.InGameSpeeds;
 import simplicity.Model.GameTime.InGameTime;
+import simplicity.Model.GameTime.InGameTimeManager;
 import simplicity.Model.Listeners.InGameTimeListener;
 
 import javax.swing.*;
@@ -14,15 +15,14 @@ public class TopRightBar extends JPanel implements InGameTimeListener {
 
     private JLabel timeLabel;
 
-    private final InGameTime inGameTime;
+    private final InGameTime inGameTime = InGameTimeManager.getInstance().getInGameTime();
 
     public TopRightBar(){
         Font font = GameModel.CUSTOM_FONT.deriveFont(Font.PLAIN, 18);
         timeLabel = new JLabel();
         timeLabel.setFont(font);
         this.add(timeLabel);
-        inGameTime = new InGameTime();
-        inGameTime.startInGameTime(InGameSpeeds.NORMAL);
+        // inGameTime.startInGameTime(InGameSpeeds.NORMAL);
         inGameTime.setInGameTimeListener(this);
         // this.setBackground(new Color(150, 0, 0));
         JButton btn1 = new JButton("⏹");

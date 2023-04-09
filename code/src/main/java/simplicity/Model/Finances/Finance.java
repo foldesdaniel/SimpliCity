@@ -1,6 +1,7 @@
 package simplicity.Model.Finances;
 
 import lombok.Getter;
+import lombok.Setter;
 
 import java.util.ArrayList;
 
@@ -9,6 +10,8 @@ public class Finance {
     private ArrayList<FinanceData> incomeList;
     private ArrayList<FinanceData> spendList;
     private int currentWealth;
+    @Setter
+    private int profitableYearsInARow = 0;
 
     public Finance(int currentWealth) {
         this.currentWealth = currentWealth;

@@ -20,9 +20,9 @@ public class GameWindow extends JFrame implements MenuEventListener, StartGameLi
     private static int windowWidth;
     @Getter
     private static int windowHeight;
-
     private MainMenu mainMenu;
     private GamePanel gamePanel;
+    private GameModel gameModel;
 
     public GameWindow() {
         this.setTitle(GameModel.GAME_TITLE);
@@ -83,6 +83,7 @@ public class GameWindow extends JFrame implements MenuEventListener, StartGameLi
         this.repaint();
         this.updateSize(); // needs to be called here as well
         if (gamePanel == null) gamePanel = new GamePanel();
+        if(gameModel == null) gameModel = new GameModel();
         this.add(gamePanel);
     }
 

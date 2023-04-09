@@ -1,12 +1,13 @@
 package simplicity;
 
 import com.formdev.flatlaf.FlatDarculaLaf;
-import lombok.Getter;
-import lombok.Setter;
 import simplicity.Model.GameModel;
+import simplicity.Model.Person.Person;
+import simplicity.Model.Zones.Residential;
 import simplicity.View.GameWindow;
 
 import javax.swing.*;
+import java.awt.*;
 
 public class Main {
 
@@ -17,7 +18,7 @@ public class Main {
         } catch (Exception ex) {
             System.err.println("Failed to initialize FlatLaf");
         }
-        GameModel gameModel = new GameModel();
+//        GameModel gameModel = new GameModel();
         GameWindow gameWindow = new GameWindow();
         gameWindow.setVisible(true);
     }

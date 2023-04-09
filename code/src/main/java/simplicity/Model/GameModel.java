@@ -43,6 +43,7 @@ public class GameModel implements InGameTimeTickListener {
     private Date nextDisaster;
     private int secondaryPercentage;
     private int uniPercentage;
+    private int cityMood;
     private Placeable grid[][];
     private Finance finance;
 
@@ -52,7 +53,7 @@ public class GameModel implements InGameTimeTickListener {
 
     public GameModel() {
         inGameTime.addInGameTimeTickListener(this);
-        inGameTime.startInGameTime(InGameSpeeds.NORMAL);
+        inGameTime.startInGameTime(InGameSpeeds.ULTRASONIC_DEV_ONLY);
         this.finance = new Finance(10000); //starting wealth
         this.secondaryPercentage = 70;
         this.uniPercentage = 22;
@@ -485,19 +486,79 @@ public class GameModel implements InGameTimeTickListener {
         System.out.println(finance.getCurrentWealth());
     }
 
+    void calculateCityMood() {
+        int cityMood = 0;
+        int numOfZones = 0;
+        for (int i = 0; i < this.gridSize; i++) {
+            for (int j = 0; j < this.gridSize; j++) {
+                if (this.grid[i][j] instanceof Residential) {
+                    cityMood += ((Residential) this.grid[i][j]).calculateZoneMood();
+                    numOfZones++;
+                }
+            }
+        }
+        if (numOfZones != 0) {
+            this.cityMood = (int) cityMood / numOfZones;
+        }
+    }
+
+    public void changeMoodOfPeople() {
+        if (this.finance.getCurrentWealth() < -10000) {
+            this.finance.setProfitableYearsInARow(this.finance.getProfitableYearsInARow() - 1);
+        } else {
+            this.finance.setProfitableYearsInARow(this.finance.getProfitableYearsInARow() + 1);
+        }
+
+        double multiplier = 1;
+        if (this.finance.getProfitableYearsInARow() < -3) {
+            //gameover
+            multiplier = 0.7;
+        } else if (this.finance.getProfitableYearsInARow() > 3) {
+            multiplier = 1.3;
+        } else {
+            multiplier = (10 + this.finance.getProfitableYearsInARow()) / 10.0;
+        }
+        for (int i = 0; i < this.gridSize; i++) {
+            for (int j = 0; j < this.gridSize; j++) {
+                if (this.grid[i][j] instanceof Residential) {
+                    for (int k = 0; k < ((Residential) this.grid[i][j]).getPeople().size(); k++) {
+                        if (multiplier >= 1) {
+                            ((Residential) this.grid[i][j])
+                                    .getPeople()
+                                    .get(k)
+                                    .setMood(Math.min((int) (((Residential) this.grid[i][j]).getPeople().get(k).getMood() * multiplier), 100));
+                        } else {
+                            ((Residential) this.grid[i][j])
+                                    .getPeople()
+                                    .get(k)
+                                    .setMood(Math.max((int) (((Residential) this.grid[i][j]).getPeople().get(k).getMood() * multiplier), 0));
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+
     @Override
     public void timeTick() {
-        /*System.out.println("******************");
-        for (int i = 0; i < gridSize; ++i) {
-            for (int j = 0; j < gridSize; ++j) {
-                System.out.print(grid[i][j] + " ");
-            }
-            System.out.println();
+        if (inGameTime.getInGameHour() > 0) {
+            System.out.println("City mood: " + this.cityMood);
+            calculateCityMood();
         }
-        System.out.println("Current money : " + finance.getCurrentWealth());
+//        System.out.println("******************");
+//        for (int i = 0; i < gridSize; ++i) {
+//            for (int j = 0; j < gridSize; ++j) {
+//                System.out.print(grid[i][j] + " ");
+//            }
+//            System.out.println();
+//        }
+//        System.out.println("Current money : " + finance.getCurrentWealth());
         System.out.println("******************");
         if (inGameTime.getInGameYear() > 0 && inGameTime.getInGameDay() == 0 && inGameTime.getInGameHour() == 0) {
-            //triggers new year
-        }*/
+            //triggers new year tax collection
+            //and city mood change
+            changeMoodOfPeople();
+        }
     }
 }
