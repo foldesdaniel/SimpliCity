@@ -14,6 +14,7 @@ import simplicity.Model.Zones.Residential;
 
 @AllArgsConstructor
 @Getter
+@Setter
 public class Person implements InGameTimeTickListener {
 
     private int mood = 5;
@@ -32,9 +33,11 @@ public class Person implements InGameTimeTickListener {
     private Residential home = null;
     private final InGameTime inGameTime;
 
-    public Person() {
+    public Person(Residential home) {
         inGameTime = InGameTimeManager.getInstance().getInGameTime();
         inGameTime.addInGameTimeTickListener(this);
+
+        this.home = home;
     }
 
     public void goToSchool(Education placeOfEducation) {

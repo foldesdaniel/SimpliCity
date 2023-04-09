@@ -1,9 +1,11 @@
 package simplicity.Model.Placeables;
 
+import lombok.Getter;
 import simplicity.Model.Game.FieldType;
 
 import java.awt.*;
 
+@Getter
 public abstract class Building extends Placeable {
     private float moodBoost;
     private int radius;

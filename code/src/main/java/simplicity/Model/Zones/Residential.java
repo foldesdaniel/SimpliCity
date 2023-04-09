@@ -2,6 +2,7 @@ package simplicity.Model.Zones;
 
 import lombok.Getter;
 import simplicity.Model.Game.FieldType;
+import simplicity.Model.Person.Person;
 import simplicity.Model.Placeables.Zone;
 
 import java.awt.*;
@@ -14,6 +15,11 @@ public class Residential extends Zone {
     public Residential(Point position) {
         super(FieldType.ZONE_RESIDENTIAL, position, 1000, 20);
         this.taxPerInhabitant = 100;
+        //todo: DELETE LATER
+        this.addPerson(new Person(this));
+        this.addPerson(new Person(this));
+        this.addPerson(new Person(this));
+        this.addPerson(new Person(this));
     }
 
     @Override

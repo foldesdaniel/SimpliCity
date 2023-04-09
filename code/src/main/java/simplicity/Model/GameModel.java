@@ -1,17 +1,26 @@
 package simplicity.Model;
 
+import simplicity.Model.Algorithm.NodeCount;
 import simplicity.Model.Education.School;
 import simplicity.Model.Finances.Finance;
+import simplicity.Model.Game.FieldType;
 import simplicity.Model.GameTime.Date;
 import simplicity.Model.GameTime.InGameSpeeds;
 import simplicity.Model.GameTime.InGameTime;
 import simplicity.Model.GameTime.InGameTimeManager;
 import simplicity.Model.Listeners.InGameTimeTickListener;
-import simplicity.Model.Placeables.Placeable;
-import simplicity.Model.Placeables.Road;
+import simplicity.Model.Person.Person;
+import simplicity.Model.Placeables.*;
 import simplicity.Model.Resource.ResourceLoader;
+import simplicity.Model.Zones.Industrial;
+import simplicity.Model.Zones.Residential;
+import simplicity.Model.Zones.Service;
 
 import java.awt.*;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.Queue;
+import java.util.Set;
 
 public class GameModel implements InGameTimeTickListener {
 
@@ -29,13 +38,17 @@ public class GameModel implements InGameTimeTickListener {
     public static final Color BG_DARK = new Color(61, 63, 65); // default flatlaf dark
     private final InGameTime inGameTime = InGameTimeManager.getInstance().getInGameTime();
     //just for testing purposes
-    private final int gridSize = 3;
+    private final int gridSize = 20;
     private int mood;
     private Date nextDisaster;
     private int secondaryPercentage;
     private int uniPercentage;
     private Placeable grid[][];
     private Finance finance;
+
+    private int industrialCount = 0;
+
+    private int serviceCount = 0;
 
     public GameModel() {
         inGameTime.addInGameTimeTickListener(this);
@@ -46,34 +59,355 @@ public class GameModel implements InGameTimeTickListener {
         this.mood = 0;
 
         //Initialize grid
-//        this.grid = new Placeable[this.gridSize][this.gridSize];
-//        for (int i = 0; i < this.gridSize; ++i) {
-//            for (int j = 0; j < this.gridSize; ++j) {
-//                this.grid[i][j] = null; //null == not initialized block
-//            }
-//        }
-//        this.grid = new Placeable[][]{
-//                {new School(new Point(0, 0)), new School(new Point(0, 1)), new School(new Point(0, 2))},
-//                {new School(new Point(1, 0)), new Road(new Point(1, 1)), new School(new Point(1, 2))},
-//                {new School(new Point(2, 0)), new School(new Point(2, 1)), new School(new Point(2, 2))}
-//        };
-//        this.grid = new Placeable[][]{
-//                {new School(new Point(0, 0)), new School(new Point(0, 1)), new School(new Point(0, 2))},
-//                {new School(new Point(1, 0)), new School(new Point(1, 1)), new School(new Point(1, 2))},
-//                {new School(new Point(2, 0)), new School(new Point(2, 1)), new School(new Point(2, 2))}
-//        };
-//        this.grid = new Placeable[][]{
-//                {new School(new Point(0, 0)), new School(new Point(0, 1)), new Road(new Point(0, 2))},
-//                {new School(new Point(1, 0)), new School(new Point(1, 1)), new Road(new Point(1, 2))},
-//                {new School(new Point(2, 0)), new School(new Point(2, 1)), new Road(new Point(2, 2))}
-//        };
-        this.grid = new Placeable[][]{
-                {new School(new Point(0, 0)), new School(new Point(0, 1)), new Road(new Point(0, 2))},
-                {new School(new Point(1, 0)), new Road(new Point(1, 1)), new Road(new Point(1, 2))},
-                {new School(new Point(2, 0)), new School(new Point(2, 1)), new Road(new Point(2, 2))}
-        };
+        this.grid = new Placeable[this.gridSize][this.gridSize];
+        for (int i = 0; i < this.gridSize; ++i) {
+            for (int j = 0; j < this.gridSize; ++j) {
+                this.grid[i][j] = null; //null == not initialized block
+            }
+        }
 
-        System.out.println(canRoadBeDestroyed(grid[0][1], grid[2][1], grid[1][1]));
+        //TESTING feature/13_mood_with_radius
+        System.out.println("******************");
+        for (int i = 0; i < gridSize; ++i) {
+            for (int j = 0; j < gridSize; ++j) {
+                System.out.print(grid[i][j] + " ");
+            }
+            System.out.println();
+        }
+        System.out.println("******************");
+
+//        grid[0][1] = new Residential(new Point(0,1));
+//        grid[0][2] = new Road(new Point(0,2));
+//        grid[0][3] = new Road(new Point(0,3));
+//        grid[0][4] = new Road(new Point(0,4));
+//        grid[0][5] = new Road(new Point(0,5));
+//        grid[1][2] = new Road(new Point(1,2));
+//        grid[2][2] = new Road(new Point(2,2));
+//        grid[3][2] = new Road(new Point(3,2));
+//        grid[3][3] = new Road(new Point(3,3));
+//        grid[3][4] = new Road(new Point(3,4));
+//        grid[3][5] = new Road(new Point(3,5));
+//        grid[1][5] = new Road(new Point(1,5));
+//
+//
+//        grid[2][5] = new Service(new Point(2, 5));
+//
+//        ((Residential)grid[0][1]).getPeople().get(0).goToWork((Workplace)grid[2][5]);
+//        System.out.println(getWorkplaceDistance(((Residential)grid[0][1]).getPeople().get(0)));
+
+
+    }
+
+    private void placeStadium(Point position) {
+        grid[position.x][position.y] = new Stadium(position);
+        int r = new Stadium(new Point(-1, -1)).getRadius();
+
+        for (int i = position.x - r; i <= position.x + r; ++i) {
+            for (int j = position.y - r; j <= position.y + r; ++j) {
+                if (i >= 0 && j >= 0 && i < gridSize && j < gridSize) {
+                    if (grid[i][j] != null) {
+                        if (grid[i][j].getType() == FieldType.ZONE_RESIDENTIAL) {
+                            for (Person p : ((Residential)grid[i][j]).getPeople()) {
+                                calculateMood(p);
+                            }
+                        }
+                        else if (grid[i][j].getType() == FieldType.ZONE_INDUSTRIAL || grid[i][j].getType() == FieldType.ZONE_SERVICE) {
+                            for (Person p : ((Workplace)grid[i][j]).getPeople()) {
+                                calculateMood(p);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private void removeStadium(Point position) {
+        grid[position.x][position.y] = null;
+        int r = new Stadium(new Point(-1, -1)).getRadius();
+
+        for (int i = position.x - r; i <= position.x + r; ++i) {
+            for (int j = position.y - r; j <= position.y + r; ++j) {
+                if (i >= 0 && j >= 0 && i < gridSize && j < gridSize) {
+                    if (grid[i][j] != null) {
+                        if (grid[i][j].getType() == FieldType.ZONE_RESIDENTIAL) {
+                            for (Person p : ((Residential)grid[i][j]).getPeople()) {
+                                calculateMood(p);
+                            }
+                        }
+                        else if (grid[i][j].getType() == FieldType.ZONE_INDUSTRIAL || grid[i][j].getType() == FieldType.ZONE_SERVICE) {
+                            for (Person p : ((Workplace)grid[i][j]).getPeople()) {
+                                calculateMood(p);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private void placePolice(Point position) {
+        grid[position.x][position.y] = new Police(position);
+        int r = new Police(new Point(-1, -1)).getRadius();
+
+        for (int i = position.x - r; i <= position.x + r; ++i) {
+            for (int j = position.y - r; j <= position.y + r; ++j) {
+                if (i >= 0 && j >= 0 && i < gridSize && j < gridSize) {
+                    if (grid[i][j] != null) {
+                        if (grid[i][j].getType() == FieldType.ZONE_RESIDENTIAL) {
+                            for (Person p : ((Residential)grid[i][j]).getPeople()) {
+                                calculateMood(p);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private void removePolice(Point position) {
+        grid[position.x][position.y] = null;
+        int r = new Stadium(new Point(-1, -1)).getRadius();
+
+        for (int i = position.x - r; i <= position.x + r; ++i) {
+            for (int j = position.y - r; j <= position.y + r; ++j) {
+                if (i >= 0 && j >= 0 && i < gridSize && j < gridSize) {
+                    if (grid[i][j] != null) {
+                        if (grid[i][j].getType() == FieldType.ZONE_RESIDENTIAL) {
+                            for (Person p : ((Residential)grid[i][j]).getPeople()) {
+                                calculateMood(p);
+                            }
+                        }
+                        else if (grid[i][j].getType() == FieldType.ZONE_INDUSTRIAL || grid[i][j].getType() == FieldType.ZONE_SERVICE) {
+                            for (Person p : ((Workplace)grid[i][j]).getPeople()) {
+                                calculateMood(p);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private void placeIndustrial(Point position) {
+        grid[position.x][position.y] = new Industrial(position);
+        int r = 5;
+
+        for (int i = position.x - r; i <= position.x + r; ++i) {
+            for (int j = position.y - r; j <= position.y + r; ++j) {
+                if (i >= 0 && j >= 0 && i < gridSize && j < gridSize) {
+                    if (grid[i][j] != null && grid[i][j].getType() == FieldType.ZONE_RESIDENTIAL) {
+                        for (Person p : ((Residential)grid[i][j]).getPeople()) {
+                            calculateMood(p);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private void removeIndustrial(Point position) {
+        grid[position.x][position.y] = null;
+        int r = 5;
+
+        for (int i = position.x - r; i <= position.x + r; ++i) {
+            for (int j = position.y - r; j <= position.y + r; ++j) {
+                if (i >= 0 && j >= 0 && i < gridSize && j < gridSize) {
+                    if (grid[i][j] != null && grid[i][j].getType() == FieldType.ZONE_RESIDENTIAL) {
+                        for (Person p : ((Residential)grid[i][j]).getPeople()) {
+                            calculateMood(p);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    //todo : place/remove road, forest, service, residential, school, university and finish industrial
+
+    private Boolean searchForStadium(Person person) {
+        //Searching around home first
+        Residential home = person.getHome();
+        Point homePosition = home.getPosition();
+        int r = new Stadium(new Point(-1, -1)).getRadius();
+
+        for (int i = homePosition.x - r; i <= homePosition.x + r; ++i) {
+            for (int j = homePosition.y - r; j <= homePosition.y + r; ++j) {
+                if (i >= 0 && j >= 0 && i < gridSize && j < gridSize) {
+                    if (grid[i][j] != null && grid[i][j].getType() == FieldType.STADIUM) {
+                        return true;
+                    }
+                }
+            }
+        }
+
+        //If not found around home then search around workplace
+        Workplace workplace = person.getWorkplace();
+        if (workplace == null) return false;
+        Point workplacePosition = workplace.getPosition();
+
+        for (int i = workplacePosition.x - r; i <= workplacePosition.x + r; ++i) {
+            for (int j = workplacePosition.y - r; j <= workplacePosition.y + r; ++j) {
+                if (i >= 0 && j >= 0 && i < gridSize && j < gridSize) {
+                    if (grid[i][j] != null && grid[i][j].getType() == FieldType.STADIUM) {
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
+
+    private Boolean searchForPolice(Person person) {
+        Residential home = person.getHome();
+        Point homePosition = home.getPosition();
+        int r = new Police(new Point(-1, -1)).getRadius();
+
+        for (int i = homePosition.x - r; i <= homePosition.x + r; ++i) {
+            for (int j = homePosition.y - r; j <= homePosition.y + r; ++j) {
+                if (i >= 0 && j >= 0 && i < gridSize && j < gridSize) {
+                    if (grid[i][j] != null && grid[i][j].getType() == FieldType.POLICE) {
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
+
+    private int getWorkplaceDistance(Person person) {
+        Residential home = person.getHome();
+        Point position = home.getPosition();
+
+        Workplace workplace = person.getWorkplace();
+        if (workplace == null) return -1;
+        Point workplacePosition = workplace.getPosition();
+
+        Queue<NodeCount> queue = new LinkedList<>();
+        Set<Point> visited = new HashSet<>();
+        int distance = gridSize;
+
+        if (position.x + 1 < gridSize && grid[position.x + 1][position.y] != null) {
+            if (grid[position.x + 1][position.y].getType() == FieldType.ROAD) {
+                queue.add(new NodeCount(new Point(position.x + 1, position.y), 1));
+                visited.add(new Point(position.x + 1, position.y));
+            }
+            if (grid[position.x + 1][position.y].getPosition().equals(workplacePosition)) {
+                return 1;
+            }
+        }
+        if (position.y + 1 < gridSize && grid[position.x][position.y + 1] != null) {
+            if (grid[position.x][position.y + 1].getType() == FieldType.ROAD) {
+                queue.add(new NodeCount(new Point(position.x, position.y + 1), 1));
+                visited.add(new Point(position.x, position.y + 1));
+            }
+            if (grid[position.x][position.y + 1].getPosition().equals(workplacePosition)) {
+                return 1;
+            }
+        }
+        if (position.y - 1 >= 0 && grid[position.x][position.y - 1] != null) {
+            if (grid[position.x][position.y - 1].getType() == FieldType.ROAD) {
+                queue.add(new NodeCount(new Point(position.x, position.y - 1), 1));
+                visited.add(new Point(position.x, position.y - 1));
+            }
+            if (grid[position.x][position.y - 1].getPosition().equals(workplacePosition)) {
+                return 1;
+            }
+        }
+        if (position.x - 1 >= 0 && grid[position.x - 1][position.y] != null) {
+            if (grid[position.x - 1][position.y].getType() == FieldType.ROAD) {
+                queue.add(new NodeCount(new Point(position.x - 1, position.y), 1));
+                visited.add(new Point(position.x - 1, position.y));
+            }
+            if (grid[position.x - 1][position.y].getPosition().equals(workplacePosition)) {
+                return 1;
+            }
+        }
+
+        while(!queue.isEmpty()) {
+            NodeCount nc = queue.remove();
+            position = nc.position;
+            System.out.println("Position : " + position.x + " " + position.y);
+
+            if (!visited.contains(new Point(position.x + 1, position.y)) && position.x + 1 < gridSize && grid[position.x + 1][position.y] != null) {
+                if (grid[position.x + 1][position.y].getType() == FieldType.ROAD) {
+                    queue.add(new NodeCount(new Point(position.x + 1, position.y), nc.count + 1));
+                    visited.add(new Point(position.x + 1, position.y));
+                }
+                else if (grid[position.x + 1][position.y].getPosition().equals(workplacePosition) && nc.count + 1 < distance) {
+                    distance = nc.count + 1;
+                }
+            }
+            if (!visited.contains(new Point(position.x, position.y + 1)) && position.y + 1 < gridSize && grid[position.x][position.y + 1] != null) {
+                if (grid[position.x][position.y + 1].getType() == FieldType.ROAD) {
+                    queue.add(new NodeCount(new Point(position.x, position.y + 1), nc.count + 1));
+                    visited.add(new Point(position.x, position.y + 1));
+                }
+                else if (grid[position.x][position.y + 1].getPosition().equals(workplacePosition) && nc.count + 1 < distance) {
+                    distance = nc.count + 1;
+                }
+            }
+            if (!visited.contains(new Point(position.x, position.y - 1)) && position.y - 1 >= 0 && grid[position.x][position.y - 1] != null) {
+                if (grid[position.x][position.y - 1].getType() == FieldType.ROAD) {
+                    queue.add(new NodeCount(new Point(position.x, position.y - 1), nc.count + 1));
+                    visited.add(new Point(position.x, position.y - 1));
+                }
+                else if (grid[position.x][position.y - 1].getPosition().equals(workplacePosition) && nc.count + 1 < distance) {
+                    distance = nc.count + 1;
+                }
+            }
+            if (!visited.contains(new Point(position.x - 1, position.y)) && position.x - 1 >= 0 && grid[position.x - 1][position.y] != null) {
+                if (grid[position.x - 1][position.y].getType() == FieldType.ROAD) {
+                    queue.add(new NodeCount(new Point(position.x - 1, position.y), nc.count + 1));
+                    visited.add(new Point(position.x - 1, position.y));
+                }
+                else if (grid[position.x - 1][position.y].getPosition().equals(workplacePosition) && nc.count + 1 < distance) {
+                    distance = nc.count + 1;
+                }
+            }
+        }
+
+        return distance;
+    }
+
+    private Boolean searchForIndustrial(Person person) {
+        Residential home = person.getHome();
+        Point homePosition = home.getPosition();
+        int r = 5;
+
+        for (int i = homePosition.x - r; i <= homePosition.x + r; ++i) {
+            for (int j = homePosition.y - r; j <= homePosition.y + r; ++j) {
+                if (i >= 0 && j >= 0 && i < gridSize && j < gridSize) {
+                    if (grid[i][j] != null && grid[i][j].getType() == FieldType.ZONE_INDUSTRIAL) {
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
+
+    public void calculateMood(Person person) {
+        person.setMood(0);
+        if (searchForStadium(person)) {
+            person.setMood(person.getMood() + 5);
+        }
+        if (searchForPolice(person)) {
+            person.setMood(person.getMood() + 5);
+        }
+        if (searchForIndustrial(person)) {
+            person.setMood(person.getMood() + 5);
+        }
+        {
+            if (getWorkplaceDistance(person) < 6) person.setMood(person.getMood() + 5);
+            else if (getWorkplaceDistance(person) < 12) person.setMood(person.getMood() + 3);
+            else person.setMood(person.getMood() + 1);
+        }
+
+        //todo : searchForForest && boost mood based on tax
     }
 
     public static boolean isSafe(int i, int j, int[][] matrix) {
