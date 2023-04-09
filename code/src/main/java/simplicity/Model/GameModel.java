@@ -55,8 +55,8 @@ public class GameModel implements InGameTimeTickListener {
 //                {new School(new Point(2, 0)), new School(new Point(2, 1)), new Road(new Point(2, 2))}
 //        };
         this.grid = new Placeable[][]{
-                {new School(new Point(0, 0)), new Residential( new Point(0,1))},
-                {new Residential( new Point(1,0)), new Road(new Point(1, 1))}
+                {new School(new Point(0, 0)), new Residential(new Point(0, 1))},
+                {new Residential(new Point(1, 0)), new Road(new Point(1, 1))}
         };
 
         Person p1 = new Person();
@@ -152,43 +152,50 @@ public class GameModel implements InGameTimeTickListener {
     void calculateCityMood() {
         int cityMood = 0;
         int numOfZones = 0;
-        for(int i = 0; i < this.gridSize; i++) {
-            for(int j = 0; j < this.gridSize; j++) {
-                if(this.grid[i][j] instanceof Residential) {
+        for (int i = 0; i < this.gridSize; i++) {
+            for (int j = 0; j < this.gridSize; j++) {
+                if (this.grid[i][j] instanceof Residential) {
                     cityMood += ((Residential) this.grid[i][j]).calculateZoneMood();
                     numOfZones++;
                 }
             }
         }
-        this.cityMood = (int) cityMood / numOfZones;
+        if (numOfZones != 0) {
+            this.cityMood = (int) cityMood / numOfZones;
+        }
     }
 
     public void changeMoodOfPeople() {
-        //years can be -1, -2, -3 or +1, +2, +3
-
         if (this.finance.getCurrentWealth() < -10000) {
-            this.finance.setProfitableYearsInARow(this.finance.getProfitableYearsInARow() -1);
+            this.finance.setProfitableYearsInARow(this.finance.getProfitableYearsInARow() - 1);
         } else {
             this.finance.setProfitableYearsInARow(this.finance.getProfitableYearsInARow() + 1);
         }
 
         double multiplier = 1;
-        if(this.finance.getProfitableYearsInARow() < -3) {
+        if (this.finance.getProfitableYearsInARow() < -3) {
             //gameover
             multiplier = 0.7;
-        } else if(this.finance.getProfitableYearsInARow() > 3) {
+        } else if (this.finance.getProfitableYearsInARow() > 3) {
             multiplier = 1.3;
         } else {
             multiplier = (10 + this.finance.getProfitableYearsInARow()) / 10.0;
         }
-        for(int i = 0; i < this.gridSize; i++) {
-            for(int j = 0; j < this.gridSize; j++) {
-                if(this.grid[i][j] instanceof Residential) {
-                    for(int k = 0; k < ((Residential) this.grid[i][j]).getPeople().size(); k++ ) {
-                        ((Residential) this.grid[i][j])
-                        .getPeople()
-                        .get(k)
-                        .setMood((int) (((Residential) this.grid[i][j]).getPeople().get(k).getMood() * multiplier));
+        for (int i = 0; i < this.gridSize; i++) {
+            for (int j = 0; j < this.gridSize; j++) {
+                if (this.grid[i][j] instanceof Residential) {
+                    for (int k = 0; k < ((Residential) this.grid[i][j]).getPeople().size(); k++) {
+                        if (multiplier >= 1) {
+                            ((Residential) this.grid[i][j])
+                                    .getPeople()
+                                    .get(k)
+                                    .setMood(Math.min((int) (((Residential) this.grid[i][j]).getPeople().get(k).getMood() * multiplier), 100));
+                        } else {
+                            ((Residential) this.grid[i][j])
+                                    .getPeople()
+                                    .get(k)
+                                    .setMood(Math.max((int) (((Residential) this.grid[i][j]).getPeople().get(k).getMood() * multiplier), 0));
+                        }
                     }
                 }
             }
@@ -198,7 +205,7 @@ public class GameModel implements InGameTimeTickListener {
 
     @Override
     public void timeTick() {
-        if(inGameTime.getInGameHour() > 0) {
+        if (inGameTime.getInGameHour() > 0) {
             System.out.println("City mood: " + this.cityMood);
             calculateCityMood();
         }
