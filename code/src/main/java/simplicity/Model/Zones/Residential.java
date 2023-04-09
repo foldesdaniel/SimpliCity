@@ -15,6 +15,11 @@ public class Residential extends Zone {
     public Residential(Point position) {
         super(FieldType.ZONE_RESIDENTIAL, position, 1000, 20);
         this.taxPerInhabitant = 100;
+        //todo: DELETE LATER
+        this.addPerson(new Person(this));
+        this.addPerson(new Person(this));
+        this.addPerson(new Person(this));
+        this.addPerson(new Person(this));
     }
 
     public int calculateZoneMood() {
