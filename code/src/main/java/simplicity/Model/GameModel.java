@@ -288,7 +288,6 @@ public class GameModel implements InGameTimeTickListener {
 
         Queue<NodeCount> queue = new LinkedList<>();
         Set<Point> visited = new HashSet<>();
-        int distance = gridSize;
 
         if (position.x + 1 < gridSize && grid[position.x + 1][position.y] != null) {
             if (grid[position.x + 1][position.y].getType() == FieldType.ROAD) {
@@ -337,8 +336,8 @@ public class GameModel implements InGameTimeTickListener {
                     queue.add(new NodeCount(new Point(position.x + 1, position.y), nc.count + 1));
                     visited.add(new Point(position.x + 1, position.y));
                 }
-                else if (grid[position.x + 1][position.y].getPosition().equals(workplacePosition) && nc.count + 1 < distance) {
-                    distance = nc.count + 1;
+                else if (grid[position.x + 1][position.y].getPosition().equals(workplacePosition)) {
+                    return nc.count + 1;
                 }
             }
             if (!visited.contains(new Point(position.x, position.y + 1)) && position.y + 1 < gridSize && grid[position.x][position.y + 1] != null) {
@@ -346,8 +345,8 @@ public class GameModel implements InGameTimeTickListener {
                     queue.add(new NodeCount(new Point(position.x, position.y + 1), nc.count + 1));
                     visited.add(new Point(position.x, position.y + 1));
                 }
-                else if (grid[position.x][position.y + 1].getPosition().equals(workplacePosition) && nc.count + 1 < distance) {
-                    distance = nc.count + 1;
+                else if (grid[position.x][position.y + 1].getPosition().equals(workplacePosition)) {
+                    return nc.count + 1;
                 }
             }
             if (!visited.contains(new Point(position.x, position.y - 1)) && position.y - 1 >= 0 && grid[position.x][position.y - 1] != null) {
@@ -355,8 +354,8 @@ public class GameModel implements InGameTimeTickListener {
                     queue.add(new NodeCount(new Point(position.x, position.y - 1), nc.count + 1));
                     visited.add(new Point(position.x, position.y - 1));
                 }
-                else if (grid[position.x][position.y - 1].getPosition().equals(workplacePosition) && nc.count + 1 < distance) {
-                    distance = nc.count + 1;
+                else if (grid[position.x][position.y - 1].getPosition().equals(workplacePosition)) {
+                    return nc.count + 1;
                 }
             }
             if (!visited.contains(new Point(position.x - 1, position.y)) && position.x - 1 >= 0 && grid[position.x - 1][position.y] != null) {
@@ -364,13 +363,13 @@ public class GameModel implements InGameTimeTickListener {
                     queue.add(new NodeCount(new Point(position.x - 1, position.y), nc.count + 1));
                     visited.add(new Point(position.x - 1, position.y));
                 }
-                else if (grid[position.x - 1][position.y].getPosition().equals(workplacePosition) && nc.count + 1 < distance) {
-                    distance = nc.count + 1;
+                else if (grid[position.x - 1][position.y].getPosition().equals(workplacePosition)) {
+                    return nc.count + 1;
                 }
             }
         }
 
-        return distance;
+        return -1;
     }
 
     private Boolean searchForIndustrial(Person person) {
