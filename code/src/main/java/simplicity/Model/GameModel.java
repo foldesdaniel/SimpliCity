@@ -2,6 +2,7 @@ package simplicity.Model;
 
 import simplicity.Model.Algorithm.NodeCount;
 import simplicity.Model.Education.School;
+import simplicity.Model.Education.University;
 import simplicity.Model.Finances.Finance;
 import simplicity.Model.Game.FieldType;
 import simplicity.Model.GameTime.Date;
@@ -224,7 +225,68 @@ public class GameModel implements InGameTimeTickListener {
         }
     }
 
-    //todo : place/remove road, forest, service, residential, school, university and finish industrial
+    private void placeRoad(Point position) {
+        grid[position.x][position.y] = new Road(position);
+
+        //recalculating mood for every person
+        for (int i = 0; i < gridSize; ++i) {
+            for (int j = 0; j < gridSize; ++j) {
+                if (grid[i][j] != null && grid[i][j].getType() == FieldType.ZONE_RESIDENTIAL) {
+                    for (Person p : ((Residential)grid[i][j]).getPeople()) {
+                        calculateMood(p);
+                    }
+                }
+            }
+        }
+    }
+
+    private Boolean removeRoad(Point position) {
+        grid[position.x][position.y] = null;
+
+        //todo : cannot be deleted
+
+        return true;
+    }
+
+    private void placeService(Point position) {
+        grid[position.x][position.y] = new Service(position);
+    }
+
+    private void removeService(Point position) {
+        grid[position.x][position.y] = null;
+    }
+
+    private void placeResidential(Point position) {
+        grid[position.x][position.y] = new Residential(position);
+    }
+
+    private void removeResidential(Point position) {
+        grid[position.x][position.y] = null;
+    }
+
+    private void placeSchool(Point position) {
+        grid[position.x][position.y] = new School(position);
+    }
+
+    private void removeSchool(Point position) {
+        grid[position.x][position.y] = null;
+    }
+
+    private void placeForest(Point position) {
+        grid[position.x][position.y] = new Forest(position);
+    }
+
+    private void removeForest(Point position) {
+        grid[position.x][position.y] = null;
+    }
+
+    private void placeUniversity(Point position) {
+        grid[position.x][position.y] = new University(position);
+    }
+
+    private void removeUniversity(Point position) {
+        grid[position.x][position.y] = null;
+    }
 
     private Boolean searchForStadium(Person person) {
         //Searching around home first
