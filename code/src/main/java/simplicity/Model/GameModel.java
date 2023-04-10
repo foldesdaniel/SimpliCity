@@ -1,6 +1,8 @@
 package simplicity.Model;
 
 import simplicity.Model.Algorithm.NodeCount;
+import simplicity.Model.Education.School;
+import simplicity.Model.Education.University;
 import simplicity.Model.Finances.Finance;
 import simplicity.Model.Game.FieldType;
 import simplicity.Model.GameTime.Date;
@@ -125,6 +127,7 @@ public class GameModel implements InGameTimeTickListener {
     private void placeStadium(Point position) {
         grid[position.x][position.y] = new Stadium(position);
         int r = new Stadium(new Point(-1, -1)).getRadius();
+        finance.removeMoney(new Stadium(new Point(-1, -1)).getBuildPrice());
 
         for (int i = position.x - r; i <= position.x + r; ++i) {
             for (int j = position.y - r; j <= position.y + r; ++j) {
@@ -171,6 +174,7 @@ public class GameModel implements InGameTimeTickListener {
     private void placePolice(Point position) {
         grid[position.x][position.y] = new Police(position);
         int r = new Police(new Point(-1, -1)).getRadius();
+        finance.removeMoney(new Police(new Point(-1, -1)).getBuildPrice());
 
         for (int i = position.x - r; i <= position.x + r; ++i) {
             for (int j = position.y - r; j <= position.y + r; ++j) {
@@ -215,6 +219,7 @@ public class GameModel implements InGameTimeTickListener {
     private void placeIndustrial(Point position) {
         grid[position.x][position.y] = new Industrial(position);
         int r = 5;
+        finance.removeMoney(new Industrial(new Point(-1, -1)).getBuildPrice());
 
         for (int i = position.x - r; i <= position.x + r; ++i) {
             for (int j = position.y - r; j <= position.y + r; ++j) {
@@ -244,6 +249,75 @@ public class GameModel implements InGameTimeTickListener {
                 }
             }
         }
+    }
+
+    private void placeRoad(Point position) {
+        grid[position.x][position.y] = new Road(position);
+        finance.removeMoney(new Road(new Point(-1, -1)).getBuildPrice());
+
+        //recalculating mood for every person
+        for (int i = 0; i < gridSize; ++i) {
+            for (int j = 0; j < gridSize; ++j) {
+                if (grid[i][j] != null && grid[i][j].getType() == FieldType.ZONE_RESIDENTIAL) {
+                    for (Person p : ((Residential)grid[i][j]).getPeople()) {
+                        calculateMood(p);
+                    }
+                }
+            }
+        }
+    }
+
+    private Boolean removeRoad(Point position) {
+        grid[position.x][position.y] = null;
+
+        //todo : cannot be deleted
+
+        return true;
+    }
+
+    private void placeService(Point position) {
+        grid[position.x][position.y] = new Service(position);
+        finance.removeMoney(new Service(new Point(-1, -1)).getBuildPrice());
+    }
+
+    private void removeService(Point position) {
+        grid[position.x][position.y] = null;
+    }
+
+    private void placeResidential(Point position) {
+        grid[position.x][position.y] = new Residential(position);
+        finance.removeMoney(new Residential(new Point(-1, -1)).getBuildPrice());
+    }
+
+    private void removeResidential(Point position) {
+        grid[position.x][position.y] = null;
+    }
+
+    private void placeSchool(Point position) {
+        grid[position.x][position.y] = new School(position);
+        finance.removeMoney(new School(new Point(-1, -1)).getBuildPrice());
+    }
+
+    private void removeSchool(Point position) {
+        grid[position.x][position.y] = null;
+    }
+
+    private void placeForest(Point position) {
+        //grid[position.x][position.y] = new Forest(position);
+        //finance
+    }
+
+    private void removeForest(Point position) {
+        grid[position.x][position.y] = null;
+    }
+
+    private void placeUniversity(Point position) {
+        grid[position.x][position.y] = new University(position);
+        finance.removeMoney(new University(new Point(-1, -1)).getBuildPrice());
+    }
+
+    private void removeUniversity(Point position) {
+        grid[position.x][position.y] = null;
     }
 
     private Boolean searchForStadium(Person person) {
@@ -308,7 +382,6 @@ public class GameModel implements InGameTimeTickListener {
 
         Queue<NodeCount> queue = new LinkedList<>();
         Set<Point> visited = new HashSet<>();
-        int distance = gridSize;
 
         if (position.x + 1 < gridSize && grid[position.x + 1][position.y] != null) {
             if (grid[position.x + 1][position.y].getType() == FieldType.ROAD) {
@@ -356,37 +429,41 @@ public class GameModel implements InGameTimeTickListener {
                 if (grid[position.x + 1][position.y].getType() == FieldType.ROAD) {
                     queue.add(new NodeCount(new Point(position.x + 1, position.y), nc.count + 1));
                     visited.add(new Point(position.x + 1, position.y));
-                } else if (grid[position.x + 1][position.y].getPosition().equals(workplacePosition) && nc.count + 1 < distance) {
-                    distance = nc.count + 1;
+                }
+                else if (grid[position.x + 1][position.y].getPosition().equals(workplacePosition)) {
+                    return nc.count + 1;
                 }
             }
             if (!visited.contains(new Point(position.x, position.y + 1)) && position.y + 1 < gridSize && grid[position.x][position.y + 1] != null) {
                 if (grid[position.x][position.y + 1].getType() == FieldType.ROAD) {
                     queue.add(new NodeCount(new Point(position.x, position.y + 1), nc.count + 1));
                     visited.add(new Point(position.x, position.y + 1));
-                } else if (grid[position.x][position.y + 1].getPosition().equals(workplacePosition) && nc.count + 1 < distance) {
-                    distance = nc.count + 1;
+                }
+                else if (grid[position.x][position.y + 1].getPosition().equals(workplacePosition)) {
+                    return nc.count + 1;
                 }
             }
             if (!visited.contains(new Point(position.x, position.y - 1)) && position.y - 1 >= 0 && grid[position.x][position.y - 1] != null) {
                 if (grid[position.x][position.y - 1].getType() == FieldType.ROAD) {
                     queue.add(new NodeCount(new Point(position.x, position.y - 1), nc.count + 1));
                     visited.add(new Point(position.x, position.y - 1));
-                } else if (grid[position.x][position.y - 1].getPosition().equals(workplacePosition) && nc.count + 1 < distance) {
-                    distance = nc.count + 1;
+                }
+                else if (grid[position.x][position.y - 1].getPosition().equals(workplacePosition)) {
+                    return nc.count + 1;
                 }
             }
             if (!visited.contains(new Point(position.x - 1, position.y)) && position.x - 1 >= 0 && grid[position.x - 1][position.y] != null) {
                 if (grid[position.x - 1][position.y].getType() == FieldType.ROAD) {
                     queue.add(new NodeCount(new Point(position.x - 1, position.y), nc.count + 1));
                     visited.add(new Point(position.x - 1, position.y));
-                } else if (grid[position.x - 1][position.y].getPosition().equals(workplacePosition) && nc.count + 1 < distance) {
-                    distance = nc.count + 1;
+                }
+                else if (grid[position.x - 1][position.y].getPosition().equals(workplacePosition)) {
+                    return nc.count + 1;
                 }
             }
         }
 
-        return distance;
+        return -1;
     }
 
     private Boolean searchForIndustrial(Person person) {
@@ -405,6 +482,18 @@ public class GameModel implements InGameTimeTickListener {
         }
 
         return false;
+    }
+
+    public int countPeople() {
+        int count = 0;
+        for (int i = 0; i < gridSize; ++i) {
+            for (int j = 0; j < gridSize; ++j) {
+                if (grid[i][j] != null && grid[i][j].getType() == FieldType.ZONE_RESIDENTIAL) {
+                    count += ((Residential)grid[i][j]).getPeople().size();
+                }
+            }
+        }
+        return count;
     }
 
     public void calculateMood(Person person) {
