@@ -43,8 +43,11 @@ public class InGameTime {
             @Override
             public void run() {
                 if(inGameTimeListener != null) inGameTimeListener.timeChanged(inGameYear, inGameDay, inGameHour);
-                for (InGameTimeTickListener inGameTimeTickListener : inGameTimeTickListeners) {
-                    inGameTimeTickListener.timeTick();
+//                for (InGameTimeTickListener inGameTimeTickListener : inGameTimeTickListeners) {
+//                    inGameTimeTickListener.timeTick();
+//                }
+                for(int i = 0; i < inGameTimeTickListeners.size(); i++) {
+                    inGameTimeTickListeners.get(i).timeTick();
                 }
                 if (inGameHour < 23) inGameHour++;
                 else {

@@ -18,6 +18,15 @@ public abstract class Zone extends Placeable {
         this.maxPeople = maxPeople;
     }
 
+    public boolean areSpacesLeft() {
+        if(this.maxPeople == this.people.size()) return false;
+        return true;
+    }
+
+    public int numOfSpacesLeft() {
+        return this.maxPeople - this.people.size();
+    }
+
     public void addPerson(Person person) {
         people.add(person);
     }

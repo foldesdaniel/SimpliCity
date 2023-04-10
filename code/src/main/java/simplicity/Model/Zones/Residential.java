@@ -13,16 +13,16 @@ public class Residential extends Zone {
     private final int taxPerInhabitant;
 
     public Residential(Point position) {
-        super(FieldType.ZONE_RESIDENTIAL, position, 1000, 20);
+        super(FieldType.ZONE_RESIDENTIAL, position, 1000, 4);
         this.taxPerInhabitant = 100;
     }
 
     public int calculateZoneMood() {
         int mood = 0;
-        for (Person p: this.getPeople()) {
+        for (Person p : this.getPeople()) {
             mood += p.getMood();
         }
-        return (int) mood / this.getPeople().size();
+        return this.getPeople().size() == 0 ? 0 : (int) mood / this.getPeople().size();
     }
 
     @Override
