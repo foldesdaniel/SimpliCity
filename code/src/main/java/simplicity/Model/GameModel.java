@@ -103,6 +103,7 @@ public class GameModel implements InGameTimeTickListener {
     private void placeStadium(Point position) {
         grid[position.x][position.y] = new Stadium(position);
         int r = new Stadium(new Point(-1, -1)).getRadius();
+        finance.removeMoney(new Stadium(new Point(-1, -1)).getBuildPrice());
 
         for (int i = position.x - r; i <= position.x + r; ++i) {
             for (int j = position.y - r; j <= position.y + r; ++j) {
@@ -151,6 +152,7 @@ public class GameModel implements InGameTimeTickListener {
     private void placePolice(Point position) {
         grid[position.x][position.y] = new Police(position);
         int r = new Police(new Point(-1, -1)).getRadius();
+        finance.removeMoney(new Police(new Point(-1, -1)).getBuildPrice());
 
         for (int i = position.x - r; i <= position.x + r; ++i) {
             for (int j = position.y - r; j <= position.y + r; ++j) {
@@ -194,6 +196,7 @@ public class GameModel implements InGameTimeTickListener {
     private void placeIndustrial(Point position) {
         grid[position.x][position.y] = new Industrial(position);
         int r = 5;
+        finance.removeMoney(new Industrial(new Point(-1, -1)).getBuildPrice());
 
         for (int i = position.x - r; i <= position.x + r; ++i) {
             for (int j = position.y - r; j <= position.y + r; ++j) {
@@ -227,6 +230,7 @@ public class GameModel implements InGameTimeTickListener {
 
     private void placeRoad(Point position) {
         grid[position.x][position.y] = new Road(position);
+        finance.removeMoney(new Road(new Point(-1, -1)).getBuildPrice());
 
         //recalculating mood for every person
         for (int i = 0; i < gridSize; ++i) {
@@ -250,6 +254,7 @@ public class GameModel implements InGameTimeTickListener {
 
     private void placeService(Point position) {
         grid[position.x][position.y] = new Service(position);
+        finance.removeMoney(new Service(new Point(-1, -1)).getBuildPrice());
     }
 
     private void removeService(Point position) {
@@ -258,6 +263,7 @@ public class GameModel implements InGameTimeTickListener {
 
     private void placeResidential(Point position) {
         grid[position.x][position.y] = new Residential(position);
+        finance.removeMoney(new Residential(new Point(-1, -1)).getBuildPrice());
     }
 
     private void removeResidential(Point position) {
@@ -266,6 +272,7 @@ public class GameModel implements InGameTimeTickListener {
 
     private void placeSchool(Point position) {
         grid[position.x][position.y] = new School(position);
+        finance.removeMoney(new School(new Point(-1, -1)).getBuildPrice());
     }
 
     private void removeSchool(Point position) {
@@ -274,6 +281,7 @@ public class GameModel implements InGameTimeTickListener {
 
     private void placeForest(Point position) {
         //grid[position.x][position.y] = new Forest(position);
+        //finance
     }
 
     private void removeForest(Point position) {
@@ -282,6 +290,7 @@ public class GameModel implements InGameTimeTickListener {
 
     private void placeUniversity(Point position) {
         grid[position.x][position.y] = new University(position);
+        finance.removeMoney(new University(new Point(-1, -1)).getBuildPrice());
     }
 
     private void removeUniversity(Point position) {
