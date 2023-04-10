@@ -461,6 +461,18 @@ public class GameModel implements InGameTimeTickListener {
         return false;
     }
 
+    public int countPeople() {
+        int count = 0;
+        for (int i = 0; i < gridSize; ++i) {
+            for (int j = 0; j < gridSize; ++j) {
+                if (grid[i][j] != null && grid[i][j].getType() == FieldType.ZONE_RESIDENTIAL) {
+                    count += ((Residential)grid[i][j]).getPeople().size();
+                }
+            }
+        }
+        return count;
+    }
+
     public void calculateMood(Person person) {
         person.setMood(0);
         if (searchForStadium(person)) {
