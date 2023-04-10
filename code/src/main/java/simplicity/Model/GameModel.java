@@ -273,7 +273,7 @@ public class GameModel implements InGameTimeTickListener {
     }
 
     private void placeForest(Point position) {
-        grid[position.x][position.y] = new Forest(position);
+        //grid[position.x][position.y] = new Forest(position);
     }
 
     private void removeForest(Point position) {
