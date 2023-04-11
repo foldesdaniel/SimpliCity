@@ -1,5 +1,7 @@
 package simplicity.Model.Game;
 
+import simplicity.Model.Placeables.Placeable;
+
 public enum RoadType {
 
     HORIZONTAL,
@@ -15,7 +17,7 @@ public enum RoadType {
     ALL,
     UNKNOWN;
 
-    public static RoadType calc(FieldData _left, FieldData _right, FieldData _up, FieldData _down){
+    public static RoadType calc(Placeable _left, Placeable _right, Placeable _up, Placeable _down){
         boolean left = _left != null && _left.getType() == FieldType.ROAD;
         boolean right = _right != null && _right.getType() == FieldType.ROAD;
         boolean down = _down != null && _down.getType() == FieldType.ROAD;

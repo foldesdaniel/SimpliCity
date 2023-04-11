@@ -32,4 +32,11 @@ public abstract class Placeable {
     public int hashCode() {
         return Objects.hash(type, position, buildPrice);
     }
+
+    public abstract Image getImage(Placeable left, Placeable right, Placeable up, Placeable down);
+
+    @Override
+    public String toString() {
+        return this.type.name() + "(" + this.position.x + "," + this.position.y + ")";
+    }
 }

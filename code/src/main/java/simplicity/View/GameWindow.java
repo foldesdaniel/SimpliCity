@@ -83,7 +83,7 @@ public class GameWindow extends JFrame implements MenuEventListener, StartGameLi
         this.repaint();
         this.updateSize(); // needs to be called here as well
         if (gamePanel == null) gamePanel = new GamePanel();
-        if(gameModel == null) gameModel = new GameModel();
+        gameModel = GameModel.getInstance();
         this.add(gamePanel);
     }
 

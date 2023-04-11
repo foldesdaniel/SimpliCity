@@ -1,6 +1,7 @@
 package simplicity.Model.Placeables;
 
 import lombok.Getter;
+import simplicity.Model.GameModel;
 import simplicity.Model.Game.FieldType;
 import simplicity.Model.GameTime.Date;
 
@@ -18,4 +19,10 @@ public class Forest extends Placeable {
     public int calculateTax() {
         return 0;
     }
+
+    @Override
+    public Image getImage(Placeable left, Placeable right, Placeable up, Placeable down) {
+        return GameModel.FOREST_IMG;
+    }
+
 }

@@ -1,9 +1,11 @@
 package simplicity.Model.Education;
 
 import simplicity.Model.Game.FieldType;
+import simplicity.Model.GameModel;
 import simplicity.Model.GameTime.InGameTime;
 import simplicity.Model.GameTime.InGameTimeManager;
 import simplicity.Model.Listeners.InGameTimeTickListener;
+import simplicity.Model.Placeables.Placeable;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -54,4 +56,10 @@ public class School extends Education implements InGameTimeTickListener {
         }
         graduate(graduates);
     }
+
+    @Override
+    public Image getImage(Placeable left, Placeable right, Placeable up, Placeable down) {
+        return GameModel.EDUCATION_SCHOOL_IMG;
+    }
+
 }

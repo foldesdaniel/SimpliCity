@@ -2,6 +2,7 @@ package simplicity.Model.Placeables;
 
 import lombok.Getter;
 import simplicity.Model.Game.FieldType;
+import simplicity.Model.GameModel;
 
 import java.awt.*;
 
@@ -21,4 +22,5 @@ public abstract class Building extends Placeable {
     public int calculateTax() {
         return 0;
     }
+
 }

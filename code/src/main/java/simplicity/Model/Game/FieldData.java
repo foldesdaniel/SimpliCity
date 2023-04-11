@@ -14,10 +14,6 @@ public class FieldData {
         this.type = FieldType.EMPTY;
     }
 
-    public void toggleTeszt(){
-        this.type = this.type == FieldType.EMPTY ? FieldType.ROAD : FieldType.EMPTY;
-    }
-
     @Override
     public String toString(){
         return "(" + position.x + "," + position.y + ")[" + this.type + "]";

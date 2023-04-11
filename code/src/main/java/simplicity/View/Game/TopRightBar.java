@@ -56,10 +56,19 @@ public class TopRightBar extends JPanel implements InGameTimeListener {
                 inGameTime.startInGameTime(InGameSpeeds.FASTEST);
             }
         });
+        JButton btn5 = new JButton("BRRR");
+        btn5.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                inGameTime.stopInGameTime();
+                inGameTime.startInGameTime(InGameSpeeds.ULTRASONIC_DEV_ONLY);
+            }
+        });
         this.add(btn1);
         this.add(btn2);
         this.add(btn3);
         this.add(btn4);
+        this.add(btn5);
     }
 
     @Override
