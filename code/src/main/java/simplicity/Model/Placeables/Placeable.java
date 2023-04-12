@@ -1,6 +1,7 @@
 package simplicity.Model.Placeables;
 
 import lombok.Getter;
+import simplicity.Model.GameModel;
 import simplicity.Model.Game.FieldType;
 
 import java.awt.*;
@@ -34,6 +35,10 @@ public abstract class Placeable {
     }
 
     public abstract Image getImage(Placeable left, Placeable right, Placeable up, Placeable down);
+
+    public Image getImage(){
+        return this.getImage(null, null, null, null);
+    }
 
     @Override
     public String toString() {

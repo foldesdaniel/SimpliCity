@@ -27,13 +27,11 @@ public class PlayingFieldView extends JPanel implements MouseListener, MouseMoti
     private int offsetY;
     private GameModel model;
 
-    private static final Point NO_SELECTION = new Point(-1, -1);
-
     public PlayingFieldView() {
         this.model = GameModel.getInstance();
         this.gridSize = model.getGridSize();
         this.fieldSize = defaultFieldSize;
-        this.hoverField = NO_SELECTION;
+        this.hoverField = GameModel.NO_SELECTION;
         this.offsetX = 0;
         this.offsetY = 0;
         // resetPlayingField();
@@ -107,6 +105,31 @@ public class PlayingFieldView extends JPanel implements MouseListener, MouseMoti
                 }
             }
         }
+        int shadowSize = 64;
+        int shadowOpacity = 50;
+        int shadowGap = 5;
+        for(int i=0;i<shadowSize;i++){
+            int alpha = shadowOpacity - (int)Math.round(i*(shadowOpacity/(double)shadowSize));
+            if(alpha < 0) break;
+            g.setColor(new Color(0, 0, 0, alpha));
+            g.drawLine(
+                offsetX - i - shadowGap, offsetY - i - shadowGap,
+                offsetX + fieldSize * gridSize + i + shadowGap, offsetY - i - shadowGap
+            );
+            g.drawLine(
+                offsetX - i - shadowGap, offsetY + fieldSize * gridSize + i + shadowGap,
+                offsetX + fieldSize * gridSize + i + shadowGap, offsetY + fieldSize * gridSize + i + shadowGap
+            );
+            g.drawLine(
+                offsetX - i - shadowGap, offsetY - i + 1 - shadowGap,
+                offsetX - i - shadowGap, offsetY + fieldSize * gridSize + i - 1 + shadowGap
+            );
+            g.drawLine(
+                offsetX + fieldSize * gridSize + i + shadowGap, offsetY - i + 1 - shadowGap,
+                offsetX + fieldSize * gridSize + i + shadowGap, offsetY + fieldSize * gridSize + i - 1 + shadowGap
+            );
+            //g.drawLine(i, i+1, i, height);
+        }
         for (int i = 0; i < gridSize; i++) {
             for (int j = 0; j < gridSize; j++) {
                 Point coord = new Point(
@@ -126,17 +149,16 @@ public class PlayingFieldView extends JPanel implements MouseListener, MouseMoti
             }
         }
         g.setColor(Color.BLACK);
-        if (hoverField != NO_SELECTION) {
+        if (hoverField != GameModel.NO_SELECTION) {
             double mult = 26 / 16.0;
             int multSize = (int) Math.round(fieldSize * mult);
             double mult2 = 5 / 16.0;
             int selOffset = (int) Math.round(fieldSize * mult2);
             g.drawImage(GameModel.SELECTION_2_IMG, offsetX + (fieldSize * hoverField.x) - selOffset, offsetY + (fieldSize * hoverField.y) - selOffset, multSize, multSize, null);
-            g.drawRect(offsetX + (fieldSize * hoverField.x), offsetY + (fieldSize * hoverField.y), fieldSize, fieldSize);
+            // g.drawRect(offsetX + (fieldSize * hoverField.x), offsetY + (fieldSize * hoverField.y), fieldSize, fieldSize);
         }
-        g.drawRoundRect(offsetX, offsetY, fieldSize * gridSize, fieldSize * gridSize, 24, 24);
-        g.drawRoundRect(offsetX + 1, offsetY + 1, fieldSize * gridSize - 2, fieldSize * gridSize - 2, 24, 22);
-        // g.fillRoundRect(testPoint.x, testPoint.y, 5, 5, 5, 5);
+        // g.drawRoundRect(offsetX, offsetY, fieldSize * gridSize, fieldSize * gridSize, 24, 24);
+        // g.drawRoundRect(offsetX + 1, offsetY + 1, fieldSize * gridSize - 2, fieldSize * gridSize - 2, 24, 22);
     }
 
     private FieldClickListener fieldClickListener;
@@ -155,13 +177,13 @@ public class PlayingFieldView extends JPanel implements MouseListener, MouseMoti
     }
 
     private void mouseLeftClicked(MouseEvent e) {
-        boolean fieldHit = hoverField != NO_SELECTION;
+        boolean fieldHit = hoverField != GameModel.NO_SELECTION;
         fieldClickListener.fieldClicked(fieldHit ? model.grid(hoverField.x,hoverField.y) : null);
         // this.repaint();
     }
 
     private void mouseRightClicked(MouseEvent e) {
-        boolean fieldHit = hoverField != NO_SELECTION;
+        boolean fieldHit = hoverField != GameModel.NO_SELECTION;
         // if (fieldHit) model.grid(hoverField.x,hoverField.y).toggleTeszt();
         this.repaint();
     }
@@ -198,8 +220,8 @@ public class PlayingFieldView extends JPanel implements MouseListener, MouseMoti
 
     @Override
     public void mouseExited(MouseEvent e) {
-        if (hoverField != NO_SELECTION) {
-            hoverField = NO_SELECTION;
+        if (hoverField != GameModel.NO_SELECTION) {
+            hoverField = GameModel.NO_SELECTION;
             this.repaint();
         }
     }
@@ -208,8 +230,8 @@ public class PlayingFieldView extends JPanel implements MouseListener, MouseMoti
     private boolean isLeftDragging = false;
     private boolean isGridDraggedX = false;
     private boolean isGridDraggedY = false;
-    private Point dragStart = NO_SELECTION;
-    private Point dragOffset = NO_SELECTION;
+    private Point dragStart = GameModel.NO_SELECTION;
+    private Point dragOffset = GameModel.NO_SELECTION;
 
     @Override
     public void mouseDragged(MouseEvent e) {
@@ -252,12 +274,12 @@ public class PlayingFieldView extends JPanel implements MouseListener, MouseMoti
         int xOffset = x - offsetX;
         int yOffset = y - offsetY;
         Point newHoverField = new Point(
-                (xOffset >= 0) ? (xOffset / this.fieldSize) : -1,
-                (yOffset >= 0) ? (yOffset / this.fieldSize) : -1
+            (xOffset >= 0) ? (xOffset / this.fieldSize) : -1,
+            (yOffset >= 0) ? (yOffset / this.fieldSize) : -1
         );
         if (
-                newHoverField.x >= 0 && newHoverField.x < gridSize &&
-                        newHoverField.y >= 0 && newHoverField.y < gridSize
+            newHoverField.x >= 0 && newHoverField.x < gridSize &&
+            newHoverField.y >= 0 && newHoverField.y < gridSize
         ) {
             if (newHoverField.x != hoverField.x || newHoverField.y != hoverField.y) {
                 hoverField = newHoverField;
@@ -265,14 +287,14 @@ public class PlayingFieldView extends JPanel implements MouseListener, MouseMoti
                 if (repaint) this.repaint();
                 // System.out.println(x + " " + y);
             }
-        } else if (hoverField != NO_SELECTION) {
-            hoverField = NO_SELECTION;
+        } else if (hoverField != GameModel.NO_SELECTION) {
+            hoverField = GameModel.NO_SELECTION;
             if (repaint) this.repaint();
         }
     }
 
     private void onHoverChange() {
-        boolean fieldHit = hoverField != NO_SELECTION;
+        boolean fieldHit = hoverField != GameModel.NO_SELECTION;
         if (isLeftDragging) fieldClickListener.fieldClicked(fieldHit ? model.grid(hoverField.x,hoverField.y) : null);
     }
 
@@ -281,7 +303,9 @@ public class PlayingFieldView extends JPanel implements MouseListener, MouseMoti
 
     @Override
     public void mouseWheelMoved(MouseWheelEvent e) {
-        int amount = -e.getWheelRotation() * 4;
+        int rot = e.getWheelRotation();
+        int amount = (rot < 0 ? 1 : (rot > 0 ? -1 : 0)) * 4;
+        System.out.println("scroll amount " + amount);
         if ((amount > 0 && fieldSize < maxFieldSize) || (amount < 0 && fieldSize > minFieldSize)) {
             fieldSize += amount;
             if (doesGridFitHorizontally()) isGridDraggedX = false;

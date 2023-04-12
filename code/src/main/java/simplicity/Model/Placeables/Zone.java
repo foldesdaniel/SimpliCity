@@ -2,6 +2,7 @@ package simplicity.Model.Placeables;
 
 import lombok.Getter;
 import simplicity.Model.Game.FieldType;
+import simplicity.Model.GameModel;
 import simplicity.Model.Person.Person;
 
 import java.awt.*;

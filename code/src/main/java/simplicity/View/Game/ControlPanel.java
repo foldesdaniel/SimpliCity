@@ -1,6 +1,5 @@
 package simplicity.View.Game;
 
-import simplicity.Model.Game.FieldData;
 import simplicity.Model.GameModel;
 import simplicity.Model.Placeables.Placeable;
 

@@ -1,7 +1,6 @@
 package simplicity.View.Game;
 
 import simplicity.Model.Listeners.FieldClickListener;
-import simplicity.Model.Game.FieldData;
 import simplicity.Model.Placeables.Placeable;
 import simplicity.View.GameWindow;
 
@@ -17,6 +16,9 @@ public class GamePanel extends JPanel implements FieldClickListener {
     private final PlayingFieldView playingField;
     private final BottomBar bottomBar;
     private final GridBagConstraints gbc;
+
+    private static boolean isPlacing = false;
+    private static Placeable placee;
 
     public GamePanel() {
         Dimension windowSize = new Dimension(GameWindow.getWindowWidth(), GameWindow.getWindowHeight());
@@ -75,6 +77,22 @@ public class GamePanel extends JPanel implements FieldClickListener {
         this.add(mainPanel);
         this.setBackground(new Color(0, 255, 0));
         this.repaint();
+    }
+
+    public static void setPlacing(Placeable p){
+        isPlacing = true;
+        placee = p;
+    }
+
+    public static Placeable stopPlacing(){
+        Placeable p = placee;
+        isPlacing = false;
+        placee = null;
+        return p;
+    }
+
+    public static boolean isPlacing(){
+        return isPlacing;
     }
 
     private GridBagConstraints changeGbc(int row, int col, int rowSpan, int colSpan, double weightX, double weightY) {

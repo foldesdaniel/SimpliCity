@@ -13,6 +13,7 @@ public class InfoTab extends JPanel {
     public InfoTab(){
         this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         font = GameModel.CUSTOM_FONT.deriveFont(Font.PLAIN, 18);
+        this.init();
     }
 
     public void init(){

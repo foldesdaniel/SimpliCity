@@ -1,6 +1,10 @@
 package simplicity.View.Game;
 
+import simplicity.Model.Education.School;
+import simplicity.Model.Education.University;
 import simplicity.Model.GameModel;
+import simplicity.Model.Placeables.*;
+import simplicity.Model.Zones.*;
 
 import javax.swing.*;
 import java.awt.*;
@@ -20,29 +24,29 @@ public class BuildTab extends JPanel {
     }
 
     public void updateBuildables(){
-        this.buildables.add(new JLabel("hi1"));
-        this.buildables.add(new JLabel("hi2"));
-        this.buildables.add(new JLabel("hi3"));
-        this.buildables.add(new JLabel("hi4"));
+        this.buildables.add(new BuildTile(new Residential(GameModel.NO_SELECTION)));
+        this.buildables.add(new BuildTile(new Service(GameModel.NO_SELECTION)));
+        this.buildables.add(new BuildTile(new Industrial(GameModel.NO_SELECTION)));
+        this.buildables.add(new BuildTile(new Road(GameModel.NO_SELECTION)));
+        this.buildables.add(new BuildTile(new Forest(GameModel.NO_SELECTION)));
+        this.buildables.add(new BuildTile(new Police(GameModel.NO_SELECTION)));
+        this.buildables.add(new BuildTile(new Stadium(GameModel.NO_SELECTION)));
+        this.buildables.add(new BuildTile(new School(GameModel.NO_SELECTION)));
+        this.buildables.add(new BuildTile(new University(GameModel.NO_SELECTION)));
     }
 
     public void init() {
         this.removeAll();
         //Font f = new Font("Arial", Font.BOLD, 16);
-        JLabel zonesTitle = new JLabel("Select zones:");
-        JLabel buildingsTitle = new JLabel("Available buildings:");
+        JLabel zonesTitle = new JLabel("Select buildings:");
         zonesTitle.setFont(fontBold);
-        buildingsTitle.setFont(fontBold);
         zonesTitle.setHorizontalAlignment(JLabel.CENTER);
-        buildingsTitle.setHorizontalAlignment(JLabel.CENTER);
         zonesTitle.setOpaque(true);
-        buildingsTitle.setOpaque(true);
-        zonesTitle.setBackground(new Color(255,200, 200));
-        buildingsTitle.setBackground(new Color(255,200, 200));
+        zonesTitle.setBackground(new Color(255, 50, 50));
+        this.setBackground(new Color(255, 200, 200));
         updateBuildables();
         this.add(zonesTitle);
         this.add(this.buildables);
-        this.add(buildingsTitle);
     }
 
 }

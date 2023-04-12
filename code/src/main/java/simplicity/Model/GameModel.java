@@ -40,6 +40,7 @@ public class GameModel implements InGameTimeTickListener {
     public static final Image ROAD_ALL = ResourceLoader.loadImage("road_all.png");
     public static final Image FOREST_IMG = ResourceLoader.loadImage("forest.png");
     public static final Image ZONE_RESIDENTIAL_IMG = ResourceLoader.loadImage("zone_residential.png");
+    public static final Image ZONE_RESIDENTIAL_2_IMG = ResourceLoader.loadImage("zone_residential_2.png");
     public static final Image ZONE_WORK_SERVICE_IMG = ResourceLoader.loadImage("zone_work_service.png");
     public static final Image ZONE_WORK_INDUSTRIAL_IMG = ResourceLoader.loadImage("zone_work_industrial.png");
     public static final Image STADIUM_IMG = ResourceLoader.loadImage("stadium.png");
@@ -49,6 +50,8 @@ public class GameModel implements InGameTimeTickListener {
 
     public static final Font CUSTOM_FONT = ResourceLoader.loadFont("vt323.ttf");
     public static final Color BG_DARK = new Color(61, 63, 65); // default flatlaf dark
+
+    public static final Point NO_SELECTION = new Point(-1, -1);
 
     public static GameModel getInstance(){
         if(instance == null){

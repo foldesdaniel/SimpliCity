@@ -9,10 +9,15 @@ import java.awt.*;
 
 @Getter
 public class Forest extends Placeable {
-    private Date plantTime;
+    private final Date plantTime;
+
     public Forest(Point position, Date plantTime) {
         super(FieldType.FOREST, position, 1000);
         this.plantTime = plantTime;
+    }
+
+    public Forest(Point position) {
+        this(position, new Date(0,0,0)); // need default plant time
     }
 
     @Override
