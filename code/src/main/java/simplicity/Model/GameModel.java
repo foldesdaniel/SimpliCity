@@ -37,7 +37,7 @@ public class GameModel implements InGameTimeTickListener {
     public static final Color BG_DARK = new Color(61, 63, 65); // default flatlaf dark
     private final InGameTime inGameTime = InGameTimeManager.getInstance().getInGameTime();
     //just for testing purposes
-    private final int gridSize = 5;
+    private final int gridSize = 7;
     private int mood;
     private Date nextDisaster;
     private int secondaryPercentage;
@@ -88,7 +88,7 @@ public class GameModel implements InGameTimeTickListener {
 //        System.out.println("Income:\n" + finance.incomeToString());
 //        System.out.println("Built:\n" + finance.builtToString());
 //        System.out.println("Yearly:\n" + finance.yearlySpendToString());
-
+//
 //        grid[0][0] = new Residential(new Point(0, 0));
 //        grid[0][1] = new Road(new Point(0, 1));
 //        grid[1][0] = new Residential(new Point(1, 0));
@@ -108,7 +108,7 @@ public class GameModel implements InGameTimeTickListener {
 //        grid[2][5] = new Service(new Point(2, 5));
 //
 //        ((Residential)grid[0][1]).getPeople().get(0).goToWork((Workplace)grid[2][5]);
-//        System.out.println(getWorkplaceDistance(((Residential)grid[0][1]).getPeople().get(0)));
+//        System.out.println(removeRoad(new Point(1, 2)));
 
 
     }
@@ -303,12 +303,23 @@ public class GameModel implements InGameTimeTickListener {
     }
 
     public Boolean removeRoad(Point position) {
-        grid[position.x][position.y] = null;
+        for (int i = 0; i < gridSize; ++i) {
+            for (int j = 0; j < gridSize; ++j) {
+                if (grid[i][j] != null && grid[i][j].getType() == FieldType.ZONE_RESIDENTIAL) {
+                    for (Person p : ((Residential)grid[i][j]).getPeople()) {
+                        if (p.getWorkplace() != null) {
+                            if (!canRoadBeDestroyed(grid[i][j], grid[p.getWorkplace().getPosition().x][p.getWorkplace().getPosition().y], grid[position.x][position.y])) {
+                                return false;
+                            }
+                        }
+                    }
+                }
+            }
+        }
 
+        grid[position.x][position.y] = null;
         int maintenanceCost = new Road(new Point(-1, -1)).getMaintenanceCost();
         finance.removeYearlySpend(maintenanceCost, "Út fenntartási díj");
-
-        //todo : cannot be deleted
 
         return true;
     }
@@ -532,18 +543,6 @@ public class GameModel implements InGameTimeTickListener {
         }
 
         return false;
-    }
-
-    public int countPeople() {
-        int count = 0;
-        for (int i = 0; i < gridSize; ++i) {
-            for (int j = 0; j < gridSize; ++j) {
-                if (grid[i][j] != null && grid[i][j].getType() == FieldType.ZONE_RESIDENTIAL) {
-                    count += ((Residential)grid[i][j]).getPeople().size();
-                }
-            }
-        }
-        return count;
     }
 
     public void calculateMood(Person person) {

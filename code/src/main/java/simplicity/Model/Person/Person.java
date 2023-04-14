@@ -29,6 +29,7 @@ public class Person implements InGameTimeTickListener {
     private int lifeExpectancy = (int) (Math.random() * 25 + 60);
     @Setter
     private EducationLevel educationLevel = EducationLevel.PRIMARY;
+    @Getter
     private Workplace workplace = null;
     private Residential home = null;
 
