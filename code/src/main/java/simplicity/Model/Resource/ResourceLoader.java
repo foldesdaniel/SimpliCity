@@ -2,6 +2,9 @@ package simplicity.Model.Resource;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
+import java.awt.geom.AffineTransform;
+import java.awt.image.AffineTransformOp;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -25,6 +28,16 @@ public class ResourceLoader {
             ex.printStackTrace();
             return null;
         }
+    }
+
+    public static BufferedImage rotateImage(Image img, int degrees) {
+        if (img == null) return null;
+        double rotationRequired = Math.toRadians(degrees);
+        double locationX = img.getWidth(null) / 2.0;
+        double locationY = img.getHeight(null) / 2.0;
+        AffineTransform tx = AffineTransform.getRotateInstance(rotationRequired, locationX, locationY);
+        AffineTransformOp op = new AffineTransformOp(tx, AffineTransformOp.TYPE_BILINEAR);
+        return op.filter((BufferedImage) img, null);
     }
 
     public static Font loadFont(String fileName) {

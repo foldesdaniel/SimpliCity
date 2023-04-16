@@ -1,31 +1,37 @@
 package simplicity.View.Game;
 
 import simplicity.Model.GameModel;
+import simplicity.Model.Listeners.MoralChangeListener;
+import simplicity.Model.Listeners.PeopleChangeListener;
 
 import javax.swing.*;
 import java.awt.*;
 
-public class BottomBar extends JPanel {
+public class BottomBar extends JPanel implements MoralChangeListener, PeopleChangeListener {
 
     // will implement listeners to change info about civilian count, moral, etc
     private final JLabel personCountLabel;
     private final JLabel moralLabel;
     private final JLabel separatorLabel;
+    private final GameModel model;
 
     public BottomBar() {
-        personCountLabel = new JLabel("Person count: 0");
-        moralLabel = new JLabel("Overall moral: 10");
-        separatorLabel = new JLabel(" | ");
+        this.model = GameModel.getInstance();
+        this.model.addMoralChangeListener(this);
+        this.model.addPeopleChangeListener(this);
+        this.personCountLabel = new JLabel("Person count: 0");
+        this.moralLabel = new JLabel("Overall moral: 10");
+        this.separatorLabel = new JLabel(" | ");
 
         Font font = GameModel.CUSTOM_FONT.deriveFont(Font.PLAIN, 18);
-        personCountLabel.setFont(font);
-        moralLabel.setFont(font);
-        separatorLabel.setFont(font);
+        this.personCountLabel.setFont(font);
+        this.moralLabel.setFont(font);
+        this.separatorLabel.setFont(font);
 
         Color textColor = new Color(0, 255, 0);
-        personCountLabel.setForeground(textColor);
-        moralLabel.setForeground(textColor);
-        separatorLabel.setForeground(textColor);
+        this.personCountLabel.setForeground(textColor);
+        this.moralLabel.setForeground(textColor);
+        this.separatorLabel.setForeground(textColor);
         this.setBackground(new Color(20, 20, 20));
 
         this.add(personCountLabel);
@@ -34,12 +40,13 @@ public class BottomBar extends JPanel {
         //this.setLayout(new FlowLayout());
     }
 
-    public void setPersonCount(int count) {
-        personCountLabel.setText("Person count: " + count);
+    @Override
+    public void onMoralChanged() {
+        moralLabel.setText("Overall moral: " + model.getCityMood());
     }
 
-    public void setMoral(int moral) {
-        moralLabel.setText("Overall moral: " + moral);
+    @Override
+    public void onPeopleCountChange() {
+        personCountLabel.setText("Person count: " + model.countPeople());
     }
-
 }

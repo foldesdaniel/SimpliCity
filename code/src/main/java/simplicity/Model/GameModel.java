@@ -10,12 +10,14 @@ import simplicity.Model.GameTime.InGameSpeeds;
 import simplicity.Model.GameTime.InGameTime;
 import simplicity.Model.GameTime.InGameTimeManager;
 import simplicity.Model.Listeners.InGameTimeTickListener;
+import simplicity.Model.Listeners.MoralChangeListener;
+import simplicity.Model.Listeners.PeopleChangeListener;
 import simplicity.Model.Person.Person;
 import simplicity.Model.Placeables.*;
 import simplicity.Model.Resource.ResourceLoader;
-import simplicity.Model.Zones.Industrial;
-import simplicity.Model.Zones.Residential;
-import simplicity.Model.Zones.Service;
+import simplicity.Model.Placeables.Zones.Industrial;
+import simplicity.Model.Placeables.Zones.Residential;
+import simplicity.Model.Placeables.Zones.Service;
 
 import java.awt.*;
 import java.util.Queue;
@@ -23,25 +25,51 @@ import java.util.*;
 
 public class GameModel implements InGameTimeTickListener {
 
+    private static GameModel instance;
+
     public static final String GAME_TITLE = "SimpliCity";
     public static final Image MISSING_IMG = ResourceLoader.loadImage("missing.png");
     public static final Image GRASS_IMG = ResourceLoader.loadImage("grass.png");
     public static final Image SELECTION_IMG = ResourceLoader.loadImage("selection.png");
-    public static final Image SELECTION_2_IMG = ResourceLoader.loadImage("selection2.png");
+    public static final Image SELECTION_VALID_IMG = ResourceLoader.loadImage("selection_valid.png");
+    public static final Image SELECTION_INVALID_IMG = ResourceLoader.loadImage("selection_invalid.png");
+    public static final Image TILE_HOVER_IMG = ResourceLoader.loadImage("hover.png");
     public static final Image ROAD_STRAIGHT_IMG = ResourceLoader.loadImage("road.png");
     public static final Image ROAD_TURN_IMG = ResourceLoader.loadImage("road_turn.png");
     public static final Image ROAD_T = ResourceLoader.loadImage("road_t.png");
     public static final Image ROAD_ALL = ResourceLoader.loadImage("road_all.png");
+    public static final Image FOREST_IMG = ResourceLoader.loadImage("forest.png");
+    public static final Image ZONE_RESIDENTIAL_IMG = ResourceLoader.loadImage("zone_residential.png");
+    public static final Image ZONE_RESIDENTIAL_2_IMG = ResourceLoader.loadImage("zone_residential_2.png");
+    public static final Image ZONE_WORK_SERVICE_IMG = ResourceLoader.loadImage("zone_work_service.png");
+    public static final Image ZONE_WORK_INDUSTRIAL_IMG = ResourceLoader.loadImage("zone_work_industrial.png");
+    public static final Image STADIUM_IMG = ResourceLoader.loadImage("stadium.png");
+    public static final Image POLICE_IMG = ResourceLoader.loadImage("police.png");
+    public static final Image EDUCATION_SCHOOL_IMG = ResourceLoader.loadImage("edu_school.png");
+    public static final Image EDUCATION_UNIVERSITY_IMG = ResourceLoader.loadImage("edu_uni.png");
+
     public static final Font CUSTOM_FONT = ResourceLoader.loadFont("vt323.ttf");
     public static final Color BG_DARK = new Color(61, 63, 65); // default flatlaf dark
+
+    public static final Point NO_SELECTION = new Point(-1, -1);
+
+    public static GameModel getInstance(){
+        if(instance == null){
+            instance = new GameModel();
+        }
+        return instance;
+    }
+
     private final InGameTime inGameTime = InGameTimeManager.getInstance().getInGameTime();
     //just for testing purposes
-    private final int gridSize = 7;
+    private final int gridSize = 20;
     private int mood;
     private Date nextDisaster;
     private int secondaryPercentage;
     private int uniPercentage;
-    private int cityMood = 20;
+    private final ArrayList<MoralChangeListener> moralListeners = new ArrayList<>();
+    private final ArrayList<PeopleChangeListener> peopleChangeListeners = new ArrayList<>();
+    private int cityMood = 50;
     private Placeable grid[][];
     private Finance finance;
     private int industrialCount = 0;
@@ -57,45 +85,19 @@ public class GameModel implements InGameTimeTickListener {
         this.mood = 0;
 
         //Initialize grid
-        this.grid = new Placeable[this.gridSize][this.gridSize];
-        for (int i = 0; i < this.gridSize; ++i) {
-            for (int j = 0; j < this.gridSize; ++j) {
-                this.grid[i][j] = null; //null == not initialized block
-            }
-        }
+        this.initGrid();
 
         for (int i = 0; i < 10; i++) {
             this.people.add(new Person());
         }
 
         //TESTING feature/14_mood
-        System.out.println("******************");
-        for (int i = 0; i < gridSize; ++i) {
-            for (int j = 0; j < gridSize; ++j) {
-                System.out.print(grid[i][j] + " ");
-            }
-            System.out.println();
-        }
-        System.out.println("******************");
+        this.printGrid();
 
-//        placeResidential(new Point(0, 0));
-//        placeIndustrial(new Point(0, 1));
-//        placeService(new Point(1, 1));
-//        placePolice(new Point(0, 2));
-//        ((Residential)grid[0][0]).addPerson(new Person());
-//        ((Residential)grid[0][0]).addPerson(new Person());
-//        ((Residential)grid[0][0]).addPerson(new Person());
-//        ((Residential)grid[0][0]).getPeople().get(0).goToWork((Industrial)grid[0][1]);
-//        placeUniversity(new Point(0, 3));
-//        newYearTaxCollection();
-//        System.out.println("Income:\n" + finance.incomeToString());
-//        System.out.println("Built:\n" + finance.builtToString());
-//        System.out.println("Yearly:\n" + finance.yearlySpendToString());
-//
-//        grid[0][0] = new Residential(new Point(0, 0));
-//        grid[0][1] = new Road(new Point(0, 1));
-//        grid[1][0] = new Residential(new Point(1, 0));
-//        grid[1][1] = new Residential(new Point(1, 1));
+        grid[0][0] = new Residential(new Point(0, 0));
+        grid[1][0] = new Residential(new Point(1, 0));
+        grid[0][1] = new Road(new Point(0, 1));
+        grid[1][1] = new Residential(new Point(1, 1));
 //        grid[0][3] = new Road(new Point(0,3));
 //        grid[0][4] = new Road(new Point(0,4));
 //        grid[0][5] = new Road(new Point(0,5));
@@ -116,7 +118,49 @@ public class GameModel implements InGameTimeTickListener {
 
     }
 
-    private static boolean isSafe(int i, int j, int[][] matrix) {
+    public Placeable grid(int i, int j){
+        return this.grid[i][j];
+    }
+
+    public void printGrid(){
+        System.out.println("******************");
+        for (int i = 0; i < gridSize; ++i) {
+            for (int j = 0; j < gridSize; ++j) {
+                System.out.print(grid[j][i] + " ");
+            }
+            System.out.println();
+        }
+        System.out.println("******************");
+    }
+
+    public int getCityMood(){
+        return this.cityMood;
+    }
+
+    public void initGrid(){
+        this.grid = new Placeable[this.gridSize][this.gridSize];
+        for (int i = 0; i < this.gridSize; ++i) {
+            for (int j = 0; j < this.gridSize; ++j) {
+                this.grid[i][j] = null; //null == not initialized block
+            }
+        }
+    }
+
+    public int getGridSize(){
+        return this.gridSize;
+    }
+
+    public boolean gridPlace(Placeable p, int i, int j){
+        if(this.grid[i][j] == null){
+            p.setPosition(new Point(i,j));
+            this.grid[i][j] = p;
+            return true;
+        }else{
+            return false;
+        }
+    }
+
+    public static boolean isSafe(int i, int j, int[][] matrix) {
         return i >= 0 && i < matrix.length && j >= 0 && j < matrix[0].length;
     }
 
@@ -634,6 +678,15 @@ public class GameModel implements InGameTimeTickListener {
         if (numOfZones != 0) {
             this.cityMood = cityMood / numOfZones;
         }
+        for(MoralChangeListener l : this.moralListeners) l.onMoralChanged();
+    }
+
+    public void addMoralChangeListener(MoralChangeListener l){
+        this.moralListeners.add(l);
+    }
+
+    public void addPeopleChangeListener(PeopleChangeListener l){
+        this.peopleChangeListeners.add(l);
     }
 
     private void changeMoodOfPeople() {
@@ -689,6 +742,7 @@ public class GameModel implements InGameTimeTickListener {
         double incomingNewPeople = (freeSpace * (cityMood / 100.0));
         for (int i = 0; i < (int) incomingNewPeople; i++) {
             this.people.add(new Person(findHome()));
+            for(PeopleChangeListener l : peopleChangeListeners) l.onPeopleCountChange();
         }
         for (int i = 0; i < this.people.size(); i++) {
             //TODO overpowered function
@@ -758,7 +812,7 @@ public class GameModel implements InGameTimeTickListener {
 //            System.out.println();
 //        }
 //        System.out.println("Current money : " + finance.getCurrentWealth());
-        //System.out.println("******************");
+        // System.out.println("******************");
         if (this.inGameTime.getInGameDay() > 0 && this.inGameTime.getInGameDay() % 20 == 0 && this.inGameTime.getInGameHour() == 0) {
             if (isMoodGoodEnough()) {
                 welcomeNewInhabitants();

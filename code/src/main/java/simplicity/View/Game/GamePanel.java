@@ -1,7 +1,7 @@
 package simplicity.View.Game;
 
 import simplicity.Model.Listeners.FieldClickListener;
-import simplicity.Model.Game.FieldData;
+import simplicity.Model.Placeables.Placeable;
 import simplicity.View.GameWindow;
 
 import javax.swing.*;
@@ -17,6 +17,9 @@ public class GamePanel extends JPanel implements FieldClickListener {
     private final BottomBar bottomBar;
     private final GridBagConstraints gbc;
 
+    private static boolean isPlacing = false;
+    private static Placeable placee;
+
     public GamePanel() {
         Dimension windowSize = new Dimension(GameWindow.getWindowWidth(), GameWindow.getWindowHeight());
         this.setSize(windowSize);
@@ -27,7 +30,7 @@ public class GamePanel extends JPanel implements FieldClickListener {
         topLeftBar = new TopLeftBar();
         topRightBar = new TopRightBar();
         controlPanel = new ControlPanel();
-        playingField = new PlayingFieldView(20, 20);
+        playingField = new PlayingFieldView();
         bottomBar = new BottomBar();
 
         this.gbc = new GridBagConstraints();
@@ -76,6 +79,26 @@ public class GamePanel extends JPanel implements FieldClickListener {
         this.repaint();
     }
 
+    public static void setPlacing(Placeable p){
+        isPlacing = true;
+        placee = p;
+    }
+
+    public static Placeable stopPlacing(){
+        Placeable p = placee;
+        isPlacing = false;
+        placee = null;
+        return p;
+    }
+
+    public static boolean isPlacing(){
+        return isPlacing;
+    }
+
+    public static Placeable getPlacee(){
+        return placee;
+    }
+
     private GridBagConstraints changeGbc(int row, int col, int rowSpan, int colSpan, double weightX, double weightY) {
         return GamePanel.changeGbc(gbc, row, col, rowSpan, colSpan, weightX, weightY);
     }
@@ -94,7 +117,7 @@ public class GamePanel extends JPanel implements FieldClickListener {
     }
 
     @Override
-    public void fieldClicked(FieldData f) {
+    public void fieldClicked(Placeable f) {
         controlPanel.updateInfo(f);
     }
 

@@ -1,8 +1,10 @@
-package simplicity.Model.Placeables;
+package simplicity.Model.Placeables.Zones;
 
 import lombok.Getter;
 import simplicity.Model.Game.FieldType;
+import simplicity.Model.GameModel;
 import simplicity.Model.Person.Person;
+import simplicity.Model.Placeables.Placeable;
 
 import java.awt.*;
 import java.util.ArrayList;
