@@ -1,19 +1,829 @@
 package simplicity.Model;
 
 import lombok.Getter;
-import lombok.Setter;
+import simplicity.Model.Algorithm.NodeCount;
+import simplicity.Model.Education.School;
+import simplicity.Model.Education.University;
+import simplicity.Model.Finances.Finance;
+import simplicity.Model.Game.FieldType;
+import simplicity.Model.GameTime.Date;
+import simplicity.Model.GameTime.InGameSpeeds;
+import simplicity.Model.GameTime.InGameTime;
+import simplicity.Model.GameTime.InGameTimeManager;
+import simplicity.Model.Listeners.InGameTimeTickListener;
+import simplicity.Model.Listeners.MoralChangeListener;
+import simplicity.Model.Listeners.PeopleChangeListener;
+import simplicity.Model.Person.Person;
+import simplicity.Model.Placeables.*;
 import simplicity.Model.Resource.ResourceLoader;
+import simplicity.Model.Placeables.Zones.Industrial;
+import simplicity.Model.Placeables.Zones.Residential;
+import simplicity.Model.Placeables.Zones.Service;
 
 import java.awt.*;
+import java.util.Queue;
+import java.util.*;
 
-public class GameModel {
+public class GameModel implements InGameTimeTickListener {
 
+    private static GameModel instance;
+
+    public static final String GAME_TITLE = "SimpliCity";
     public static final Image MISSING_IMG = ResourceLoader.loadImage("missing.png");
     public static final Image GRASS_IMG = ResourceLoader.loadImage("grass.png");
     public static final Image SELECTION_IMG = ResourceLoader.loadImage("selection.png");
+    public static final Image SELECTION_VALID_IMG = ResourceLoader.loadImage("selection_valid.png");
+    public static final Image SELECTION_INVALID_IMG = ResourceLoader.loadImage("selection_invalid.png");
+    public static final Image TILE_HOVER_IMG = ResourceLoader.loadImage("hover.png");
     public static final Image ROAD_STRAIGHT_IMG = ResourceLoader.loadImage("road.png");
     public static final Image ROAD_TURN_IMG = ResourceLoader.loadImage("road_turn.png");
     public static final Image ROAD_T = ResourceLoader.loadImage("road_t.png");
     public static final Image ROAD_ALL = ResourceLoader.loadImage("road_all.png");
+    public static final Image FOREST_IMG = ResourceLoader.loadImage("forest.png");
+    public static final Image ZONE_RESIDENTIAL_IMG = ResourceLoader.loadImage("zone_residential.png");
+    public static final Image ZONE_RESIDENTIAL_2_IMG = ResourceLoader.loadImage("zone_residential_2.png");
+    public static final Image ZONE_WORK_SERVICE_IMG = ResourceLoader.loadImage("zone_work_service.png");
+    public static final Image ZONE_WORK_INDUSTRIAL_IMG = ResourceLoader.loadImage("zone_work_industrial.png");
+    public static final Image STADIUM_IMG = ResourceLoader.loadImage("stadium.png");
+    public static final Image POLICE_IMG = ResourceLoader.loadImage("police.png");
+    public static final Image EDUCATION_SCHOOL_IMG = ResourceLoader.loadImage("edu_school.png");
+    public static final Image EDUCATION_UNIVERSITY_IMG = ResourceLoader.loadImage("edu_uni.png");
 
+    public static final Font CUSTOM_FONT = ResourceLoader.loadFont("vt323.ttf");
+    public static final Color BG_DARK = new Color(61, 63, 65); // default flatlaf dark
+
+    public static final Point NO_SELECTION = new Point(-1, -1);
+
+    public static GameModel getInstance(){
+        if(instance == null){
+            instance = new GameModel();
+        }
+        return instance;
+    }
+
+    private final InGameTime inGameTime = InGameTimeManager.getInstance().getInGameTime();
+    //just for testing purposes
+    @Getter
+    private final int gridSize = 20;
+    private int mood;
+    private Date nextDisaster;
+    private int secondaryPercentage;
+    private int uniPercentage;
+    private final ArrayList<MoralChangeListener> moralListeners = new ArrayList<>();
+    private final ArrayList<PeopleChangeListener> peopleChangeListeners = new ArrayList<>();
+    @Getter
+    private int cityMood = 50;
+    private Placeable grid[][];
+    private Finance finance;
+    private int industrialCount = 0;
+    private int serviceCount = 0;
+    @Getter
+    private ArrayList<Person> people = new ArrayList<>();
+
+    public GameModel() {
+        inGameTime.addInGameTimeTickListener(this);
+        inGameTime.startInGameTime(InGameSpeeds.ULTRASONIC_DEV_ONLY);
+        this.finance = new Finance(10000); //starting wealth
+        this.secondaryPercentage = 70;
+        this.uniPercentage = 22;
+        this.mood = 0;
+
+        //Initialize grid
+        this.initGrid();
+
+        for (int i = 0; i < 10; i++) {
+            this.people.add(new Person());
+        }
+
+        //TESTING feature/14_mood
+        this.printGrid();
+
+        grid[0][0] = new Residential(new Point(0, 0));
+        grid[1][0] = new Residential(new Point(1, 0));
+        grid[0][1] = new Road(new Point(0, 1));
+        grid[1][1] = new Residential(new Point(1, 1));
+//        grid[0][3] = new Road(new Point(0,3));
+//        grid[0][4] = new Road(new Point(0,4));
+//        grid[0][5] = new Road(new Point(0,5));
+//        grid[1][2] = new Road(new Point(1,2));
+//        grid[2][2] = new Road(new Point(2,2));
+//        grid[3][2] = new Road(new Point(3,2));
+//        grid[3][3] = new Road(new Point(3,3));
+//        grid[3][4] = new Road(new Point(3,4));
+//        grid[3][5] = new Road(new Point(3,5));
+//        grid[1][5] = new Road(new Point(1,5));
+//
+//
+//        grid[2][5] = new Service(new Point(2, 5));
+//
+//        ((Residential)grid[0][1]).getPeople().get(0).goToWork((Workplace)grid[2][5]);
+//        System.out.println(removeRoad(new Point(1, 2)));
+
+
+    }
+
+    public Placeable grid(int i, int j){
+        return this.grid[i][j];
+    }
+
+    public void printGrid(){
+        System.out.println("******************");
+        for (int i = 0; i < gridSize; ++i) {
+            for (int j = 0; j < gridSize; ++j) {
+                System.out.print(grid[j][i] + " ");
+            }
+            System.out.println();
+        }
+        System.out.println("******************");
+    }
+
+    public void initGrid(){
+        this.grid = new Placeable[this.gridSize][this.gridSize];
+        for (int i = 0; i < this.gridSize; ++i) {
+            for (int j = 0; j < this.gridSize; ++j) {
+                this.grid[i][j] = null; //null == not initialized block
+            }
+        }
+    }
+
+    public boolean gridPlace(Placeable p, int i, int j){
+        if(this.grid[i][j] == null){
+            p.setPosition(new Point(i,j));
+            this.grid[i][j] = p;
+            return true;
+        }else{
+            return false;
+        }
+    }
+
+    public static boolean isSafe(int i, int j, int[][] matrix) {
+        return i >= 0 && i < matrix.length && j >= 0 && j < matrix[0].length;
+    }
+
+    public static boolean isPath(int[][] matrix, int i, int j, boolean[][] visited) {
+        if (isSafe(i, j, matrix) && matrix[i][j] != 0 && !visited[i][j]) {
+
+            visited[i][j] = true;
+
+            if (matrix[i][j] == 2) return true;
+
+            boolean up = isPath(matrix, i - 1, j, visited);
+            if (up) return true;
+
+            boolean left = isPath(matrix, i, j - 1, visited);
+            if (left) return true;
+
+            boolean down = isPath(matrix, i + 1, j, visited);
+            if (down) return true;
+
+            boolean right = isPath(matrix, i, j + 1, visited);
+            if (right) return true;
+        }
+        return false;
+    }
+
+    public void placeStadium(Point position) {
+        grid[position.x][position.y] = new Stadium(position);
+        int r = new Stadium(new Point(-1, -1)).getRadius();
+        int price = new Stadium(new Point(-1, -1)).getBuildPrice();
+        int maintenanceCost = new Stadium(new Point(-1, -1)).getMaintenanceCost();
+        finance.removeMoney(price);
+        finance.addBuilt(price, "Stadium építés");
+        finance.addYearlySpend(maintenanceCost, "Stadium fenntartási díj");
+
+        for (int i = position.x - r; i <= position.x + r; ++i) {
+            for (int j = position.y - r; j <= position.y + r; ++j) {
+                if (i >= 0 && j >= 0 && i < gridSize && j < gridSize) {
+                    if (grid[i][j] != null) {
+                        if (grid[i][j].getType() == FieldType.ZONE_RESIDENTIAL) {
+                            for (Person p : ((Residential) grid[i][j]).getPeople()) {
+                                calculateMood(p);
+                            }
+                        } else if (grid[i][j].getType() == FieldType.ZONE_INDUSTRIAL || grid[i][j].getType() == FieldType.ZONE_SERVICE) {
+                            for (Person p : ((Workplace) grid[i][j]).getPeople()) {
+                                calculateMood(p);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    public void removeStadium(Point position) {
+        grid[position.x][position.y] = null;
+        int r = new Stadium(new Point(-1, -1)).getRadius();
+
+        int maintenanceCost = new Stadium(new Point(-1, -1)).getMaintenanceCost();
+        finance.removeYearlySpend(maintenanceCost, "Stadium fenntartási díj");
+
+        for (int i = position.x - r; i <= position.x + r; ++i) {
+            for (int j = position.y - r; j <= position.y + r; ++j) {
+                if (i >= 0 && j >= 0 && i < gridSize && j < gridSize) {
+                    if (grid[i][j] != null) {
+                        if (grid[i][j].getType() == FieldType.ZONE_RESIDENTIAL) {
+                            for (Person p : ((Residential) grid[i][j]).getPeople()) {
+                                calculateMood(p);
+                            }
+                        } else if (grid[i][j].getType() == FieldType.ZONE_INDUSTRIAL || grid[i][j].getType() == FieldType.ZONE_SERVICE) {
+                            for (Person p : ((Workplace) grid[i][j]).getPeople()) {
+                                calculateMood(p);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    public void placePolice(Point position) {
+        grid[position.x][position.y] = new Police(position);
+        int r = new Police(new Point(-1, -1)).getRadius();
+        int price = new Police(new Point(-1, -1)).getBuildPrice();
+        int maintenanceCost = new Police(new Point(-1, -1)).getMaintenanceCost();
+        finance.removeMoney(price);
+        finance.addBuilt(price, "Rendőrség építés");
+        finance.addYearlySpend(maintenanceCost, "Rendőrség fenntartási díj");
+
+        for (int i = position.x - r; i <= position.x + r; ++i) {
+            for (int j = position.y - r; j <= position.y + r; ++j) {
+                if (i >= 0 && j >= 0 && i < gridSize && j < gridSize) {
+                    if (grid[i][j] != null) {
+                        if (grid[i][j].getType() == FieldType.ZONE_RESIDENTIAL) {
+                            for (Person p : ((Residential) grid[i][j]).getPeople()) {
+                                calculateMood(p);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    public void removePolice(Point position) {
+        grid[position.x][position.y] = null;
+        int r = new Stadium(new Point(-1, -1)).getRadius();
+
+        int maintenanceCost = new Police(new Point(-1, -1)).getMaintenanceCost();
+        finance.removeYearlySpend(maintenanceCost, "Rendőrség fenntartási díj");
+
+        for (int i = position.x - r; i <= position.x + r; ++i) {
+            for (int j = position.y - r; j <= position.y + r; ++j) {
+                if (i >= 0 && j >= 0 && i < gridSize && j < gridSize) {
+                    if (grid[i][j] != null) {
+                        if (grid[i][j].getType() == FieldType.ZONE_RESIDENTIAL) {
+                            for (Person p : ((Residential) grid[i][j]).getPeople()) {
+                                calculateMood(p);
+                            }
+                        } else if (grid[i][j].getType() == FieldType.ZONE_INDUSTRIAL || grid[i][j].getType() == FieldType.ZONE_SERVICE) {
+                            for (Person p : ((Workplace) grid[i][j]).getPeople()) {
+                                calculateMood(p);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    //todo : place/remove road, forest, service, residential, school, university and finish industrial
+
+    public void placeIndustrial(Point position) {
+        grid[position.x][position.y] = new Industrial(position);
+        int r = 5;
+        int price = new Industrial(new Point(-1, -1)).getBuildPrice();
+        finance.removeMoney(price);
+        finance.addBuilt(price, "Ipari zóna kijelölés");
+
+        for (int i = position.x - r; i <= position.x + r; ++i) {
+            for (int j = position.y - r; j <= position.y + r; ++j) {
+                if (i >= 0 && j >= 0 && i < gridSize && j < gridSize) {
+                    if (grid[i][j] != null && grid[i][j].getType() == FieldType.ZONE_RESIDENTIAL) {
+                        for (Person p : ((Residential) grid[i][j]).getPeople()) {
+                            calculateMood(p);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    public void removeIndustrial(Point position) {
+        grid[position.x][position.y] = null;
+        int r = 5;
+
+        for (int i = position.x - r; i <= position.x + r; ++i) {
+            for (int j = position.y - r; j <= position.y + r; ++j) {
+                if (i >= 0 && j >= 0 && i < gridSize && j < gridSize) {
+                    if (grid[i][j] != null && grid[i][j].getType() == FieldType.ZONE_RESIDENTIAL) {
+                        for (Person p : ((Residential) grid[i][j]).getPeople()) {
+                            calculateMood(p);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    public void placeRoad(Point position) {
+        grid[position.x][position.y] = new Road(position);
+        int price = new Road(new Point(-1, -1)).getBuildPrice();
+        finance.removeMoney(price);
+        int maintenanceCost = new Road(new Point(-1, -1)).getMaintenanceCost();
+        finance.addBuilt(price, "Út építés");
+        finance.addYearlySpend(maintenanceCost, "Út fenntartási díj");
+
+        //recalculating mood for every person
+        for (int i = 0; i < gridSize; ++i) {
+            for (int j = 0; j < gridSize; ++j) {
+                if (grid[i][j] != null && grid[i][j].getType() == FieldType.ZONE_RESIDENTIAL) {
+                    for (Person p : ((Residential) grid[i][j]).getPeople()) {
+                        calculateMood(p);
+                    }
+                }
+            }
+        }
+    }
+
+    public Boolean removeRoad(Point position) {
+        // TODO refactor
+        for (int i = 0; i < gridSize; ++i) {
+            for (int j = 0; j < gridSize; ++j) {
+                if (grid[i][j] != null && grid[i][j].getType() == FieldType.ZONE_RESIDENTIAL) {
+                    for (Person p : ((Residential)grid[i][j]).getPeople()) {
+                        if (p.getWorkplace() != null) {
+                            if (!canRoadBeDestroyed(grid[i][j], grid[p.getWorkplace().getPosition().x][p.getWorkplace().getPosition().y], grid[position.x][position.y])) {
+                                return false;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        grid[position.x][position.y] = null;
+        int maintenanceCost = new Road(new Point(-1, -1)).getMaintenanceCost();
+        finance.removeYearlySpend(maintenanceCost, "Út fenntartási díj");
+
+        return true;
+    }
+
+    public void placeService(Point position) {
+        grid[position.x][position.y] = new Service(position);
+        int price = new Service(new Point(-1, -1)).getBuildPrice();
+        finance.removeMoney(price);
+        finance.addBuilt(price, "Szolgáltatási zóna kijelölés");
+    }
+
+    public void removeService(Point position) {
+        grid[position.x][position.y] = null;
+    }
+
+    public void placeResidential(Point position) {
+        grid[position.x][position.y] = new Residential(position);
+        int price = new Residential(new Point(-1, -1)).getBuildPrice();
+        finance.removeMoney(price);
+        finance.addBuilt(price, "Lakóhely zóna kijelölés");
+    }
+
+    public void removeResidential(Point position) {
+        grid[position.x][position.y] = null;
+    }
+
+    public void placeSchool(Point position) {
+        grid[position.x][position.y] = new School(position);
+        int price = new School(new Point(-1, -1)).getBuildPrice();
+        int maintenanceCost = new School(new Point(-1, -1)).getMaintenanceCost();
+        finance.removeMoney(price);
+        finance.addBuilt(price, "Iskola építés");
+        finance.addYearlySpend(maintenanceCost, "Iskola fenntartási díj");
+    }
+
+    public void removeSchool(Point position) {
+        grid[position.x][position.y] = null;
+
+        int maintenanceCost = new School(new Point(-1, -1)).getMaintenanceCost();
+        finance.removeYearlySpend(maintenanceCost, "Iskola fenntartási díj");
+    }
+
+    public void placeForest(Point position) {
+        //grid[position.x][position.y] = new Forest(position);
+        //finance
+
+    }
+
+    public void removeForest(Point position) {
+        grid[position.x][position.y] = null;
+    }
+
+    public void placeUniversity(Point position) {
+        grid[position.x][position.y] = new University(position);
+        finance.removeMoney(new University(new Point(-1, -1)).getBuildPrice());
+    }
+
+    public void removeUniversity(Point position) {
+        grid[position.x][position.y] = null;
+    }
+
+    private Boolean searchForStadium(Person person) {
+        //Searching around home first
+        Residential home = person.getHome();
+        Point homePosition = home.getPosition();
+        int r = new Stadium(new Point(-1, -1)).getRadius();
+
+        for (int i = homePosition.x - r; i <= homePosition.x + r; ++i) {
+            for (int j = homePosition.y - r; j <= homePosition.y + r; ++j) {
+                if (i >= 0 && j >= 0 && i < gridSize && j < gridSize) {
+                    if (grid[i][j] != null && grid[i][j].getType() == FieldType.STADIUM) {
+                        return true;
+                    }
+                }
+            }
+        }
+
+        //If not found around home then search around workplace
+        Workplace workplace = person.getWorkplace();
+        if (workplace == null) return false;
+        Point workplacePosition = workplace.getPosition();
+
+        for (int i = workplacePosition.x - r; i <= workplacePosition.x + r; ++i) {
+            for (int j = workplacePosition.y - r; j <= workplacePosition.y + r; ++j) {
+                if (i >= 0 && j >= 0 && i < gridSize && j < gridSize) {
+                    if (grid[i][j] != null && grid[i][j].getType() == FieldType.STADIUM) {
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
+
+    private Boolean searchForPolice(Person person) {
+        Residential home = person.getHome();
+        Point homePosition = home.getPosition();
+        int r = new Police(new Point(-1, -1)).getRadius();
+
+        for (int i = homePosition.x - r; i <= homePosition.x + r; ++i) {
+            for (int j = homePosition.y - r; j <= homePosition.y + r; ++j) {
+                if (i >= 0 && j >= 0 && i < gridSize && j < gridSize) {
+                    if (grid[i][j] != null && grid[i][j].getType() == FieldType.POLICE) {
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
+
+    private int getWorkplaceDistance(Person person) {
+        Residential home = person.getHome();
+        Point position = home.getPosition();
+
+        Workplace workplace = person.getWorkplace();
+        if (workplace == null) return -1;
+        Point workplacePosition = workplace.getPosition();
+
+        Queue<NodeCount> queue = new LinkedList<>();
+        Set<Point> visited = new HashSet<>();
+
+        if (position.x + 1 < gridSize && grid[position.x + 1][position.y] != null) {
+            if (grid[position.x + 1][position.y].getType() == FieldType.ROAD) {
+                queue.add(new NodeCount(new Point(position.x + 1, position.y), 1));
+                visited.add(new Point(position.x + 1, position.y));
+            }
+            if (grid[position.x + 1][position.y].getPosition().equals(workplacePosition)) {
+                return 1;
+            }
+        }
+        if (position.y + 1 < gridSize && grid[position.x][position.y + 1] != null) {
+            if (grid[position.x][position.y + 1].getType() == FieldType.ROAD) {
+                queue.add(new NodeCount(new Point(position.x, position.y + 1), 1));
+                visited.add(new Point(position.x, position.y + 1));
+            }
+            if (grid[position.x][position.y + 1].getPosition().equals(workplacePosition)) {
+                return 1;
+            }
+        }
+        if (position.y - 1 >= 0 && grid[position.x][position.y - 1] != null) {
+            if (grid[position.x][position.y - 1].getType() == FieldType.ROAD) {
+                queue.add(new NodeCount(new Point(position.x, position.y - 1), 1));
+                visited.add(new Point(position.x, position.y - 1));
+            }
+            if (grid[position.x][position.y - 1].getPosition().equals(workplacePosition)) {
+                return 1;
+            }
+        }
+        if (position.x - 1 >= 0 && grid[position.x - 1][position.y] != null) {
+            if (grid[position.x - 1][position.y].getType() == FieldType.ROAD) {
+                queue.add(new NodeCount(new Point(position.x - 1, position.y), 1));
+                visited.add(new Point(position.x - 1, position.y));
+            }
+            if (grid[position.x - 1][position.y].getPosition().equals(workplacePosition)) {
+                return 1;
+            }
+        }
+
+        while (!queue.isEmpty()) {
+            NodeCount nc = queue.remove();
+            position = nc.position;
+            //System.out.println("Position : " + position.x + " " + position.y);
+
+            if (!visited.contains(new Point(position.x + 1, position.y)) && position.x + 1 < gridSize && grid[position.x + 1][position.y] != null) {
+                if (grid[position.x + 1][position.y].getType() == FieldType.ROAD) {
+                    queue.add(new NodeCount(new Point(position.x + 1, position.y), nc.count + 1));
+                    visited.add(new Point(position.x + 1, position.y));
+                } else if (grid[position.x + 1][position.y].getPosition().equals(workplacePosition)) {
+                    return nc.count + 1;
+                }
+            }
+            if (!visited.contains(new Point(position.x, position.y + 1)) && position.y + 1 < gridSize && grid[position.x][position.y + 1] != null) {
+                if (grid[position.x][position.y + 1].getType() == FieldType.ROAD) {
+                    queue.add(new NodeCount(new Point(position.x, position.y + 1), nc.count + 1));
+                    visited.add(new Point(position.x, position.y + 1));
+                } else if (grid[position.x][position.y + 1].getPosition().equals(workplacePosition)) {
+                    return nc.count + 1;
+                }
+            }
+            if (!visited.contains(new Point(position.x, position.y - 1)) && position.y - 1 >= 0 && grid[position.x][position.y - 1] != null) {
+                if (grid[position.x][position.y - 1].getType() == FieldType.ROAD) {
+                    queue.add(new NodeCount(new Point(position.x, position.y - 1), nc.count + 1));
+                    visited.add(new Point(position.x, position.y - 1));
+                } else if (grid[position.x][position.y - 1].getPosition().equals(workplacePosition)) {
+                    return nc.count + 1;
+                }
+            }
+            if (!visited.contains(new Point(position.x - 1, position.y)) && position.x - 1 >= 0 && grid[position.x - 1][position.y] != null) {
+                if (grid[position.x - 1][position.y].getType() == FieldType.ROAD) {
+                    queue.add(new NodeCount(new Point(position.x - 1, position.y), nc.count + 1));
+                    visited.add(new Point(position.x - 1, position.y));
+                } else if (grid[position.x - 1][position.y].getPosition().equals(workplacePosition)) {
+                    return nc.count + 1;
+                }
+            }
+        }
+
+        return -1;
+    }
+
+    private Boolean searchForIndustrial(Person person) {
+        Residential home = person.getHome();
+        Point homePosition = home.getPosition();
+        int r = 5;
+
+        for (int i = homePosition.x - r; i <= homePosition.x + r; ++i) {
+            for (int j = homePosition.y - r; j <= homePosition.y + r; ++j) {
+                if (i >= 0 && j >= 0 && i < gridSize && j < gridSize) {
+                    if (grid[i][j] != null && grid[i][j].getType() == FieldType.ZONE_INDUSTRIAL) {
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
+
+    private void calculateMood(Person person) {
+        //TODO refactor
+        person.setMood(0);
+        if (searchForStadium(person)) {
+            person.setMood(person.getMood() + 5);
+        }
+        if (searchForPolice(person)) {
+            person.setMood(person.getMood() + 5);
+        }
+        if (searchForIndustrial(person)) {
+            person.setMood(person.getMood() + 5);
+        }
+        {
+            if (getWorkplaceDistance(person) < 6) person.setMood(person.getMood() + 5);
+            else if (getWorkplaceDistance(person) < 12) person.setMood(person.getMood() + 3);
+            else person.setMood(person.getMood() + 1);
+        }
+
+        //todo : searchForForest && boost mood based on tax
+    }
+
+    private boolean canRoadBeDestroyed(Placeable startPoint, Placeable endPoint, Placeable toBeDestroyed) {
+        boolean directPath = isPath(convertToNumMatrix(startPoint, endPoint, null), gridSize);
+        boolean moreThanOnePath = isPath(convertToNumMatrix(startPoint, endPoint, toBeDestroyed), gridSize);
+        return directPath && (moreThanOnePath);
+    }
+
+    private int[][] convertToNumMatrix(Placeable startPoint, Placeable endPoint, Placeable toBeDestroyed) {
+        int[][] matrix = new int[this.gridSize][this.gridSize];
+        for (int i = 0; i < gridSize; i++) {
+            for (int j = 0; j < gridSize; j++) {
+                if (grid[i][j] instanceof Road) matrix[i][j] = 3;
+                else matrix[i][j] = 0;
+            }
+        }
+        matrix[startPoint.getPosition().x][startPoint.getPosition().y] = 1;
+        matrix[endPoint.getPosition().x][endPoint.getPosition().y] = 2;
+        if (toBeDestroyed != null) matrix[toBeDestroyed.getPosition().x][toBeDestroyed.getPosition().y] = 0;
+        return matrix;
+    }
+
+    private boolean isPath(int[][] matrix, int n) {
+        boolean[][] visited = new boolean[n][n];
+        boolean flag = false;
+
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                if (matrix[i][j] == 1 && !visited[i][j]) {
+                    if (isPath(matrix, i, j, visited)) {
+                        flag = true;
+                        break;
+                    }
+                }
+            }
+        }
+        return flag;
+    }
+
+    private void newYearTaxCollection() {
+        int sum = 0;
+        for (int i = 0; i < gridSize; ++i) {
+            for (int j = 0; j < gridSize; ++j) {
+                if ((grid[i][j] != null)) {
+                    sum += grid[i][j].calculateTax();
+
+                }
+            }
+        }
+        finance.addIncome(sum, "Éves adó összeg");
+        finance.addMoney(sum);
+    }
+
+    private void calculateCityMood() {
+        if (this.people.size() == 0) return;
+        int cityMood = 0;
+        int numOfZones = 0;
+        for (int i = 0; i < this.gridSize; i++) {
+            for (int j = 0; j < this.gridSize; j++) {
+                if (this.grid[i][j] instanceof Residential) {
+//                    System.out.println("MOOD OF ZONE: " + ((Residential) this.grid[i][j]).calculateZoneMood());
+//                    System.out.println("NUM OF ZONE: " + (numOfZones + 1));
+                    cityMood += ((Residential) this.grid[i][j]).calculateZoneMood();
+                    if (((Residential) this.grid[i][j]).getPeople().size() != 0) {
+                        numOfZones++;
+                    }
+                }
+            }
+        }
+        if (numOfZones != 0) {
+            this.cityMood = cityMood / numOfZones;
+        }
+        for(MoralChangeListener l : this.moralListeners) l.onMoralChanged();
+    }
+
+    public void addMoralChangeListener(MoralChangeListener l){
+        this.moralListeners.add(l);
+    }
+
+    public void addPeopleChangeListener(PeopleChangeListener l){
+        this.peopleChangeListeners.add(l);
+    }
+
+    private void changeMoodOfPeople() {
+        if (this.finance.getCurrentWealth() < -10000) {
+            this.finance.setProfitableYearsInARow(this.finance.getProfitableYearsInARow() - 1);
+        } else {
+            this.finance.setProfitableYearsInARow(this.finance.getProfitableYearsInARow() + 1);
+        }
+
+        double multiplier = 1;
+        if (this.finance.getProfitableYearsInARow() < -3) {
+            //gameover
+            multiplier = 0.7;
+        } else if (this.finance.getProfitableYearsInARow() > 3) {
+            multiplier = 1.3;
+        } else {
+            multiplier = (10 + this.finance.getProfitableYearsInARow()) / 10.0;
+        }
+        for (int i = 0; i < this.gridSize; i++) {
+            for (int j = 0; j < this.gridSize; j++) {
+                if (this.grid[i][j] instanceof Residential) {
+                    for (int k = 0; k < ((Residential) this.grid[i][j]).getPeople().size(); k++) {
+                        if (multiplier >= 1) {
+                            ((Residential) this.grid[i][j])
+                                    .getPeople()
+                                    .get(k)
+                                    .setMood(Math.min((int) (((Residential) this.grid[i][j]).getPeople().get(k).getMood() * multiplier), 100));
+                        } else {
+                            ((Residential) this.grid[i][j])
+                                    .getPeople()
+                                    .get(k)
+                                    .setMood(Math.max((int) (((Residential) this.grid[i][j]).getPeople().get(k).getMood() * multiplier), 0));
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private boolean isMoodGoodEnough() {
+        return this.cityMood >= 25;
+    }
+
+    private void welcomeNewInhabitants() {
+        int freeSpace = 0;
+        for (int i = 0; i < this.gridSize; i++) {
+            for (int j = 0; j < this.gridSize; j++) {
+                if (this.grid[i][j] instanceof Residential && isNextToARoad(new Point(i, j))) {
+                    freeSpace += ((Residential) this.grid[i][j]).numOfSpacesLeft();
+                }
+            }
+        }
+        double incomingNewPeople = (freeSpace * (cityMood / 100.0));
+        for (int i = 0; i < (int) incomingNewPeople; i++) {
+            this.people.add(new Person(findHome()));
+            for(PeopleChangeListener l : peopleChangeListeners) l.onPeopleCountChange();
+        }
+        for (int i = 0; i < this.people.size(); i++) {
+            //TODO overpowered function
+//            calculateMood(this.people.get(i));
+        }
+        //System.out.println("PEOPLE SIZE: " + this.people.size());
+        //System.out.println(freeSpace + " free space");
+        //System.out.println(incomingNewPeople + " incoming new people");
+    }
+
+    private void departInhabitants() {
+        double outgoingPeople = this.people.size() * ((100 - cityMood - 30) / 100.0);
+        System.out.println("OUTGOING PEOPLE " + outgoingPeople);
+        System.out.println("BEFORE REMOVAL " + this.people.size());
+        System.out.println("LAST INDEX: " + (this.people.size() - 1 - (int) outgoingPeople));
+        //remove outgoingPeople amount of people from this.people who have the lowest mood
+        for (int i = 0; i < outgoingPeople; i++) {
+            int lowestMood = 101;
+            Person lp = null;
+            for (Person p : this.people) {
+                if (p.getMood() < lowestMood) {
+                    lowestMood = p.getMood();
+                    lp = p;
+                }
+            }
+            if (lp.getWorkplace() != null) lp.getWorkplace().getPeople().remove(lp);
+            if (lp.getHome() != null) lp.getHome().getPeople().remove(lp);
+            if (lp.getEducation() != null) lp.getEducation().getPeople().remove(lp);
+            this.people.remove(lp);
+        }
+        System.out.println("AFTER REMOVAL: " + this.people.size());
+    }
+
+    private Residential findHome() {
+        for (int i = 0; i < this.gridSize; i++) {
+            for (int j = 0; j < this.gridSize; j++) {
+                if (this.grid[i][j] instanceof Residential && ((Residential) this.grid[i][j]).areSpacesLeft() && isNextToARoad(new Point(i, j))) {
+                    return ((Residential) this.grid[i][j]);
+                }
+            }
+        }
+        return null;
+    }
+
+    private boolean isNextToARoad(Point point) {
+        int x = point.x;
+        int y = point.y;
+
+        if (x - 1 >= 0 && this.grid[x - 1][y] instanceof Road) return true;
+        if (x + 1 < this.gridSize && this.grid[x + 1][y] instanceof Road) return true;
+        if (y - 1 >= 0 && this.grid[x][y - 1] instanceof Road) return true;
+        if (y + 1 < this.gridSize && this.grid[x][y + 1] instanceof Road) return true;
+        return false;
+    }
+
+    @Override
+    public void timeTick() {
+        if (this.inGameTime.getInGameHour() > 0) {
+            //System.out.println("City mood: " + this.cityMood);
+            calculateCityMood();
+        }
+//        System.out.println("******************");
+//        for (int i = 0; i < gridSize; ++i) {
+//            for (int j = 0; j < gridSize; ++j) {
+//                System.out.print(grid[i][j] + " ");
+//            }
+//            System.out.println();
+//        }
+//        System.out.println("Current money : " + finance.getCurrentWealth());
+        // System.out.println("******************");
+        if (this.inGameTime.getInGameDay() > 0 && this.inGameTime.getInGameDay() % 20 == 0 && this.inGameTime.getInGameHour() == 0) {
+            if (isMoodGoodEnough()) {
+                welcomeNewInhabitants();
+//                System.out.println("ADD");
+            } else {
+                departInhabitants();
+//                System.out.println("REMOVE");
+            }
+        }
+        if (this.inGameTime.getInGameYear() > 0 && this.inGameTime.getInGameDay() == 0 && this.inGameTime.getInGameHour() == 0) {
+            //triggers new year tax collection
+            //and city mood change
+            changeMoodOfPeople();
+        }
+    }
 }

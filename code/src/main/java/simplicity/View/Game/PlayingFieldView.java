@@ -1,68 +1,68 @@
 package simplicity.View.Game;
 
-import simplicity.Model.Game.FieldType;
-import simplicity.Model.Game.RoadType;
 import simplicity.Model.Listeners.FieldClickListener;
 import simplicity.Model.GameModel;
-import simplicity.Model.Game.FieldData;
+import simplicity.Model.Placeables.Placeable;
+import simplicity.View.Listeners.MouseAdapter;
 import simplicity.View.Style.InsetShadowBorder;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.awt.geom.AffineTransform;
-import java.awt.image.AffineTransformOp;
-import java.awt.image.BufferedImage;
 
 public class PlayingFieldView extends JPanel implements MouseListener, MouseMotionListener, MouseWheelListener {
 
     // TODO: move to GameModel
-    private FieldData[][] grid;
-    private final Dimension gridDimension;
-    private int defaultFieldSize = 32;
+    //private Placeable[][] grid;
+    private final int gridSize;
+    private final int defaultFieldSize = 32;
     private int fieldSize;
     private Point hoverField;
     private int offsetX;
     private int offsetY;
+    private GameModel model;
 
-    private static final Point NO_SELECTION = new Point(-1, -1);
-
-    public PlayingFieldView(int width, int height) {
-        this.gridDimension = new Dimension(width, height);
+    public PlayingFieldView() {
+        this.model = GameModel.getInstance();
+        this.gridSize = model.getGridSize();
         this.fieldSize = defaultFieldSize;
-        this.hoverField = NO_SELECTION;
+        this.hoverField = GameModel.NO_SELECTION;
         this.offsetX = 0;
         this.offsetY = 0;
-        resetPlayingField();
+        // resetPlayingField();
+        MouseAdapter mouseAdapter = new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                // System.out.println("clicked");
+            }
+        };
         this.addMouseListener(this);
+        this.addMouseListener(mouseAdapter);
         this.addMouseMotionListener(this);
         this.addMouseWheelListener(this);
-        InsetShadowBorder insetShadow = new InsetShadowBorder(16);
-        this.setBorder(insetShadow);
+        this.setBorder(new InsetShadowBorder(16));
     }
 
-    private void resetPlayingField() {
+    /*private void resetPlayingField() {
         int width = this.gridDimension.width;
         int height = this.gridDimension.height;
-        grid = new FieldData[height][width];
+        grid = new Placeable[height][width];
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {
-                FieldData fv = new FieldData(new Point(i, j), GameModel.GRASS_IMG);
+                Placeable fv = new Placeable(new Point(i, j), GameModel.GRASS_IMG);
                 grid[i][j] = fv;
             }
         }
-    }
+    }*/
 
     private boolean doesGridFitHorizontally() {
-        int gridWidth = this.gridDimension.width;
         int panelWidth = this.getWidth();
-        return fieldSize * gridWidth <= panelWidth;
+        return fieldSize * gridSize <= panelWidth;
     }
 
     private boolean doesGridFitVertically() {
-        int gridHeight = this.gridDimension.height;
         int panelHeight = this.getHeight();
-        return fieldSize * gridHeight <= panelHeight;
+        return fieldSize * gridSize <= panelHeight;
     }
 
     private boolean doesGridFit() {
@@ -70,18 +70,14 @@ public class PlayingFieldView extends JPanel implements MouseListener, MouseMoti
     }
 
     private Point getDefaultOffset() {
-        int gridWidth = this.gridDimension.width;
-        int gridHeight = this.gridDimension.height;
         int panelWidth = this.getWidth();
         int panelHeight = this.getHeight();
-        return new Point((int) (panelWidth / 2.0 - gridWidth * fieldSize / 2.0), (int) (panelHeight / 2.0 - gridHeight * fieldSize / 2.0));
+        return new Point((int) (panelWidth / 2.0 - gridSize * fieldSize / 2.0), (int) (panelHeight / 2.0 - gridSize * fieldSize / 2.0));
     }
 
     @Override
     protected void paintComponent(Graphics graphics) {
         Graphics2D g = (Graphics2D) graphics;
-        int gridWidth = this.gridDimension.width;
-        int gridHeight = this.gridDimension.height;
         int panelWidth = this.getWidth();
         int panelHeight = this.getHeight();
         g.setColor(new Color(255, 200, 200));
@@ -90,71 +86,87 @@ public class PlayingFieldView extends JPanel implements MouseListener, MouseMoti
         if (doesGridFitHorizontally() || !isGridDraggedX) offsetX = centerOffset.x;
         if (doesGridFitVertically() || !isGridDraggedY) offsetY = centerOffset.y;
         int tempX1 = -(int) Math.ceil(offsetX / (double) fieldSize);
-        int tempX2 = (int) Math.ceil((this.getWidth() - (offsetX + gridWidth * fieldSize)) / (double) fieldSize);
+        int tempX2 = (int) Math.ceil((this.getWidth() - (offsetX + gridSize * fieldSize)) / (double) fieldSize);
         int tempY1 = -(int) Math.ceil(offsetY / (double) fieldSize);
-        int tempY2 = (int) Math.ceil((this.getHeight() - (offsetY + gridHeight * fieldSize)) / (double) fieldSize);
-        for (int i = tempY1; i < gridHeight + tempY2; i++) {
-            for (int j = tempX1; j < gridWidth + tempX2; j++) {
+        int tempY2 = (int) Math.ceil((this.getHeight() - (offsetY + gridSize * fieldSize)) / (double) fieldSize);
+        for (int i = tempY1; i < gridSize + tempY2; i++) {
+            for (int j = tempX1; j < gridSize + tempX2; j++) {
                 Point coord = new Point(
-                    fieldSize * i,
-                    fieldSize * j
+                        fieldSize * i,
+                        fieldSize * j
                 );
-                if ((i < 0 || i >= gridHeight) || (j < 0 || j >= gridWidth)) {
+                if ((i < 0 || i >= gridSize) || (j < 0 || j >= gridSize)) {
                     g.drawImage(GameModel.GRASS_IMG, offsetX + coord.y, offsetY + coord.x, fieldSize, fieldSize, null);
                 }
             }
         }
-        for (int i = 0; i < gridHeight; i++) {
-            for (int j = 0; j < gridWidth; j++) {
+        int shadowSize = fieldSize * 2;
+        int shadowOpacity = 50;
+        int shadowGap = (int)(fieldSize / 4.8);
+        for(int i=0;i<shadowSize;i++){
+            int alpha = shadowOpacity - (int)Math.round(i*(shadowOpacity/(double)shadowSize));
+            if(alpha < 0) break;
+            g.setColor(new Color(0, 0, 0, alpha));
+            g.drawLine(
+                offsetX - i - shadowGap, offsetY - i - shadowGap,
+                offsetX + fieldSize * gridSize + i + shadowGap, offsetY - i - shadowGap
+            );
+            g.drawLine(
+                offsetX - i - shadowGap, offsetY + fieldSize * gridSize + i + shadowGap,
+                offsetX + fieldSize * gridSize + i + shadowGap, offsetY + fieldSize * gridSize + i + shadowGap
+            );
+            g.drawLine(
+                offsetX - i - shadowGap, offsetY - i + 1 - shadowGap,
+                offsetX - i - shadowGap, offsetY + fieldSize * gridSize + i - 1 + shadowGap
+            );
+            g.drawLine(
+                offsetX + fieldSize * gridSize + i + shadowGap, offsetY - i + 1 - shadowGap,
+                offsetX + fieldSize * gridSize + i + shadowGap, offsetY + fieldSize * gridSize + i - 1 + shadowGap
+            );
+            //g.drawLine(i, i+1, i, height);
+        }
+        for (int i = 0; i < gridSize; i++) {
+            for (int j = 0; j < gridSize; j++) {
                 Point coord = new Point(
                     fieldSize * i,
                     fieldSize * j
                 );
-                //g.drawImage(grid[i][j].getImage(), offsetX + coord.y, offsetY + coord.x, fieldSize, fieldSize, null);
+                // instead of this, a method of a grid element will be called to determine what image will be used
                 g.drawImage(GameModel.GRASS_IMG, offsetX + coord.y, offsetY + coord.x, fieldSize, fieldSize, null);
-                if(grid[j][i].getType() == FieldType.ROAD){
-                    FieldData leftNeighbor = (j > 0) ? grid[j-1][i] : null;
-                    FieldData rightNeighbor = (j < gridWidth-1) ? grid[j+1][i] : null;
-                    FieldData upNeighbor = (i > 0) ? grid[j][i-1] : null;
-                    FieldData downNeighbor = (i < gridHeight-1) ? grid[j][i+1] : null;
-                    RoadType type = RoadType.calc(leftNeighbor, rightNeighbor, upNeighbor, downNeighbor);
-                    Image roadImg;
-                    switch(type){
-                        case HORIZONTAL -> roadImg = GameModel.ROAD_STRAIGHT_IMG;
-                        case VERTICAL -> roadImg = rotateImage(GameModel.ROAD_STRAIGHT_IMG, 90);
-                        case DOWN_TO_LEFT -> roadImg = GameModel.ROAD_TURN_IMG;
-                        case DOWN_TO_RIGHT -> roadImg = rotateImage(GameModel.ROAD_TURN_IMG, -90);
-                        case UP_TO_RIGHT -> roadImg = rotateImage(GameModel.ROAD_TURN_IMG, 180);
-                        case UP_TO_LEFT -> roadImg = rotateImage(GameModel.ROAD_TURN_IMG, 90);
-                        case DOWN_T -> roadImg = GameModel.ROAD_T;
-                        case RIGHT_T -> roadImg = rotateImage(GameModel.ROAD_T, -90);
-                        case UP_T -> roadImg = rotateImage(GameModel.ROAD_T, 180);
-                        case LEFT_T -> roadImg = rotateImage(GameModel.ROAD_T, 90);
-                        case ALL -> roadImg = GameModel.ROAD_ALL;
-                        default -> roadImg = GameModel.MISSING_IMG;
-                    }
-                    g.drawImage(roadImg, offsetX + coord.y, offsetY + coord.x, fieldSize, fieldSize, null);
-                }
-                if (i == hoverField.y && j == hoverField.x) {
-
-                    g.drawImage(GameModel.SELECTION_IMG, offsetX + coord.y, offsetY + coord.x, fieldSize, fieldSize, null);
+                if(model.grid(j,i) != null){
+                    Placeable leftNeighbor = (j > 0) ? model.grid(j - 1,i) : null;
+                    Placeable rightNeighbor = (j < gridSize - 1) ? model.grid(j + 1,i) : null;
+                    Placeable upNeighbor = (i > 0) ? model.grid(j,i - 1) : null;
+                    Placeable downNeighbor = (i < gridSize - 1) ? model.grid(j,i + 1) : null;
+                    Image img = model.grid(j,i).getImage(leftNeighbor, rightNeighbor, upNeighbor, downNeighbor);
+                    g.drawImage(img, offsetX + coord.y, offsetY + coord.x, fieldSize, fieldSize, null);
                 }
             }
         }
         g.setColor(Color.BLACK);
-        g.drawRoundRect(offsetX, offsetY, fieldSize * gridWidth, fieldSize * gridHeight, 24, 24);
-        g.drawRoundRect(offsetX + 1, offsetY + 1, fieldSize * gridWidth - 2, fieldSize * gridHeight - 2, 24, 22);
-        // g.fillRoundRect(testPoint.x, testPoint.y, 5, 5, 5, 5);
-    }
+        if (hoverField != GameModel.NO_SELECTION) {
+            double mult = 26 / 16.0;
+            int multSize = (int) Math.round(fieldSize * mult);
+            double mult2 = 5 / 16.0;
+            int selOffset = (int) Math.round(fieldSize * mult2);
+            Dimension selectionSize = new Dimension(1,1);
+            if(GamePanel.isPlacing()){
+                Image img = GamePanel.getPlacee().getImage();
+                // selectionSize = ...;
+                g.drawImage(img, offsetX + fieldSize * hoverField.x, offsetY + fieldSize * hoverField.y, fieldSize, fieldSize, null);
+                if(true){ // if can place
+                    g.drawImage(GameModel.SELECTION_VALID_IMG, offsetX + (fieldSize * hoverField.x) - selOffset, offsetY + (fieldSize * hoverField.y) - selOffset, multSize, multSize, null);
+                }else{
+                    g.drawImage(GameModel.SELECTION_INVALID_IMG, offsetX + (fieldSize * hoverField.x) - selOffset, offsetY + (fieldSize * hoverField.y) - selOffset, multSize, multSize, null);
+                }
+            }else{
+                g.drawImage(GameModel.SELECTION_IMG, offsetX + (fieldSize * hoverField.x) - selOffset, offsetY + (fieldSize * hoverField.y) - selOffset, multSize, multSize, null);
+            }
 
-    private BufferedImage rotateImage(Image img, int degrees){
-        if(img == null) return null;
-        double rotationRequired = Math.toRadians(degrees);
-        double locationX = img.getWidth(null) / 2.0;
-        double locationY = img.getHeight(null) / 2.0;
-        AffineTransform tx = AffineTransform.getRotateInstance(rotationRequired, locationX, locationY);
-        AffineTransformOp op = new AffineTransformOp(tx, AffineTransformOp.TYPE_BILINEAR);
-        return op.filter((BufferedImage) img, null);
+            // g.drawRect(offsetX + (fieldSize * hoverField.x), offsetY + (fieldSize * hoverField.y), fieldSize, fieldSize);
+        }
+        // g.drawRoundRect(offsetX, offsetY, fieldSize * gridSize, fieldSize * gridSize, 24, 24);
+        // g.drawRoundRect(offsetX + 1, offsetY + 1, fieldSize * gridSize - 2, fieldSize * gridSize - 2, 24, 22);
     }
 
     private FieldClickListener fieldClickListener;
@@ -165,9 +177,28 @@ public class PlayingFieldView extends JPanel implements MouseListener, MouseMoti
 
     @Override
     public void mouseClicked(MouseEvent e) {
-        boolean fieldHit = hoverField != NO_SELECTION;
-        if(fieldHit) grid[hoverField.x][hoverField.y].toggleTeszt();
-        fieldClickListener.fieldClicked(fieldHit ? grid[hoverField.x][hoverField.y] : null);
+        if (SwingUtilities.isLeftMouseButton(e)) {
+            this.mouseLeftClicked(e);
+        } else if (SwingUtilities.isRightMouseButton(e)) {
+            this.mouseRightClicked(e);
+        }
+    }
+
+    private void mouseLeftClicked(MouseEvent e) {
+        boolean fieldHit = hoverField != GameModel.NO_SELECTION;
+        if(GamePanel.isPlacing()){
+            Placeable placee = GamePanel.stopPlacing();
+            model.gridPlace(placee, hoverField.x, hoverField.y);
+            this.repaint();
+        }else{
+            fieldClickListener.fieldClicked(fieldHit ? model.grid(hoverField.x,hoverField.y) : null);
+        }
+        // this.repaint();
+    }
+
+    private void mouseRightClicked(MouseEvent e) {
+        boolean fieldHit = hoverField != GameModel.NO_SELECTION;
+        // if (fieldHit) model.grid(hoverField.x,hoverField.y).toggleTeszt();
         this.repaint();
     }
 
@@ -177,8 +208,24 @@ public class PlayingFieldView extends JPanel implements MouseListener, MouseMoti
 
     @Override
     public void mouseReleased(MouseEvent e) {
-        if (SwingUtilities.isRightMouseButton(e) && isDraggingGrid) isDraggingGrid = false;
-        if (isLeftDragging) isLeftDragging = false;
+        if (SwingUtilities.isRightMouseButton(e) && isDraggingGrid) {
+            isDraggingGrid = false;
+            Point dragPointer = new Point(e.getPoint().x - dragStart.x, e.getPoint().y - dragStart.y);
+            double distance = Math.sqrt(Math.pow(dragPointer.x, 2) + Math.pow(dragPointer.y, 2));
+            if (distance <= 5) {
+                mouseRightClicked(e);
+            }
+        }
+        if (SwingUtilities.isLeftMouseButton(e) && isLeftDragging) {
+            isLeftDragging = false;
+            Point dragPointer = new Point(e.getPoint().x - dragStart.x, e.getPoint().y - dragStart.y);
+            double distance = Math.sqrt(Math.pow(dragPointer.x, 2) + Math.pow(dragPointer.y, 2));
+            if (distance <= 5) {
+                mouseLeftClicked(e);
+            } else {
+                // System.out.println("actual drag");
+            }
+        }
     }
 
     @Override
@@ -187,8 +234,8 @@ public class PlayingFieldView extends JPanel implements MouseListener, MouseMoti
 
     @Override
     public void mouseExited(MouseEvent e) {
-        if (hoverField != NO_SELECTION) {
-            hoverField = NO_SELECTION;
+        if (hoverField != GameModel.NO_SELECTION) {
+            hoverField = GameModel.NO_SELECTION;
             this.repaint();
         }
     }
@@ -197,8 +244,8 @@ public class PlayingFieldView extends JPanel implements MouseListener, MouseMoti
     private boolean isLeftDragging = false;
     private boolean isGridDraggedX = false;
     private boolean isGridDraggedY = false;
-    private Point dragStart = NO_SELECTION;
-    private Point dragOffset = NO_SELECTION;
+    private Point dragStart = GameModel.NO_SELECTION;
+    private Point dragOffset = GameModel.NO_SELECTION;
 
     @Override
     public void mouseDragged(MouseEvent e) {
@@ -210,31 +257,25 @@ public class PlayingFieldView extends JPanel implements MouseListener, MouseMoti
                 dragStart = e.getPoint();
                 dragOffset = new Point(offsetX, offsetY);
             }
-            int gw = fieldSize * gridDimension.width;
-            int gh = fieldSize * gridDimension.height;
             Point defaultOffset = this.getDefaultOffset();
             Point dragPointer = new Point(e.getPoint().x - dragStart.x, e.getPoint().y - dragStart.y);
             int newOffsetX = dragOffset.x + dragPointer.x;
             int newOffsetY = dragOffset.y + dragPointer.y;
             int feleX = (int) Math.round(this.getWidth() / 2.0);
             int feleY = (int) Math.round(this.getHeight() / 2.0);
-            boolean canDragX = newOffsetX > -(fieldSize * gridDimension.width - feleX) && newOffsetX < feleX;
-            boolean canDragY = newOffsetY > -(fieldSize * gridDimension.height - feleY) && newOffsetY < feleY;
+            boolean canDragX = newOffsetX > -(fieldSize * gridSize - feleX) && newOffsetX < feleX;
+            boolean canDragY = newOffsetY > -(fieldSize * gridSize - feleY) && newOffsetY < feleY;
             if (canDragX && !doesGridFitHorizontally()) offsetX = newOffsetX;
             if (canDragY && !doesGridFitVertically()) offsetY = newOffsetY;
             this.updateHover(e.getX(), e.getY(), false, false);
             this.repaint();
-        }else{
-            if(!isLeftDragging){
+        } else {
+            if (!isLeftDragging) {
                 isLeftDragging = true;
                 dragStart = e.getPoint();
+                this.onHoverChange();
             }
-            Point dragPointer = new Point(e.getPoint().x - dragStart.x, e.getPoint().y - dragStart.y);
-            double distance = Math.sqrt(Math.pow(dragPointer.x, 2) + Math.pow(dragPointer.y, 2));
-            if(distance <= 5){
-                isLeftDragging = false;
-                mouseClicked(e);
-            }
+            this.updateHover(e.getX(), e.getY(), true, true);
         }
     }
 
@@ -251,18 +292,24 @@ public class PlayingFieldView extends JPanel implements MouseListener, MouseMoti
             (yOffset >= 0) ? (yOffset / this.fieldSize) : -1
         );
         if (
-            newHoverField.x >= 0 && newHoverField.x < this.gridDimension.width &&
-            newHoverField.y >= 0 && newHoverField.y < this.gridDimension.height
+            newHoverField.x >= 0 && newHoverField.x < gridSize &&
+            newHoverField.y >= 0 && newHoverField.y < gridSize
         ) {
             if (newHoverField.x != hoverField.x || newHoverField.y != hoverField.y) {
                 hoverField = newHoverField;
+                this.onHoverChange();
                 if (repaint) this.repaint();
                 // System.out.println(x + " " + y);
             }
-        } else if (hoverField != NO_SELECTION) {
-            hoverField = NO_SELECTION;
+        } else if (hoverField != GameModel.NO_SELECTION) {
+            hoverField = GameModel.NO_SELECTION;
             if (repaint) this.repaint();
         }
+    }
+
+    private void onHoverChange() {
+        boolean fieldHit = hoverField != GameModel.NO_SELECTION;
+        if (isLeftDragging) fieldClickListener.fieldClicked(fieldHit ? model.grid(hoverField.x,hoverField.y) : null);
     }
 
     private static final int minFieldSize = 10;
@@ -270,8 +317,9 @@ public class PlayingFieldView extends JPanel implements MouseListener, MouseMoti
 
     @Override
     public void mouseWheelMoved(MouseWheelEvent e) {
-        System.out.println("test");
-        int amount = -e.getWheelRotation() * 4;
+        int rot = e.getWheelRotation();
+        int amount = (rot < 0 ? 1 : (rot > 0 ? -1 : 0)) * 4;
+        System.out.println("scroll amount " + amount);
         if ((amount > 0 && fieldSize < maxFieldSize) || (amount < 0 && fieldSize > minFieldSize)) {
             fieldSize += amount;
             if (doesGridFitHorizontally()) isGridDraggedX = false;
