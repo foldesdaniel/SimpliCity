@@ -63,6 +63,7 @@ public class GameModel implements InGameTimeTickListener {
 
     private final InGameTime inGameTime = InGameTimeManager.getInstance().getInGameTime();
     //just for testing purposes
+    @Getter
     private final int gridSize = 20;
     private int mood;
     private Date nextDisaster;
@@ -70,6 +71,7 @@ public class GameModel implements InGameTimeTickListener {
     private int uniPercentage;
     private final ArrayList<MoralChangeListener> moralListeners = new ArrayList<>();
     private final ArrayList<PeopleChangeListener> peopleChangeListeners = new ArrayList<>();
+    @Getter
     private int cityMood = 50;
     private Placeable grid[][];
     private Finance finance;
@@ -135,10 +137,6 @@ public class GameModel implements InGameTimeTickListener {
         System.out.println("******************");
     }
 
-    public int getCityMood(){
-        return this.cityMood;
-    }
-
     public void initGrid(){
         this.grid = new Placeable[this.gridSize][this.gridSize];
         for (int i = 0; i < this.gridSize; ++i) {
@@ -146,10 +144,6 @@ public class GameModel implements InGameTimeTickListener {
                 this.grid[i][j] = null; //null == not initialized block
             }
         }
-    }
-
-    public int getGridSize(){
-        return this.gridSize;
     }
 
     public boolean gridPlace(Placeable p, int i, int j){
@@ -166,7 +160,7 @@ public class GameModel implements InGameTimeTickListener {
         return i >= 0 && i < matrix.length && j >= 0 && j < matrix[0].length;
     }
 
-    private static boolean isPath(int[][] matrix, int i, int j, boolean[][] visited) {
+    public static boolean isPath(int[][] matrix, int i, int j, boolean[][] visited) {
         if (isSafe(i, j, matrix) && matrix[i][j] != 0 && !visited[i][j]) {
 
             visited[i][j] = true;
@@ -352,6 +346,7 @@ public class GameModel implements InGameTimeTickListener {
     }
 
     public Boolean removeRoad(Point position) {
+        // TODO refactor
         for (int i = 0; i < gridSize; ++i) {
             for (int j = 0; j < gridSize; ++j) {
                 if (grid[i][j] != null && grid[i][j].getType() == FieldType.ZONE_RESIDENTIAL) {
@@ -591,6 +586,7 @@ public class GameModel implements InGameTimeTickListener {
     }
 
     private void calculateMood(Person person) {
+        //TODO refactor
         person.setMood(0);
         if (searchForStadium(person)) {
             person.setMood(person.getMood() + 5);

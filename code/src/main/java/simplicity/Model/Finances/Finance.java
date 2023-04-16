@@ -7,10 +7,10 @@ import java.util.ArrayList;
 
 @Getter
 public class Finance {
-    private ArrayList<FinanceData> incomeList; //stores incomes with their information
-    private ArrayList<FinanceData> builtList; //stores built costs with their information
+    private final ArrayList<FinanceData> incomeList; //stores incomes with their information
+    private final ArrayList<FinanceData> builtList; //stores built costs with their information
 
-    private ArrayList<FinanceData> yearlySpendList; //stores maintenance costs with their information
+    private final ArrayList<FinanceData> yearlySpendList; //stores maintenance costs with their information
     private int currentWealth; //player's current money
     @Setter
     private int profitableYearsInARow = 0;
@@ -24,9 +24,8 @@ public class Finance {
 
     /**
      * Remove money from the player's current wealth
-     *
      * @param money
-     *              The amount to remove
+     * The amount to remove
      */
 
 
@@ -37,7 +36,7 @@ public class Finance {
     /**
      * Add money to the player's current wealth
      * @param money
-     *              The amount to add
+     *The amount to add
      */
     public void addMoney(int money) {
         currentWealth += money;
@@ -46,9 +45,9 @@ public class Finance {
     /**
      * Add income to the list
      * @param price
-     *              The profit
+     * The profit
      * @param text
-     *              Information about the building
+     * Information about the building
      */
     public void addIncome(int price, String text) {
         this.incomeList.add(new FinanceData(price, text));
@@ -57,9 +56,9 @@ public class Finance {
     /**
      * Add built price to the list with text
      * @param price
-     *              The expense
+     * The expense
      * @param text
-     *              Information about the building
+     * Information about the building
      */
     public void addBuilt(int price, String text) {
         this.builtList.add(new FinanceData(price, text));
@@ -68,9 +67,9 @@ public class Finance {
     /**
      * Add yearly maintenance price with text
      * @param price
-     *              The yearly expense
+     * The yearly expense
      * @param text
-     *              Information about the building
+     * Information about the building
      */
     public void addYearlySpend(int price, String text) {
         this.yearlySpendList.add(new FinanceData(price, text));
@@ -79,9 +78,9 @@ public class Finance {
     /**
      * Remove yearly maintenance price with text
      * @param price
-     *              The yearly expense
+     * The yearly expense
      * @param text
-     *              Information about the building
+     * Information about the building
      */
     public void removeYearlySpend(int price, String text) {
         int ind = -1;
@@ -97,7 +96,6 @@ public class Finance {
 
     /**
      * Making displayable information about the built expenses
-     *
      * @return information about the built expenses
      */
     public String builtToString() {
@@ -110,7 +108,6 @@ public class Finance {
 
     /**
      * Making displayable information about the yearly maintenance expenses
-     *
      * @return information about the yearly maintenance expenses
      */
     public String yearlySpendToString() {
@@ -123,7 +120,6 @@ public class Finance {
 
     /**
      * Making displayable information about the income
-     *
      * @return information about the income
      */
     public String incomeToString() {
