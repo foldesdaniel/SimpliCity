@@ -15,7 +15,7 @@ public class School extends Education implements InGameTimeTickListener {
 
     private final InGameTime inGameTime;
 
-    public School( Point position) {
+    public School(Point position) {
         super(FieldType.SCHOOL, position, 1000, 20);
         inGameTime = InGameTimeManager.getInstance().getInGameTime();
         inGameTime.addInGameTimeTickListener(this);
@@ -25,6 +25,7 @@ public class School extends Education implements InGameTimeTickListener {
     public void graduate(ArrayList<Integer> studentIds) {
         for (int i = 0; i < studentIds.size(); i++) {
             this.getPeople().get(i).setEducationLevel(levelOfEducation);
+            this.getPeople().get(i).setEducation(null);
 //            System.out.println(this.getPeople().get(i).getEducationLevel() + " GRADUATED");
         }
         if (studentIds.size() > 0) {
