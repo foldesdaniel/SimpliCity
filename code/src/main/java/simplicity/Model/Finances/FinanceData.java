@@ -11,4 +11,8 @@ public class FinanceData {
         this.price = price;
         this.text = text;
     }
+
+    public String toString(boolean positive) {
+        return (positive ? "+$" : "-$") + this.price + " " + this.text;
+    }
 }

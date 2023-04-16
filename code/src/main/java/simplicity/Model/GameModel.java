@@ -36,7 +36,7 @@ public class GameModel implements InGameTimeTickListener {
     public static final Color BG_DARK = new Color(61, 63, 65); // default flatlaf dark
     private final InGameTime inGameTime = InGameTimeManager.getInstance().getInGameTime();
     //just for testing purposes
-    private final int gridSize = 2;
+    private final int gridSize = 7;
     private int mood;
     private Date nextDisaster;
     private int secondaryPercentage;
@@ -78,10 +78,24 @@ public class GameModel implements InGameTimeTickListener {
         }
         System.out.println("******************");
 
-        grid[0][0] = new Residential(new Point(0, 0));
-        grid[0][1] = new Road(new Point(0, 1));
-        grid[1][0] = new Residential(new Point(1, 0));
-        grid[1][1] = new Residential(new Point(1, 1));
+//        placeResidential(new Point(0, 0));
+//        placeIndustrial(new Point(0, 1));
+//        placeService(new Point(1, 1));
+//        placePolice(new Point(0, 2));
+//        ((Residential)grid[0][0]).addPerson(new Person());
+//        ((Residential)grid[0][0]).addPerson(new Person());
+//        ((Residential)grid[0][0]).addPerson(new Person());
+//        ((Residential)grid[0][0]).getPeople().get(0).goToWork((Industrial)grid[0][1]);
+//        placeUniversity(new Point(0, 3));
+//        newYearTaxCollection();
+//        System.out.println("Income:\n" + finance.incomeToString());
+//        System.out.println("Built:\n" + finance.builtToString());
+//        System.out.println("Yearly:\n" + finance.yearlySpendToString());
+//
+//        grid[0][0] = new Residential(new Point(0, 0));
+//        grid[0][1] = new Road(new Point(0, 1));
+//        grid[1][0] = new Residential(new Point(1, 0));
+//        grid[1][1] = new Residential(new Point(1, 1));
 //        grid[0][3] = new Road(new Point(0,3));
 //        grid[0][4] = new Road(new Point(0,4));
 //        grid[0][5] = new Road(new Point(0,5));
@@ -97,7 +111,7 @@ public class GameModel implements InGameTimeTickListener {
 //        grid[2][5] = new Service(new Point(2, 5));
 //
 //        ((Residential)grid[0][1]).getPeople().get(0).goToWork((Workplace)grid[2][5]);
-//        System.out.println(getWorkplaceDistance(((Residential)grid[0][1]).getPeople().get(0)));
+//        System.out.println(removeRoad(new Point(1, 2)));
 
 
     }
@@ -128,10 +142,14 @@ public class GameModel implements InGameTimeTickListener {
         return false;
     }
 
-    private void placeStadium(Point position) {
+    public void placeStadium(Point position) {
         grid[position.x][position.y] = new Stadium(position);
         int r = new Stadium(new Point(-1, -1)).getRadius();
-        finance.removeMoney(new Stadium(new Point(-1, -1)).getBuildPrice());
+        int price = new Stadium(new Point(-1, -1)).getBuildPrice();
+        int maintenanceCost = new Stadium(new Point(-1, -1)).getMaintenanceCost();
+        finance.removeMoney(price);
+        finance.addBuilt(price, "Stadium építés");
+        finance.addYearlySpend(maintenanceCost, "Stadium fenntartási díj");
 
         for (int i = position.x - r; i <= position.x + r; ++i) {
             for (int j = position.y - r; j <= position.y + r; ++j) {
@@ -152,10 +170,13 @@ public class GameModel implements InGameTimeTickListener {
         }
     }
 
-    private void removeStadium(Point position) {
+    public void removeStadium(Point position) {
         grid[position.x][position.y] = null;
         int r = new Stadium(new Point(-1, -1)).getRadius();
 
+        int maintenanceCost = new Stadium(new Point(-1, -1)).getMaintenanceCost();
+        finance.removeYearlySpend(maintenanceCost, "Stadium fenntartási díj");
+
         for (int i = position.x - r; i <= position.x + r; ++i) {
             for (int j = position.y - r; j <= position.y + r; ++j) {
                 if (i >= 0 && j >= 0 && i < gridSize && j < gridSize) {
@@ -175,10 +196,14 @@ public class GameModel implements InGameTimeTickListener {
         }
     }
 
-    private void placePolice(Point position) {
+    public void placePolice(Point position) {
         grid[position.x][position.y] = new Police(position);
         int r = new Police(new Point(-1, -1)).getRadius();
-        finance.removeMoney(new Police(new Point(-1, -1)).getBuildPrice());
+        int price = new Police(new Point(-1, -1)).getBuildPrice();
+        int maintenanceCost = new Police(new Point(-1, -1)).getMaintenanceCost();
+        finance.removeMoney(price);
+        finance.addBuilt(price, "Rendőrség építés");
+        finance.addYearlySpend(maintenanceCost, "Rendőrség fenntartási díj");
 
         for (int i = position.x - r; i <= position.x + r; ++i) {
             for (int j = position.y - r; j <= position.y + r; ++j) {
@@ -195,9 +220,12 @@ public class GameModel implements InGameTimeTickListener {
         }
     }
 
-    private void removePolice(Point position) {
+    public void removePolice(Point position) {
         grid[position.x][position.y] = null;
         int r = new Stadium(new Point(-1, -1)).getRadius();
+
+        int maintenanceCost = new Police(new Point(-1, -1)).getMaintenanceCost();
+        finance.removeYearlySpend(maintenanceCost, "Rendőrség fenntartási díj");
 
         for (int i = position.x - r; i <= position.x + r; ++i) {
             for (int j = position.y - r; j <= position.y + r; ++j) {
@@ -220,10 +248,12 @@ public class GameModel implements InGameTimeTickListener {
 
     //todo : place/remove road, forest, service, residential, school, university and finish industrial
 
-    private void placeIndustrial(Point position) {
+    public void placeIndustrial(Point position) {
         grid[position.x][position.y] = new Industrial(position);
         int r = 5;
-        finance.removeMoney(new Industrial(new Point(-1, -1)).getBuildPrice());
+        int price = new Industrial(new Point(-1, -1)).getBuildPrice();
+        finance.removeMoney(price);
+        finance.addBuilt(price, "Ipari zóna kijelölés");
 
         for (int i = position.x - r; i <= position.x + r; ++i) {
             for (int j = position.y - r; j <= position.y + r; ++j) {
@@ -238,7 +268,7 @@ public class GameModel implements InGameTimeTickListener {
         }
     }
 
-    private void removeIndustrial(Point position) {
+    public void removeIndustrial(Point position) {
         grid[position.x][position.y] = null;
         int r = 5;
 
@@ -255,9 +285,13 @@ public class GameModel implements InGameTimeTickListener {
         }
     }
 
-    private void placeRoad(Point position) {
+    public void placeRoad(Point position) {
         grid[position.x][position.y] = new Road(position);
-        finance.removeMoney(new Road(new Point(-1, -1)).getBuildPrice());
+        int price = new Road(new Point(-1, -1)).getBuildPrice();
+        finance.removeMoney(price);
+        int maintenanceCost = new Road(new Point(-1, -1)).getMaintenanceCost();
+        finance.addBuilt(price, "Út építés");
+        finance.addYearlySpend(maintenanceCost, "Út fenntartási díj");
 
         //recalculating mood for every person
         for (int i = 0; i < gridSize; ++i) {
@@ -271,56 +305,82 @@ public class GameModel implements InGameTimeTickListener {
         }
     }
 
-    private Boolean removeRoad(Point position) {
-        grid[position.x][position.y] = null;
+    public Boolean removeRoad(Point position) {
+        for (int i = 0; i < gridSize; ++i) {
+            for (int j = 0; j < gridSize; ++j) {
+                if (grid[i][j] != null && grid[i][j].getType() == FieldType.ZONE_RESIDENTIAL) {
+                    for (Person p : ((Residential)grid[i][j]).getPeople()) {
+                        if (p.getWorkplace() != null) {
+                            if (!canRoadBeDestroyed(grid[i][j], grid[p.getWorkplace().getPosition().x][p.getWorkplace().getPosition().y], grid[position.x][position.y])) {
+                                return false;
+                            }
+                        }
+                    }
+                }
+            }
+        }
 
-        //todo : cannot be deleted
+        grid[position.x][position.y] = null;
+        int maintenanceCost = new Road(new Point(-1, -1)).getMaintenanceCost();
+        finance.removeYearlySpend(maintenanceCost, "Út fenntartási díj");
 
         return true;
     }
 
-    private void placeService(Point position) {
+    public void placeService(Point position) {
         grid[position.x][position.y] = new Service(position);
-        finance.removeMoney(new Service(new Point(-1, -1)).getBuildPrice());
+        int price = new Service(new Point(-1, -1)).getBuildPrice();
+        finance.removeMoney(price);
+        finance.addBuilt(price, "Szolgáltatási zóna kijelölés");
     }
 
-    private void removeService(Point position) {
+    public void removeService(Point position) {
         grid[position.x][position.y] = null;
     }
 
-    private void placeResidential(Point position) {
+    public void placeResidential(Point position) {
         grid[position.x][position.y] = new Residential(position);
-        finance.removeMoney(new Residential(new Point(-1, -1)).getBuildPrice());
+        int price = new Residential(new Point(-1, -1)).getBuildPrice();
+        finance.removeMoney(price);
+        finance.addBuilt(price, "Lakóhely zóna kijelölés");
     }
 
-    private void removeResidential(Point position) {
+    public void removeResidential(Point position) {
         grid[position.x][position.y] = null;
     }
 
-    private void placeSchool(Point position) {
+    public void placeSchool(Point position) {
         grid[position.x][position.y] = new School(position);
-        finance.removeMoney(new School(new Point(-1, -1)).getBuildPrice());
+        int price = new School(new Point(-1, -1)).getBuildPrice();
+        int maintenanceCost = new School(new Point(-1, -1)).getMaintenanceCost();
+        finance.removeMoney(price);
+        finance.addBuilt(price, "Iskola építés");
+        finance.addYearlySpend(maintenanceCost, "Iskola fenntartási díj");
     }
 
-    private void removeSchool(Point position) {
+    public void removeSchool(Point position) {
         grid[position.x][position.y] = null;
+
+        int maintenanceCost = new School(new Point(-1, -1)).getMaintenanceCost();
+        finance.removeYearlySpend(maintenanceCost, "Iskola fenntartási díj");
     }
 
-    private void placeForest(Point position) {
+    public void placeForest(Point position) {
         //grid[position.x][position.y] = new Forest(position);
         //finance
+
     }
 
-    private void removeForest(Point position) {
+    public void removeForest(Point position) {
         grid[position.x][position.y] = null;
     }
 
-    private void placeUniversity(Point position) {
+    public void placeUniversity(Point position) {
         grid[position.x][position.y] = new University(position);
         finance.removeMoney(new University(new Point(-1, -1)).getBuildPrice());
     }
 
-    private void removeUniversity(Point position) {
+    public void removeUniversity(Point position) {
         grid[position.x][position.y] = null;
     }
 
@@ -427,7 +487,7 @@ public class GameModel implements InGameTimeTickListener {
         while (!queue.isEmpty()) {
             NodeCount nc = queue.remove();
             position = nc.position;
-            System.out.println("Position : " + position.x + " " + position.y);
+            //System.out.println("Position : " + position.x + " " + position.y);
 
             if (!visited.contains(new Point(position.x + 1, position.y)) && position.x + 1 < gridSize && grid[position.x + 1][position.y] != null) {
                 if (grid[position.x + 1][position.y].getType() == FieldType.ROAD) {
@@ -545,12 +605,14 @@ public class GameModel implements InGameTimeTickListener {
         int sum = 0;
         for (int i = 0; i < gridSize; ++i) {
             for (int j = 0; j < gridSize; ++j) {
-                sum += (grid[i][j] != null) ? grid[i][j].calculateTax() : 0;
+                if ((grid[i][j] != null)) {
+                    sum += grid[i][j].calculateTax();
+
+                }
             }
-            System.out.println();
         }
-        finance.removeMoney(sum);
-        System.out.println(finance.getCurrentWealth());
+        finance.addIncome(sum, "Éves adó összeg");
+        finance.addMoney(sum);
     }
 
     private void calculateCityMood() {
@@ -632,9 +694,9 @@ public class GameModel implements InGameTimeTickListener {
             //TODO overpowered function
 //            calculateMood(this.people.get(i));
         }
-        System.out.println("PEOPLE SIZE: " + this.people.size());
-        System.out.println(freeSpace + " free space");
-        System.out.println(incomingNewPeople + " incoming new people");
+        //System.out.println("PEOPLE SIZE: " + this.people.size());
+        //System.out.println(freeSpace + " free space");
+        //System.out.println(incomingNewPeople + " incoming new people");
     }
 
     private void departInhabitants() {
@@ -685,7 +747,7 @@ public class GameModel implements InGameTimeTickListener {
     @Override
     public void timeTick() {
         if (this.inGameTime.getInGameHour() > 0) {
-            System.out.println("City mood: " + this.cityMood);
+            //System.out.println("City mood: " + this.cityMood);
             calculateCityMood();
         }
 //        System.out.println("******************");
@@ -696,7 +758,7 @@ public class GameModel implements InGameTimeTickListener {
 //            System.out.println();
 //        }
 //        System.out.println("Current money : " + finance.getCurrentWealth());
-        System.out.println("******************");
+        //System.out.println("******************");
         if (this.inGameTime.getInGameDay() > 0 && this.inGameTime.getInGameDay() % 20 == 0 && this.inGameTime.getInGameHour() == 0) {
             if (isMoodGoodEnough()) {
                 welcomeNewInhabitants();
