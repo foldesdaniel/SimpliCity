@@ -47,6 +47,6 @@ public class BottomBar extends JPanel implements MoralChangeListener, PeopleChan
 
     @Override
     public void onPeopleCountChange() {
-        personCountLabel.setText("Person count: " + model.countPeople());
+        personCountLabel.setText("Person count: " + model.getPeople().size());
     }
 }

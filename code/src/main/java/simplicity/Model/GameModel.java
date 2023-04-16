@@ -1,5 +1,6 @@
 package simplicity.Model;
 
+import lombok.Getter;
 import simplicity.Model.Algorithm.NodeCount;
 import simplicity.Model.Education.School;
 import simplicity.Model.Education.University;
@@ -74,6 +75,7 @@ public class GameModel implements InGameTimeTickListener {
     private Finance finance;
     private int industrialCount = 0;
     private int serviceCount = 0;
+    @Getter
     private ArrayList<Person> people = new ArrayList<>();
 
     public GameModel() {
