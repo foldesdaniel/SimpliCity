@@ -1,5 +1,6 @@
 package simplicity.Model.Placeables;
 
+import lombok.Getter;
 import simplicity.Model.Game.FieldType;
 import simplicity.Model.Game.RoadType;
 import simplicity.Model.GameModel;
@@ -9,8 +10,11 @@ import java.awt.*;
 
 public class Road extends Placeable {
 
+    @Getter
+    private int maintenanceCost;
     public Road(Point position) {
         super(FieldType.ROAD, position, 1000);
+        this.maintenanceCost = 500;
     }
 
     @Override

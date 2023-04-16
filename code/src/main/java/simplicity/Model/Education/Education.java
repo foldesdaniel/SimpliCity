@@ -13,8 +13,11 @@ public abstract class Education extends Zone {
 
     private final ArrayList<Date> arrivalDates = new ArrayList<>();
 
-    public Education(FieldType type, Point position, int buildPrice, int maxPeople) {
+    private int maintenanceCost;
+
+    public Education(FieldType type, Point position, int buildPrice, int maxPeople, int maintenanceCost) {
         super(type, position, buildPrice, maxPeople);
+        this.maintenanceCost = maintenanceCost;
     }
 
     public abstract void graduate(ArrayList<Integer> studentIds);
