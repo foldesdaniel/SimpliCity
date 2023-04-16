@@ -1,8 +1,8 @@
 package simplicity.Model.Placeables;
 
 import lombok.Getter;
-import simplicity.Model.GameModel;
 import simplicity.Model.Game.FieldType;
+import simplicity.Model.GameModel;
 
 import java.awt.*;
 import java.util.Objects;
@@ -11,13 +11,17 @@ import java.util.Objects;
 public abstract class Placeable {
 
     private final FieldType type;
-    private final Point position;
+    private Point position;
     private final int buildPrice;
 
     public Placeable(FieldType type, Point position, int buildPrice) {
         this.type = type;
         this.position = position;
         this.buildPrice = buildPrice;
+    }
+
+    public void setPosition(Point position){
+        this.position = position;
     }
 
     public abstract int calculateTax();
@@ -40,8 +44,13 @@ public abstract class Placeable {
         return this.getImage(null, null, null, null);
     }
 
+    public String getDisplayName(){
+        return this.type.getDisplayName();
+    }
+
     @Override
     public String toString() {
         return this.type.name() + "(" + this.position.x + "," + this.position.y + ")";
     }
+
 }

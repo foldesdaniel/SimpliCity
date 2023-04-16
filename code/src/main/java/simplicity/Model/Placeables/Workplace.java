@@ -1,6 +1,7 @@
 package simplicity.Model.Placeables;
 
 import simplicity.Model.Game.FieldType;
+import simplicity.Model.Placeables.Zones.Zone;
 
 import java.awt.*;
 

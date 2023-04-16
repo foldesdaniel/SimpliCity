@@ -9,10 +9,6 @@ import simplicity.View.Menu.MainMenu;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowStateListener;
 
 public class GameWindow extends JFrame implements MenuEventListener, StartGameListener {
 
@@ -27,8 +23,8 @@ public class GameWindow extends JFrame implements MenuEventListener, StartGameLi
     public GameWindow() {
         this.setTitle(GameModel.GAME_TITLE);
         this.changedFullscreen();
-        // this.changedWindowed(960,480);
         this.setUndecorated(true);
+        //this.changedWindowed(960,480);
         this.setLayout(null);
         this.setLocationRelativeTo(null);
         this.setResizable(false);

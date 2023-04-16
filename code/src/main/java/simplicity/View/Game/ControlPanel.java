@@ -8,9 +8,11 @@ import java.awt.*;
 
 public class ControlPanel extends JPanel {
 
-    private InfoTab infoTab;
-    private BuildTab buildTab;
-    private JPanel container;
+    private final JButton infoBtn;
+    private final JButton buildBtn;
+    private final InfoTab infoTab;
+    private final BuildTab buildTab;
+    private final JPanel container;
     private boolean infoTabShowing = true;
     private final Font font; // temporary
     private final GameModel model;
@@ -20,25 +22,22 @@ public class ControlPanel extends JPanel {
         infoTab = new InfoTab();
         buildTab = new BuildTab();
         container = new JPanel();
+        container.setPreferredSize(new Dimension(10, 1000));
         GridBagConstraints gbc = new GridBagConstraints();
         this.setLayout(new GridBagLayout());
         JPanel btnContainer = new JPanel();
         font = GameModel.CUSTOM_FONT.deriveFont(Font.PLAIN, 18);
-        JButton infoBtn = new JButton("infobtn");
-        JButton buildBtn = new JButton("buildbtn");
-        JButton testBtn = new JButton("print");
+        infoBtn = new JButton("infobtn");
+        buildBtn = new JButton("buildbtn");
         infoBtn.setFont(font);
         buildBtn.setFont(font);
-        testBtn.setFont(font);
         infoBtn.addActionListener((e) -> showInfoTab());
         buildBtn.addActionListener((e) -> showBuildTab());
-        testBtn.addActionListener((e) -> model.printGrid());
         //infoTab.init();
         //buildTab.init();
         container.add(infoTab);
         btnContainer.add(infoBtn);
         btnContainer.add(buildBtn);
-        btnContainer.add(testBtn);
         this.add(btnContainer, GamePanel.changeGbc(gbc, 0, 0, 1, 1, 1, 0));
         this.add(container, GamePanel.changeGbc(gbc, 1, 0, 1, 1, 1, 1));
     }
@@ -55,6 +54,7 @@ public class ControlPanel extends JPanel {
         container.revalidate();
         container.repaint();
         container.add(infoTab);
+        infoBtn.requestFocus();
         //}
     }
 

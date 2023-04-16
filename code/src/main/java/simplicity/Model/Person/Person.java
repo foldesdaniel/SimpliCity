@@ -10,7 +10,7 @@ import simplicity.Model.GameTime.InGameTime;
 import simplicity.Model.GameTime.InGameTimeManager;
 import simplicity.Model.Listeners.InGameTimeTickListener;
 import simplicity.Model.Placeables.Workplace;
-import simplicity.Model.Zones.Residential;
+import simplicity.Model.Placeables.Zones.Residential;
 
 @AllArgsConstructor
 @Getter

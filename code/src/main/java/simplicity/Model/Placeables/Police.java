@@ -6,6 +6,7 @@ import simplicity.Model.GameModel;
 import java.awt.*;
 
 public class Police extends Building {
+
     public Police(Point position) {
         super(FieldType.POLICE, position, 1000, 1.2f, 4, 500);
     }

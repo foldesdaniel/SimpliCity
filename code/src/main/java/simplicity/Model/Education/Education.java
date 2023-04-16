@@ -3,7 +3,7 @@ package simplicity.Model.Education;
 import lombok.Getter;
 import simplicity.Model.Game.FieldType;
 import simplicity.Model.GameTime.Date;
-import simplicity.Model.Placeables.Zone;
+import simplicity.Model.Placeables.Zones.Zone;
 
 import java.awt.*;
 import java.util.ArrayList;

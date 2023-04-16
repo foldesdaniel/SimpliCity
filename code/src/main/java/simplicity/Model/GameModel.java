@@ -1,6 +1,5 @@
 package simplicity.Model;
 
-import lombok.Getter;
 import simplicity.Model.Algorithm.NodeCount;
 import simplicity.Model.Education.School;
 import simplicity.Model.Education.University;
@@ -16,9 +15,9 @@ import simplicity.Model.Listeners.PeopleChangeListener;
 import simplicity.Model.Person.Person;
 import simplicity.Model.Placeables.*;
 import simplicity.Model.Resource.ResourceLoader;
-import simplicity.Model.Zones.Industrial;
-import simplicity.Model.Zones.Residential;
-import simplicity.Model.Zones.Service;
+import simplicity.Model.Placeables.Zones.Industrial;
+import simplicity.Model.Placeables.Zones.Residential;
+import simplicity.Model.Placeables.Zones.Service;
 
 import java.awt.*;
 import java.util.Queue;
@@ -33,7 +32,9 @@ public class GameModel implements InGameTimeTickListener {
     public static final Image MISSING_IMG = ResourceLoader.loadImage("missing.png");
     public static final Image GRASS_IMG = ResourceLoader.loadImage("grass.png");
     public static final Image SELECTION_IMG = ResourceLoader.loadImage("selection.png");
-    public static final Image SELECTION_2_IMG = ResourceLoader.loadImage("selection2.png");
+    public static final Image SELECTION_VALID_IMG = ResourceLoader.loadImage("selection_valid.png");
+    public static final Image SELECTION_INVALID_IMG = ResourceLoader.loadImage("selection_invalid.png");
+    public static final Image TILE_HOVER_IMG = ResourceLoader.loadImage("hover.png");
     public static final Image ROAD_STRAIGHT_IMG = ResourceLoader.loadImage("road.png");
     public static final Image ROAD_TURN_IMG = ResourceLoader.loadImage("road_turn.png");
     public static final Image ROAD_T = ResourceLoader.loadImage("road_t.png");
@@ -144,6 +145,16 @@ public class GameModel implements InGameTimeTickListener {
 
     public int getGridSize(){
         return this.gridSize;
+    }
+
+    public boolean gridPlace(Placeable p, int i, int j){
+        if(this.grid[i][j] == null){
+            p.setPosition(new Point(i,j));
+            this.grid[i][j] = p;
+            return true;
+        }else{
+            return false;
+        }
     }
 
     public static boolean isSafe(int i, int j, int[][] matrix) {

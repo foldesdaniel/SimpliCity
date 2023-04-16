@@ -1,4 +1,4 @@
-package simplicity.Model.Zones;
+package simplicity.Model.Placeables.Zones;
 
 import lombok.Getter;
 import simplicity.Model.Game.FieldType;

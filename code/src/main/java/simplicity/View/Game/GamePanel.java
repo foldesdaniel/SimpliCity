@@ -95,6 +95,10 @@ public class GamePanel extends JPanel implements FieldClickListener {
         return isPlacing;
     }
 
+    public static Placeable getPlacee(){
+        return placee;
+    }
+
     private GridBagConstraints changeGbc(int row, int col, int rowSpan, int colSpan, double weightX, double weightY) {
         return GamePanel.changeGbc(gbc, row, col, rowSpan, colSpan, weightX, weightY);
     }
