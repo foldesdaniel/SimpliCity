@@ -31,12 +31,14 @@ public class Person implements InGameTimeTickListener {
     private EducationLevel educationLevel = EducationLevel.PRIMARY;
     @Getter
     private Workplace workplace = null;
+    @Setter
+    private Education education = null;
     private Residential home = null;
 
-   public Person() {
-       inGameTime = InGameTimeManager.getInstance().getInGameTime();
-       inGameTime.addInGameTimeTickListener(this);
-   }
+    public Person() {
+        inGameTime = InGameTimeManager.getInstance().getInGameTime();
+        inGameTime.addInGameTimeTickListener(this);
+    }
 
     public Person(Residential home) {
         inGameTime = InGameTimeManager.getInstance().getInGameTime();
@@ -46,24 +48,26 @@ public class Person implements InGameTimeTickListener {
     }
 
     public void goToSchool(Education placeOfEducation) {
-        if (placeOfEducation.getPeople().size() < placeOfEducation.getMaxPeople() && !placeOfEducation.getPeople().contains(this)) {
+
+        if (placeOfEducation.areSpacesLeft() && !placeOfEducation.getPeople().contains(this)) {
             placeOfEducation.getPeople().add(this);
             InGameTime igt = InGameTimeManager.getInstance().getInGameTime();
             placeOfEducation.getArrivalDates().add(
                     new Date(igt.getInGameYear(), igt.getInGameDay(), igt.getInGameHour())
             );
+            this.education = placeOfEducation;
         }
     }
 
     public void goToWork(Workplace placeOfWork) {
-        if (placeOfWork.getPeople().size() < placeOfWork.getMaxPeople() && !placeOfWork.getPeople().contains(this)) {
+        if (placeOfWork.areSpacesLeft() && !placeOfWork.getPeople().contains(this)) {
             placeOfWork.getPeople().add(this);
             this.workplace = placeOfWork;
         }
     }
 
     public void moveIn(Residential home) {
-        if (home.getPeople().size() < home.getMaxPeople() && !home.getPeople().contains(this)) {
+        if (home.areSpacesLeft() && !home.getPeople().contains(this)) {
             home.getPeople().add(this);
             this.home = home;
         }

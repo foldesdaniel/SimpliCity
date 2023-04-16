@@ -24,7 +24,6 @@ import java.util.*;
 public class GameModel implements InGameTimeTickListener {
 
     public static final String GAME_TITLE = "SimpliCity";
-
     public static final Image MISSING_IMG = ResourceLoader.loadImage("missing.png");
     public static final Image GRASS_IMG = ResourceLoader.loadImage("grass.png");
     public static final Image SELECTION_IMG = ResourceLoader.loadImage("selection.png");
@@ -42,7 +41,7 @@ public class GameModel implements InGameTimeTickListener {
     private Date nextDisaster;
     private int secondaryPercentage;
     private int uniPercentage;
-    private int cityMood = 50;
+    private int cityMood = 20;
     private Placeable grid[][];
     private Finance finance;
     private int industrialCount = 0;
@@ -63,6 +62,10 @@ public class GameModel implements InGameTimeTickListener {
             for (int j = 0; j < this.gridSize; ++j) {
                 this.grid[i][j] = null; //null == not initialized block
             }
+        }
+
+        for (int i = 0; i < 10; i++) {
+            this.people.add(new Person());
         }
 
         //TESTING feature/14_mood
@@ -113,11 +116,11 @@ public class GameModel implements InGameTimeTickListener {
 
     }
 
-    public static boolean isSafe(int i, int j, int[][] matrix) {
+    private static boolean isSafe(int i, int j, int[][] matrix) {
         return i >= 0 && i < matrix.length && j >= 0 && j < matrix[0].length;
     }
 
-    public static boolean isPath(int[][] matrix, int i, int j, boolean[][] visited) {
+    private static boolean isPath(int[][] matrix, int i, int j, boolean[][] visited) {
         if (isSafe(i, j, matrix) && matrix[i][j] != 0 && !visited[i][j]) {
 
             visited[i][j] = true;
@@ -294,7 +297,7 @@ public class GameModel implements InGameTimeTickListener {
         for (int i = 0; i < gridSize; ++i) {
             for (int j = 0; j < gridSize; ++j) {
                 if (grid[i][j] != null && grid[i][j].getType() == FieldType.ZONE_RESIDENTIAL) {
-                    for (Person p : ((Residential)grid[i][j]).getPeople()) {
+                    for (Person p : ((Residential) grid[i][j]).getPeople()) {
                         calculateMood(p);
                     }
                 }
@@ -490,8 +493,7 @@ public class GameModel implements InGameTimeTickListener {
                 if (grid[position.x + 1][position.y].getType() == FieldType.ROAD) {
                     queue.add(new NodeCount(new Point(position.x + 1, position.y), nc.count + 1));
                     visited.add(new Point(position.x + 1, position.y));
-                }
-                else if (grid[position.x + 1][position.y].getPosition().equals(workplacePosition)) {
+                } else if (grid[position.x + 1][position.y].getPosition().equals(workplacePosition)) {
                     return nc.count + 1;
                 }
             }
@@ -499,8 +501,7 @@ public class GameModel implements InGameTimeTickListener {
                 if (grid[position.x][position.y + 1].getType() == FieldType.ROAD) {
                     queue.add(new NodeCount(new Point(position.x, position.y + 1), nc.count + 1));
                     visited.add(new Point(position.x, position.y + 1));
-                }
-                else if (grid[position.x][position.y + 1].getPosition().equals(workplacePosition)) {
+                } else if (grid[position.x][position.y + 1].getPosition().equals(workplacePosition)) {
                     return nc.count + 1;
                 }
             }
@@ -508,8 +509,7 @@ public class GameModel implements InGameTimeTickListener {
                 if (grid[position.x][position.y - 1].getType() == FieldType.ROAD) {
                     queue.add(new NodeCount(new Point(position.x, position.y - 1), nc.count + 1));
                     visited.add(new Point(position.x, position.y - 1));
-                }
-                else if (grid[position.x][position.y - 1].getPosition().equals(workplacePosition)) {
+                } else if (grid[position.x][position.y - 1].getPosition().equals(workplacePosition)) {
                     return nc.count + 1;
                 }
             }
@@ -517,8 +517,7 @@ public class GameModel implements InGameTimeTickListener {
                 if (grid[position.x - 1][position.y].getType() == FieldType.ROAD) {
                     queue.add(new NodeCount(new Point(position.x - 1, position.y), nc.count + 1));
                     visited.add(new Point(position.x - 1, position.y));
-                }
-                else if (grid[position.x - 1][position.y].getPosition().equals(workplacePosition)) {
+                } else if (grid[position.x - 1][position.y].getPosition().equals(workplacePosition)) {
                     return nc.count + 1;
                 }
             }
@@ -545,7 +544,7 @@ public class GameModel implements InGameTimeTickListener {
         return false;
     }
 
-    public void calculateMood(Person person) {
+    private void calculateMood(Person person) {
         person.setMood(0);
         if (searchForStadium(person)) {
             person.setMood(person.getMood() + 5);
@@ -565,13 +564,13 @@ public class GameModel implements InGameTimeTickListener {
         //todo : searchForForest && boost mood based on tax
     }
 
-    public boolean canRoadBeDestroyed(Placeable startPoint, Placeable endPoint, Placeable toBeDestroyed) {
+    private boolean canRoadBeDestroyed(Placeable startPoint, Placeable endPoint, Placeable toBeDestroyed) {
         boolean directPath = isPath(convertToNumMatrix(startPoint, endPoint, null), gridSize);
         boolean moreThanOnePath = isPath(convertToNumMatrix(startPoint, endPoint, toBeDestroyed), gridSize);
         return directPath && (moreThanOnePath);
     }
 
-    public int[][] convertToNumMatrix(Placeable startPoint, Placeable endPoint, Placeable toBeDestroyed) {
+    private int[][] convertToNumMatrix(Placeable startPoint, Placeable endPoint, Placeable toBeDestroyed) {
         int[][] matrix = new int[this.gridSize][this.gridSize];
         for (int i = 0; i < gridSize; i++) {
             for (int j = 0; j < gridSize; j++) {
@@ -585,7 +584,7 @@ public class GameModel implements InGameTimeTickListener {
         return matrix;
     }
 
-    public boolean isPath(int[][] matrix, int n) {
+    private boolean isPath(int[][] matrix, int n) {
         boolean[][] visited = new boolean[n][n];
         boolean flag = false;
 
@@ -602,7 +601,7 @@ public class GameModel implements InGameTimeTickListener {
         return flag;
     }
 
-    void newYearTaxCollection() {
+    private void newYearTaxCollection() {
         int sum = 0;
         for (int i = 0; i < gridSize; ++i) {
             for (int j = 0; j < gridSize; ++j) {
@@ -616,15 +615,15 @@ public class GameModel implements InGameTimeTickListener {
         finance.addMoney(sum);
     }
 
-    void calculateCityMood() {
+    private void calculateCityMood() {
         if (this.people.size() == 0) return;
         int cityMood = 0;
         int numOfZones = 0;
         for (int i = 0; i < this.gridSize; i++) {
             for (int j = 0; j < this.gridSize; j++) {
                 if (this.grid[i][j] instanceof Residential) {
-                    //ut.println("MOOD OF ZONE: " + ((Residential) this.grid[i][j]).calculateZoneMood());
-                    //System.out.println("NUM OF ZONE: " + (numOfZones + 1));
+//                    System.out.println("MOOD OF ZONE: " + ((Residential) this.grid[i][j]).calculateZoneMood());
+//                    System.out.println("NUM OF ZONE: " + (numOfZones + 1));
                     cityMood += ((Residential) this.grid[i][j]).calculateZoneMood();
                     if (((Residential) this.grid[i][j]).getPeople().size() != 0) {
                         numOfZones++;
@@ -637,7 +636,7 @@ public class GameModel implements InGameTimeTickListener {
         }
     }
 
-    public void changeMoodOfPeople() {
+    private void changeMoodOfPeople() {
         if (this.finance.getCurrentWealth() < -10000) {
             this.finance.setProfitableYearsInARow(this.finance.getProfitableYearsInARow() - 1);
         } else {
@@ -674,7 +673,11 @@ public class GameModel implements InGameTimeTickListener {
         }
     }
 
-    public void welcomeNewInhabitants() {
+    private boolean isMoodGoodEnough() {
+        return this.cityMood >= 25;
+    }
+
+    private void welcomeNewInhabitants() {
         int freeSpace = 0;
         for (int i = 0; i < this.gridSize; i++) {
             for (int j = 0; j < this.gridSize; j++) {
@@ -696,7 +699,30 @@ public class GameModel implements InGameTimeTickListener {
         //System.out.println(incomingNewPeople + " incoming new people");
     }
 
-    public Residential findHome() {
+    private void departInhabitants() {
+        double outgoingPeople = this.people.size() * ((100 - cityMood - 30) / 100.0);
+        System.out.println("OUTGOING PEOPLE " + outgoingPeople);
+        System.out.println("BEFORE REMOVAL " + this.people.size());
+        System.out.println("LAST INDEX: " + (this.people.size() - 1 - (int) outgoingPeople));
+        //remove outgoingPeople amount of people from this.people who have the lowest mood
+        for (int i = 0; i < outgoingPeople; i++) {
+            int lowestMood = 101;
+            Person lp = null;
+            for (Person p : this.people) {
+                if (p.getMood() < lowestMood) {
+                    lowestMood = p.getMood();
+                    lp = p;
+                }
+            }
+            if (lp.getWorkplace() != null) lp.getWorkplace().getPeople().remove(lp);
+            if (lp.getHome() != null) lp.getHome().getPeople().remove(lp);
+            if (lp.getEducation() != null) lp.getEducation().getPeople().remove(lp);
+            this.people.remove(lp);
+        }
+        System.out.println("AFTER REMOVAL: " + this.people.size());
+    }
+
+    private Residential findHome() {
         for (int i = 0; i < this.gridSize; i++) {
             for (int j = 0; j < this.gridSize; j++) {
                 if (this.grid[i][j] instanceof Residential && ((Residential) this.grid[i][j]).areSpacesLeft() && isNextToARoad(new Point(i, j))) {
@@ -707,7 +733,7 @@ public class GameModel implements InGameTimeTickListener {
         return null;
     }
 
-    public boolean isNextToARoad(Point point) {
+    private boolean isNextToARoad(Point point) {
         int x = point.x;
         int y = point.y;
 
@@ -734,7 +760,13 @@ public class GameModel implements InGameTimeTickListener {
 //        System.out.println("Current money : " + finance.getCurrentWealth());
         //System.out.println("******************");
         if (this.inGameTime.getInGameDay() > 0 && this.inGameTime.getInGameDay() % 20 == 0 && this.inGameTime.getInGameHour() == 0) {
-            welcomeNewInhabitants();
+            if (isMoodGoodEnough()) {
+                welcomeNewInhabitants();
+//                System.out.println("ADD");
+            } else {
+                departInhabitants();
+//                System.out.println("REMOVE");
+            }
         }
         if (this.inGameTime.getInGameYear() > 0 && this.inGameTime.getInGameDay() == 0 && this.inGameTime.getInGameHour() == 0) {
             //triggers new year tax collection
