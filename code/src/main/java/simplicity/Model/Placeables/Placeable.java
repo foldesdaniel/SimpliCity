@@ -53,4 +53,8 @@ public abstract class Placeable {
         return this.type.name() + "(" + this.position.x + "," + this.position.y + ")";
     }
 
+    public Dimension getSize(){
+        return new Dimension(1, 1);
+    }
+
 }

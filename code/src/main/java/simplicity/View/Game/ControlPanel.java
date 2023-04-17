@@ -2,6 +2,7 @@ package simplicity.View.Game;
 
 import simplicity.Model.GameModel;
 import simplicity.Model.Placeables.Placeable;
+import simplicity.View.Style.CFont;
 
 import javax.swing.*;
 import java.awt.*;
@@ -14,7 +15,7 @@ public class ControlPanel extends JPanel {
     private final BuildTab buildTab;
     private final JPanel container;
     private boolean infoTabShowing = true;
-    private final Font font; // temporary
+    private final Font font;
     private final GameModel model;
 
     public ControlPanel() {
@@ -26,7 +27,7 @@ public class ControlPanel extends JPanel {
         GridBagConstraints gbc = new GridBagConstraints();
         this.setLayout(new GridBagLayout());
         JPanel btnContainer = new JPanel();
-        font = GameModel.CUSTOM_FONT.deriveFont(Font.PLAIN, 18);
+        font = CFont.get(Font.PLAIN, 22);
         infoBtn = new JButton("infobtn");
         buildBtn = new JButton("buildbtn");
         infoBtn.setFont(font);
@@ -39,6 +40,7 @@ public class ControlPanel extends JPanel {
         btnContainer.add(infoBtn);
         btnContainer.add(buildBtn);
         this.add(btnContainer, GamePanel.changeGbc(gbc, 0, 0, 1, 1, 1, 0));
+        this.add(Box.createRigidArea(new Dimension(0, 16)));
         this.add(container, GamePanel.changeGbc(gbc, 1, 0, 1, 1, 1, 1));
     }
 

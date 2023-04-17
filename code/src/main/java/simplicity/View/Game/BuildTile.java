@@ -2,6 +2,7 @@ package simplicity.View.Game;
 
 import simplicity.Model.GameModel;
 import simplicity.Model.Placeables.Placeable;
+import simplicity.View.Style.CFont;
 
 import javax.swing.*;
 import java.awt.*;
@@ -20,8 +21,7 @@ public class BuildTile extends JPanel {
     public BuildTile(Class pl) {
         this.placeable = newInstance(pl);
         this.nameLabel = new JLabel(this.placeable.getDisplayName());
-        Font font = GameModel.CUSTOM_FONT.deriveFont(Font.PLAIN, 18);
-        this.nameLabel.setFont(font);
+        this.nameLabel.setFont(CFont.get(Font.PLAIN, 20));
         this.nameLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         BuildTileImage img = new BuildTileImage();
         this.add(img);
@@ -39,18 +39,14 @@ public class BuildTile extends JPanel {
             }
             @Override
             public void mouseEntered(MouseEvent e) {
-                if(!GamePanel.isPlacing()){
-                    setCursor(cursorHand);
-                    isHovering = true;
-                    repaint();
-                }
+                isHovering = true;
+                if(!GamePanel.isPlacing()) setCursor(cursorHand);
+                repaint();
             }
             @Override
             public void mouseExited(MouseEvent e) {
-                if(!GamePanel.isPlacing()) {
-                    isHovering = false;
-                    repaint();
-                }
+                isHovering = false;
+                repaint();
             }
         });
         // this.setPreferredSize(new Dimension(imageSize.width, imageSize.height + nameLabel.getFont().getSize()*2));
