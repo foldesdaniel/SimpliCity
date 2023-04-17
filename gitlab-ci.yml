@@ -12,9 +12,9 @@ cache:
 build:
   stage: build
   script:
-    - mvn compile
+    - cd code && mvn compile
 
 test:
   stage: test
   script:
-    - mvn test
+    - cd code && mvn test
