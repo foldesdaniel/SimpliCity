@@ -5,6 +5,7 @@ import simplicity.Model.GameTime.InGameSpeeds;
 import simplicity.Model.GameTime.InGameTime;
 import simplicity.Model.GameTime.InGameTimeManager;
 import simplicity.Model.Listeners.InGameTimeListener;
+import simplicity.View.Style.CFont;
 
 import javax.swing.*;
 import java.awt.*;
@@ -18,7 +19,7 @@ public class TopRightBar extends JPanel implements InGameTimeListener {
     private final InGameTime inGameTime = InGameTimeManager.getInstance().getInGameTime();
 
     public TopRightBar(){
-        Font font = GameModel.CUSTOM_FONT.deriveFont(Font.PLAIN, 18);
+        Font font = CFont.get();
         timeLabel = new JLabel();
         timeLabel.setFont(font);
         this.add(timeLabel);

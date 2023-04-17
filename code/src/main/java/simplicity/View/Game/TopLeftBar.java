@@ -1,6 +1,7 @@
 package simplicity.View.Game;
 
 import simplicity.Model.GameModel;
+import simplicity.View.Style.CFont;
 
 import javax.swing.*;
 import java.awt.*;
@@ -11,8 +12,7 @@ public class TopLeftBar extends JPanel {
 
     public TopLeftBar(){
         JLabel tempLabel = new JLabel("Top left panel");
-        Font font = GameModel.CUSTOM_FONT.deriveFont(Font.PLAIN, 18);
-        tempLabel.setFont(font);
+        tempLabel.setFont(CFont.get());
         this.add(tempLabel);
         this.setBackground(new Color(50, 50, 50));
     }

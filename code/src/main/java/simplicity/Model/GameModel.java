@@ -13,6 +13,7 @@ import simplicity.Model.GameTime.InGameTimeManager;
 import simplicity.Model.Listeners.InGameTimeTickListener;
 import simplicity.Model.Listeners.MoralChangeListener;
 import simplicity.Model.Listeners.PeopleChangeListener;
+import simplicity.Model.Listeners.WealthChangeListener;
 import simplicity.Model.Person.Person;
 import simplicity.Model.Placeables.*;
 import simplicity.Model.Resource.ResourceLoader;
@@ -71,6 +72,7 @@ public class GameModel implements InGameTimeTickListener {
     private int uniPercentage;
     private final ArrayList<MoralChangeListener> moralListeners = new ArrayList<>();
     private final ArrayList<PeopleChangeListener> peopleChangeListeners = new ArrayList<>();
+    private final ArrayList<WealthChangeListener> wealthListeners = new ArrayList<>();
     @Getter
     private int cityMood = 50;
     private Placeable grid[][];
@@ -182,8 +184,30 @@ public class GameModel implements InGameTimeTickListener {
         return false;
     }
 
+    public boolean canPlace(Placeable p, Point position){
+        int x = position.x;
+        int y = position.y;
+        int width = p.getSize().width;
+        int height = p.getSize().height;
+        if(x + width > gridSize || y - (height - 1) < 0) {
+            System.out.println("cant place 1");
+            return false;
+        }
+        for(int i=0;i<p.getSize().height;i++) {
+            for (int j = 0; j < p.getSize().width; j++) {
+                if (grid[x + j][y - i] != null) {
+                    System.out.println("cant place 2");
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
     public void placeStadium(Point position) {
-        grid[position.x][position.y] = new Stadium(position);
+        Stadium pl = new Stadium(position);
+        if(!canPlace(pl, position)) return;
+        grid[position.x][position.y] = pl;
         int r = new Stadium(new Point(-1, -1)).getRadius();
         int price = new Stadium(new Point(-1, -1)).getBuildPrice();
         int maintenanceCost = new Stadium(new Point(-1, -1)).getMaintenanceCost();
@@ -209,6 +233,7 @@ public class GameModel implements InGameTimeTickListener {
                 }
             }
         }
+        for(WealthChangeListener l : this.wealthListeners) l.onWealthChange();
     }
 
     public void removeStadium(Point position) {
@@ -238,7 +263,9 @@ public class GameModel implements InGameTimeTickListener {
     }
 
     public void placePolice(Point position) {
-        grid[position.x][position.y] = new Police(position);
+        Police pl = new Police(position);
+        if(!canPlace(pl, position)) return;
+        grid[position.x][position.y] = pl;
         int r = new Police(new Point(-1, -1)).getRadius();
         int price = new Police(new Point(-1, -1)).getBuildPrice();
         int maintenanceCost = new Police(new Point(-1, -1)).getMaintenanceCost();
@@ -259,6 +286,7 @@ public class GameModel implements InGameTimeTickListener {
                 }
             }
         }
+        for(WealthChangeListener l : this.wealthListeners) l.onWealthChange();
     }
 
     public void removePolice(Point position) {
@@ -290,7 +318,9 @@ public class GameModel implements InGameTimeTickListener {
     //todo : place/remove road, forest, service, residential, school, university and finish industrial
 
     public void placeIndustrial(Point position) {
-        grid[position.x][position.y] = new Industrial(position);
+        Industrial pl = new Industrial(position);
+        if(!canPlace(pl, position)) return;
+        grid[position.x][position.y] = pl;
         int r = 5;
         int price = new Industrial(new Point(-1, -1)).getBuildPrice();
         finance.removeMoney(price);
@@ -307,6 +337,7 @@ public class GameModel implements InGameTimeTickListener {
                 }
             }
         }
+        for(WealthChangeListener l : this.wealthListeners) l.onWealthChange();
     }
 
     public void removeIndustrial(Point position) {
@@ -327,7 +358,9 @@ public class GameModel implements InGameTimeTickListener {
     }
 
     public void placeRoad(Point position) {
-        grid[position.x][position.y] = new Road(position);
+        Road pl = new Road(position);
+        if(!canPlace(pl, position)) return;
+        grid[position.x][position.y] = pl;
         int price = new Road(new Point(-1, -1)).getBuildPrice();
         finance.removeMoney(price);
         int maintenanceCost = new Road(new Point(-1, -1)).getMaintenanceCost();
@@ -344,6 +377,7 @@ public class GameModel implements InGameTimeTickListener {
                 }
             }
         }
+        for(WealthChangeListener l : this.wealthListeners) l.onWealthChange();
     }
 
     public Boolean removeRoad(Point position) {
@@ -374,10 +408,13 @@ public class GameModel implements InGameTimeTickListener {
     }
 
     public void placeService(Point position) {
-        grid[position.x][position.y] = new Service(position);
+        Service pl = new Service(position);
+        if(!canPlace(pl, position)) return;
+        grid[position.x][position.y] = pl;
         int price = new Service(new Point(-1, -1)).getBuildPrice();
         finance.removeMoney(price);
         finance.addBuilt(price, "Szolgáltatási zóna kijelölés");
+        for(WealthChangeListener l : this.wealthListeners) l.onWealthChange();
     }
 
     public void removeService(Point position) {
@@ -385,10 +422,13 @@ public class GameModel implements InGameTimeTickListener {
     }
 
     public void placeResidential(Point position) {
-        grid[position.x][position.y] = new Residential(position);
+        Residential pl = new Residential(position);
+        if(!canPlace(pl, position)) return;
+        grid[position.x][position.y] = pl;
         int price = new Residential(new Point(-1, -1)).getBuildPrice();
         finance.removeMoney(price);
         finance.addBuilt(price, "Lakóhely zóna kijelölés");
+        for(WealthChangeListener l : this.wealthListeners) l.onWealthChange();
     }
 
     public void removeResidential(Point position) {
@@ -396,12 +436,15 @@ public class GameModel implements InGameTimeTickListener {
     }
 
     public void placeSchool(Point position) {
-        grid[position.x][position.y] = new School(position);
+        School pl = new School(position);
+        if(!canPlace(pl, position)) return;
+        grid[position.x][position.y] = pl;
         int price = new School(new Point(-1, -1)).getBuildPrice();
         int maintenanceCost = new School(new Point(-1, -1)).getMaintenanceCost();
         finance.removeMoney(price);
         finance.addBuilt(price, "Iskola építés");
         finance.addYearlySpend(maintenanceCost, "Iskola fenntartási díj");
+        for(WealthChangeListener l : this.wealthListeners) l.onWealthChange();
     }
 
     public void removeSchool(Point position) {
@@ -412,9 +455,11 @@ public class GameModel implements InGameTimeTickListener {
     }
 
     public void placeForest(Point position) {
-        //grid[position.x][position.y] = new Forest(position);
+        Forest pl = new Forest(position);
+        if(!canPlace(pl, position)) return;
+        grid[position.x][position.y] = pl;
         //finance
-
+        for(WealthChangeListener l : this.wealthListeners) l.onWealthChange();
     }
 
     public void removeForest(Point position) {
@@ -422,8 +467,11 @@ public class GameModel implements InGameTimeTickListener {
     }
 
     public void placeUniversity(Point position) {
-        grid[position.x][position.y] = new University(position);
+        University pl = new University(position);
+        if(!canPlace(pl, position)) return;
+        grid[position.x][position.y] = pl;
         finance.removeMoney(new University(new Point(-1, -1)).getBuildPrice());
+        for(WealthChangeListener l : this.wealthListeners) l.onWealthChange();
     }
 
     public void removeUniversity(Point position) {
@@ -696,6 +744,14 @@ public class GameModel implements InGameTimeTickListener {
         this.peopleChangeListeners.add(l);
     }
 
+    public void addWealthChangeListener(WealthChangeListener l){
+        this.wealthListeners.add(l);
+    }
+
+    public int getCurrentWealth(){
+        return this.finance.getCurrentWealth();
+    }
+
     private void changeMoodOfPeople() {
         if (this.finance.getCurrentWealth() < -10000) {
             this.finance.setProfitableYearsInARow(this.finance.getProfitableYearsInARow() - 1);
@@ -834,5 +890,6 @@ public class GameModel implements InGameTimeTickListener {
             //and city mood change
             changeMoodOfPeople();
         }
+        for(WealthChangeListener l : this.wealthListeners) l.onWealthChange();
     }
 }

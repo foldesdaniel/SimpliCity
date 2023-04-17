@@ -16,4 +16,9 @@ public class Stadium extends Building {
         return GameModel.STADIUM_IMG;
     }
 
+    @Override
+    public Dimension getSize(){
+        return new Dimension(2, 2);
+    }
+
 }

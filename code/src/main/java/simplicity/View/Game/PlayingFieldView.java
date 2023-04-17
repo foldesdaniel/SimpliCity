@@ -1,8 +1,10 @@
 package simplicity.View.Game;
 
+import simplicity.Model.Education.School;
 import simplicity.Model.Listeners.FieldClickListener;
 import simplicity.Model.GameModel;
-import simplicity.Model.Placeables.Placeable;
+import simplicity.Model.Placeables.*;
+import simplicity.Model.Placeables.Zones.*;
 import simplicity.View.Listeners.MouseAdapter;
 import simplicity.View.Style.InsetShadowBorder;
 
@@ -151,10 +153,11 @@ public class PlayingFieldView extends JPanel implements MouseListener, MouseMoti
             int selOffset = (int) Math.round(fieldSize * mult2);
             Dimension selectionSize = new Dimension(1,1);
             if(GamePanel.isPlacing()){
-                Image img = GamePanel.getPlacee().getImage();
+                Placeable placee = GamePanel.getPlacee();
+                Image img = placee.getImage();
                 // selectionSize = ...;
                 g.drawImage(img, offsetX + fieldSize * hoverField.x, offsetY + fieldSize * hoverField.y, fieldSize, fieldSize, null);
-                if(true){ // if can place
+                if(model.canPlace(placee, hoverField)){ // if can place
                     g.drawImage(GameModel.SELECTION_VALID_IMG, offsetX + (fieldSize * hoverField.x) - selOffset, offsetY + (fieldSize * hoverField.y) - selOffset, multSize, multSize, null);
                 }else{
                     g.drawImage(GameModel.SELECTION_INVALID_IMG, offsetX + (fieldSize * hoverField.x) - selOffset, offsetY + (fieldSize * hoverField.y) - selOffset, multSize, multSize, null);
@@ -188,7 +191,26 @@ public class PlayingFieldView extends JPanel implements MouseListener, MouseMoti
         boolean fieldHit = hoverField != GameModel.NO_SELECTION;
         if(GamePanel.isPlacing()){
             Placeable placee = GamePanel.stopPlacing();
-            model.gridPlace(placee, hoverField.x, hoverField.y);
+            if(placee instanceof Residential){
+                model.placeResidential(hoverField);
+            }else if(placee instanceof Service){
+                model.placeService(hoverField);
+            }else if(placee instanceof Industrial){
+                model.placeIndustrial(hoverField);
+            }else if(placee instanceof Road){
+                model.placeRoad(hoverField);
+            }else if(placee instanceof Police){
+                model.placePolice(hoverField);
+            }else if(placee instanceof Stadium){
+                model.placeStadium(hoverField);
+            }else if(placee instanceof School){
+                model.placeSchool(hoverField);
+            }else if(placee instanceof Service){
+                model.placeUniversity(hoverField);
+            }else if(placee instanceof Forest){
+                model.placeForest(hoverField);
+            }
+            //model.gridPlace(placee, hoverField.x, hoverField.y);
             this.repaint();
         }else{
             fieldClickListener.fieldClicked(fieldHit ? model.grid(hoverField.x,hoverField.y) : null);
