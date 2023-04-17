@@ -198,6 +198,7 @@ public class GameModel implements InGameTimeTickListener {
                         if (grid[i][j].getType() == FieldType.ZONE_RESIDENTIAL) {
                             for (Person p : ((Residential) grid[i][j]).getPeople()) {
                                 calculateMood(p);
+                                //boostMood(p, 5); TODO howManyStadium
                             }
                         } else if (grid[i][j].getType() == FieldType.ZONE_INDUSTRIAL || grid[i][j].getType() == FieldType.ZONE_SERVICE) {
                             for (Person p : ((Workplace) grid[i][j]).getPeople()) {
@@ -589,9 +590,13 @@ public class GameModel implements InGameTimeTickListener {
         return false;
     }
 
+    private void boostMood(Person p, int boost) {
+        p.setBoostMood(p.getBoostMood() + boost);
+    }
+
     private void calculateMood(Person person) {
         //TODO refactor
-        person.setMood(0);
+        person.setMood(40);
         if (searchForStadium(person)) {
             person.setMood(person.getMood() + 5);
         }
@@ -599,7 +604,7 @@ public class GameModel implements InGameTimeTickListener {
             person.setMood(person.getMood() + 5);
         }
         if (searchForIndustrial(person)) {
-            person.setMood(person.getMood() + 5);
+            person.setMood(person.getMood() - 5);
         }
         {
             if (getWorkplaceDistance(person) < 6) person.setMood(person.getMood() + 5);
