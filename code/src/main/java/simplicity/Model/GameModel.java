@@ -346,13 +346,17 @@ public class GameModel implements InGameTimeTickListener {
     }
 
     public Boolean removeRoad(Point position) {
-        // TODO refactor
         for (int i = 0; i < gridSize; ++i) {
             for (int j = 0; j < gridSize; ++j) {
                 if (grid[i][j] != null && grid[i][j].getType() == FieldType.ZONE_RESIDENTIAL) {
                     for (Person p : ((Residential)grid[i][j]).getPeople()) {
                         if (p.getWorkplace() != null) {
                             if (!canRoadBeDestroyed(grid[i][j], grid[p.getWorkplace().getPosition().x][p.getWorkplace().getPosition().y], grid[position.x][position.y])) {
+                                return false;
+                            }
+                        }
+                        else if (p.getEducation() != null) {
+                            if (!canRoadBeDestroyed(grid[i][j], grid[p.getEducation().getPosition().x][p.getEducation().getPosition().y], grid[position.x][position.y])) {
                                 return false;
                             }
                         }
