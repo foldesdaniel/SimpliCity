@@ -122,6 +122,45 @@ public class GameModel implements InGameTimeTickListener {
 
     }
 
+    private int countStadium(Point position) {
+        int count = 0;
+        int r = new Stadium(new Point(-1, -1)).getRadius();
+
+        for (int i = position.x - r; i <= position.x + r; ++i) {
+            for (int j = position.y - r; j <= position.y + r; ++j) {
+                if (grid[i][j] != null && grid[i][j].getType() == FieldType.STADIUM) count++;
+            }
+        }
+
+        return count;
+    }
+
+    private int countPolice(Point position) {
+        int count = 0;
+        int r = new Police(new Point(-1, -1)).getRadius();
+
+        for (int i = position.x - r; i <= position.x + r; ++i) {
+            for (int j = position.y - r; j <= position.y + r; ++j) {
+                if (grid[i][j] != null && grid[i][j].getType() == FieldType.POLICE) count++;
+            }
+        }
+
+        return count;
+    }
+
+    private int countIndustrial(Point position) {
+        int count = 0;
+        int r = 5;
+
+        for (int i = position.x - r; i <= position.x + r; ++i) {
+            for (int j = position.y - r; j <= position.y + r; ++j) {
+                if (grid[i][j] != null && grid[i][j].getType() == FieldType.ZONE_INDUSTRIAL) count++;
+            }
+        }
+
+        return count;
+    }
+
     public Placeable grid(int i, int j){
         return this.grid[i][j];
     }
@@ -197,12 +236,13 @@ public class GameModel implements InGameTimeTickListener {
                     if (grid[i][j] != null) {
                         if (grid[i][j].getType() == FieldType.ZONE_RESIDENTIAL) {
                             for (Person p : ((Residential) grid[i][j]).getPeople()) {
-                                calculateMood(p);
-                                //boostMood(p, 5); TODO howManyStadium
+                                //calculateMood(p);
+                                boostMood(p, 5);
                             }
                         } else if (grid[i][j].getType() == FieldType.ZONE_INDUSTRIAL || grid[i][j].getType() == FieldType.ZONE_SERVICE) {
                             for (Person p : ((Workplace) grid[i][j]).getPeople()) {
-                                calculateMood(p);
+                                //calculateMood(p);
+                                boostMood(p, 5);
                             }
                         }
                     }
@@ -224,11 +264,13 @@ public class GameModel implements InGameTimeTickListener {
                     if (grid[i][j] != null) {
                         if (grid[i][j].getType() == FieldType.ZONE_RESIDENTIAL) {
                             for (Person p : ((Residential) grid[i][j]).getPeople()) {
-                                calculateMood(p);
+                                //calculateMood(p);
+                                boostMood(p, -5);
                             }
                         } else if (grid[i][j].getType() == FieldType.ZONE_INDUSTRIAL || grid[i][j].getType() == FieldType.ZONE_SERVICE) {
                             for (Person p : ((Workplace) grid[i][j]).getPeople()) {
-                                calculateMood(p);
+                                //calculateMood(p);
+                                boostMood(p, -5);
                             }
                         }
                     }
@@ -252,7 +294,8 @@ public class GameModel implements InGameTimeTickListener {
                     if (grid[i][j] != null) {
                         if (grid[i][j].getType() == FieldType.ZONE_RESIDENTIAL) {
                             for (Person p : ((Residential) grid[i][j]).getPeople()) {
-                                calculateMood(p);
+                                //calculateMood(p);
+                                boostMood(p, 5);
                             }
                         }
                     }
@@ -274,11 +317,13 @@ public class GameModel implements InGameTimeTickListener {
                     if (grid[i][j] != null) {
                         if (grid[i][j].getType() == FieldType.ZONE_RESIDENTIAL) {
                             for (Person p : ((Residential) grid[i][j]).getPeople()) {
-                                calculateMood(p);
+                                //calculateMood(p);
+                                boostMood(p, -5);
                             }
                         } else if (grid[i][j].getType() == FieldType.ZONE_INDUSTRIAL || grid[i][j].getType() == FieldType.ZONE_SERVICE) {
                             for (Person p : ((Workplace) grid[i][j]).getPeople()) {
-                                calculateMood(p);
+                                //calculateMood(p);
+                                boostMood(p, -5);
                             }
                         }
                     }
@@ -301,7 +346,8 @@ public class GameModel implements InGameTimeTickListener {
                 if (i >= 0 && j >= 0 && i < gridSize && j < gridSize) {
                     if (grid[i][j] != null && grid[i][j].getType() == FieldType.ZONE_RESIDENTIAL) {
                         for (Person p : ((Residential) grid[i][j]).getPeople()) {
-                            calculateMood(p);
+                            //calculateMood(p);
+                            boostMood(p, -5);
                         }
                     }
                 }
@@ -318,7 +364,8 @@ public class GameModel implements InGameTimeTickListener {
                 if (i >= 0 && j >= 0 && i < gridSize && j < gridSize) {
                     if (grid[i][j] != null && grid[i][j].getType() == FieldType.ZONE_RESIDENTIAL) {
                         for (Person p : ((Residential) grid[i][j]).getPeople()) {
-                            calculateMood(p);
+                            //calculateMood(p);
+                            boostMood(p, 5);
                         }
                     }
                 }
@@ -339,7 +386,7 @@ public class GameModel implements InGameTimeTickListener {
             for (int j = 0; j < gridSize; ++j) {
                 if (grid[i][j] != null && grid[i][j].getType() == FieldType.ZONE_RESIDENTIAL) {
                     for (Person p : ((Residential) grid[i][j]).getPeople()) {
-                        calculateMood(p);
+                        //calculateMood(p); TODO
                     }
                 }
             }
@@ -596,20 +643,29 @@ public class GameModel implements InGameTimeTickListener {
 
     private void calculateMood(Person person) {
         //TODO refactor
-        person.setMood(40);
-        if (searchForStadium(person)) {
-            person.setMood(person.getMood() + 5);
+        /*if (searchForStadium(person)) {
+            //person.setMood(person.getMood() + 5);
+            person.setBoostMood(5);
         }
         if (searchForPolice(person)) {
-            person.setMood(person.getMood() + 5);
+            //person.setMood(person.getMood() + 5);
+            person.setBoostMood(5);
         }
         if (searchForIndustrial(person)) {
-            person.setMood(person.getMood() - 5);
-        }
+            //person.setMood(person.getMood() - 5);
+            person.setBoostMood(-5);
+        }*/
+        int count = countStadium(person.getHome().getPosition());
+        person.setBoostMood(count);
+        count = countPolice(person.getHome().getPosition());
+        person.setBoostMood(count);
+        count = countIndustrial(person.getHome().getPosition());
+        person.setBoostMood(-count);
         {
             if (getWorkplaceDistance(person) < 6) person.setMood(person.getMood() + 5);
             else if (getWorkplaceDistance(person) < 12) person.setMood(person.getMood() + 3);
             else person.setMood(person.getMood() + 1);
+            //todo: apply only when person has workplace
         }
 
         //todo : searchForForest && boost mood based on tax

@@ -49,6 +49,10 @@ public class Person implements InGameTimeTickListener {
         moveIn(home);
     }
 
+    public int getMood() {
+        return mood + boostMood;
+    }
+
     public void goToSchool(Education placeOfEducation) {
 
         if (placeOfEducation.areSpacesLeft() && !placeOfEducation.getPeople().contains(this)) {
