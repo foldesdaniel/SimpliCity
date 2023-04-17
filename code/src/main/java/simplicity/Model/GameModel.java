@@ -91,9 +91,9 @@ public class GameModel implements InGameTimeTickListener {
         //Initialize grid
         this.initGrid();
 
-        for (int i = 0; i < 10; i++) {
+        /*for (int i = 0; i < 10; i++) {
             this.people.add(new Person());
-        }
+        }*/
 
         //TESTING feature/14_mood
         this.printGrid();
@@ -128,7 +128,9 @@ public class GameModel implements InGameTimeTickListener {
 
         for (int i = position.x - r; i <= position.x + r; ++i) {
             for (int j = position.y - r; j <= position.y + r; ++j) {
-                if (grid[i][j] != null && grid[i][j].getType() == FieldType.STADIUM) count++;
+                if (i >= 0 && j >= 0 && i < gridSize && j < gridSize) {
+                    if (grid[i][j] != null && grid[i][j].getType() == FieldType.STADIUM) count++;
+                }
             }
         }
 
@@ -141,7 +143,9 @@ public class GameModel implements InGameTimeTickListener {
 
         for (int i = position.x - r; i <= position.x + r; ++i) {
             for (int j = position.y - r; j <= position.y + r; ++j) {
-                if (grid[i][j] != null && grid[i][j].getType() == FieldType.POLICE) count++;
+                if (i >= 0 && j >= 0 && i < gridSize && j < gridSize) {
+                    if (grid[i][j] != null && grid[i][j].getType() == FieldType.POLICE) count++;
+                }
             }
         }
 
@@ -154,7 +158,9 @@ public class GameModel implements InGameTimeTickListener {
 
         for (int i = position.x - r; i <= position.x + r; ++i) {
             for (int j = position.y - r; j <= position.y + r; ++j) {
-                if (grid[i][j] != null && grid[i][j].getType() == FieldType.ZONE_INDUSTRIAL) count++;
+                if (i >= 0 && j >= 0 && i < gridSize && j < gridSize) {
+                    if (grid[i][j] != null && grid[i][j].getType() == FieldType.ZONE_INDUSTRIAL) count++;
+                }
             }
         }
 
@@ -803,17 +809,14 @@ public class GameModel implements InGameTimeTickListener {
             }
         }
         double incomingNewPeople = (freeSpace * (cityMood / 100.0));
+        System.out.println(incomingNewPeople);
         for (int i = 0; i < (int) incomingNewPeople; i++) {
-            this.people.add(new Person(findHome()));
+            Person tmp = new Person(findHome());
+            calculateMood(tmp);
+            this.people.add(tmp);
             for(PeopleChangeListener l : peopleChangeListeners) l.onPeopleCountChange();
         }
-        for (int i = 0; i < this.people.size(); i++) {
-            //TODO overpowered function
-            calculateMood(this.people.get(i));
-        }
-        //System.out.println("PEOPLE SIZE: " + this.people.size());
-        //System.out.println(freeSpace + " free space");
-        //System.out.println(incomingNewPeople + " incoming new people");
+        System.out.println(this.people.size());
     }
 
     private void departInhabitants() {
