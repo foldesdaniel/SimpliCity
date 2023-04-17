@@ -809,7 +809,7 @@ public class GameModel implements InGameTimeTickListener {
         }
         for (int i = 0; i < this.people.size(); i++) {
             //TODO overpowered function
-//            calculateMood(this.people.get(i));
+            calculateMood(this.people.get(i));
         }
         //System.out.println("PEOPLE SIZE: " + this.people.size());
         //System.out.println(freeSpace + " free space");
