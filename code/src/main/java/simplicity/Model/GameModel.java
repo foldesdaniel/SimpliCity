@@ -30,6 +30,7 @@ public class GameModel implements InGameTimeTickListener {
     private static GameModel instance;
 
     public static final String GAME_TITLE = "SimpliCity";
+    public static final Image BACKGROUND_IMG = ResourceLoader.loadImage("bg_temp.jpg");
     public static final Image MISSING_IMG = ResourceLoader.loadImage("missing.png");
     public static final Image GRASS_IMG = ResourceLoader.loadImage("grass.png");
     public static final Image SELECTION_IMG = ResourceLoader.loadImage("selection.png");
@@ -98,7 +99,7 @@ public class GameModel implements InGameTimeTickListener {
         }
 
         //TESTING feature/14_mood
-        this.printGrid();
+        //this.printGrid();
 
         grid[0][0] = new Residential(new Point(0, 0));
         grid[1][0] = new Residential(new Point(1, 0));
@@ -184,18 +185,41 @@ public class GameModel implements InGameTimeTickListener {
         return false;
     }
 
+    private boolean[][] freeSpaces(){
+        boolean[][] spaces = new boolean[this.gridSize][this.gridSize];
+        for(int i=0;i<gridSize;i++){
+            for(int j=0;j<gridSize;j++){
+                spaces[i][j] = true;
+            }
+        }
+        for(int i=0;i<gridSize;i++){
+            for(int j=0;j<gridSize;j++){
+                Placeable p = this.grid[j][i];
+                if (p != null) {
+                    int width = p.getSize().width;
+                    int height = p.getSize().height;
+                    for(int ii=0;ii<height;ii++) {
+                        for (int jj = 0; jj < width; jj++) {
+                            spaces[i - ii][j + jj] = false;
+                        }
+                    }
+                }
+            }
+        }
+        return spaces;
+    }
+
     public boolean canPlace(Placeable p, Point position){
         int x = position.x;
         int y = position.y;
         int width = p.getSize().width;
         int height = p.getSize().height;
-        if(x + width > gridSize || y - (height - 1) < 0) {
-            System.out.println("cant place 1");
-            return false;
-        }
+        if(x + width > gridSize || y - (height - 1) < 0) return false;
+        boolean[][] freeSpaces = this.freeSpaces();
         for(int i=0;i<p.getSize().height;i++) {
             for (int j = 0; j < p.getSize().width; j++) {
-                if (grid[x + j][y - i] != null) {
+                //if (grid[x + j][y - i] != null) {
+                if (!freeSpaces[y - i][x + j]) {
                     System.out.println("cant place 2");
                     return false;
                 }
@@ -204,10 +228,22 @@ public class GameModel implements InGameTimeTickListener {
         return true;
     }
 
+    private void fillTemps(Placeable p, Point position){
+        Dimension size = p.getSize();
+        if(size.width == 1 && size.height == 1) return;
+        for (int i = 0; i < size.height; i++) {
+            for (int j = 0; j < size.width; j++) {
+                if (i == 0 && j == 0) continue;
+                this.grid[position.x + j][position.y - i] = new PlaceableTemp(p);
+            }
+        }
+    }
+
     public void placeStadium(Point position) {
         Stadium pl = new Stadium(position);
         if(!canPlace(pl, position)) return;
         grid[position.x][position.y] = pl;
+        fillTemps(pl, position);
         int r = new Stadium(new Point(-1, -1)).getRadius();
         int price = new Stadium(new Point(-1, -1)).getBuildPrice();
         int maintenanceCost = new Stadium(new Point(-1, -1)).getMaintenanceCost();
@@ -266,6 +302,7 @@ public class GameModel implements InGameTimeTickListener {
         Police pl = new Police(position);
         if(!canPlace(pl, position)) return;
         grid[position.x][position.y] = pl;
+        fillTemps(pl, position);
         int r = new Police(new Point(-1, -1)).getRadius();
         int price = new Police(new Point(-1, -1)).getBuildPrice();
         int maintenanceCost = new Police(new Point(-1, -1)).getMaintenanceCost();
@@ -321,6 +358,7 @@ public class GameModel implements InGameTimeTickListener {
         Industrial pl = new Industrial(position);
         if(!canPlace(pl, position)) return;
         grid[position.x][position.y] = pl;
+        fillTemps(pl, position);
         int r = 5;
         int price = new Industrial(new Point(-1, -1)).getBuildPrice();
         finance.removeMoney(price);
@@ -361,6 +399,7 @@ public class GameModel implements InGameTimeTickListener {
         Road pl = new Road(position);
         if(!canPlace(pl, position)) return;
         grid[position.x][position.y] = pl;
+        fillTemps(pl, position);
         int price = new Road(new Point(-1, -1)).getBuildPrice();
         finance.removeMoney(price);
         int maintenanceCost = new Road(new Point(-1, -1)).getMaintenanceCost();
@@ -411,6 +450,7 @@ public class GameModel implements InGameTimeTickListener {
         Service pl = new Service(position);
         if(!canPlace(pl, position)) return;
         grid[position.x][position.y] = pl;
+        fillTemps(pl, position);
         int price = new Service(new Point(-1, -1)).getBuildPrice();
         finance.removeMoney(price);
         finance.addBuilt(price, "Szolgáltatási zóna kijelölés");
@@ -425,6 +465,7 @@ public class GameModel implements InGameTimeTickListener {
         Residential pl = new Residential(position);
         if(!canPlace(pl, position)) return;
         grid[position.x][position.y] = pl;
+        fillTemps(pl, position);
         int price = new Residential(new Point(-1, -1)).getBuildPrice();
         finance.removeMoney(price);
         finance.addBuilt(price, "Lakóhely zóna kijelölés");
@@ -439,6 +480,7 @@ public class GameModel implements InGameTimeTickListener {
         School pl = new School(position);
         if(!canPlace(pl, position)) return;
         grid[position.x][position.y] = pl;
+        fillTemps(pl, position);
         int price = new School(new Point(-1, -1)).getBuildPrice();
         int maintenanceCost = new School(new Point(-1, -1)).getMaintenanceCost();
         finance.removeMoney(price);
@@ -458,6 +500,7 @@ public class GameModel implements InGameTimeTickListener {
         Forest pl = new Forest(position);
         if(!canPlace(pl, position)) return;
         grid[position.x][position.y] = pl;
+        fillTemps(pl, position);
         //finance
         for(WealthChangeListener l : this.wealthListeners) l.onWealthChange();
     }
@@ -470,6 +513,7 @@ public class GameModel implements InGameTimeTickListener {
         University pl = new University(position);
         if(!canPlace(pl, position)) return;
         grid[position.x][position.y] = pl;
+        fillTemps(pl, position);
         finance.removeMoney(new University(new Point(-1, -1)).getBuildPrice());
         for(WealthChangeListener l : this.wealthListeners) l.onWealthChange();
     }
@@ -733,7 +777,6 @@ public class GameModel implements InGameTimeTickListener {
         if (numOfZones != 0) {
             this.cityMood = cityMood / numOfZones;
         }
-        for(MoralChangeListener l : this.moralListeners) l.onMoralChanged();
     }
 
     public void addMoralChangeListener(MoralChangeListener l){
@@ -891,5 +934,6 @@ public class GameModel implements InGameTimeTickListener {
             changeMoodOfPeople();
         }
         for(WealthChangeListener l : this.wealthListeners) l.onWealthChange();
+        for(MoralChangeListener l : this.moralListeners) l.onMoralChanged();
     }
 }

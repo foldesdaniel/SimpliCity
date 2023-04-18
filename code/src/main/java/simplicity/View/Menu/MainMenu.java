@@ -1,5 +1,6 @@
 package simplicity.View.Menu;
 
+import simplicity.Model.GameModel;
 import simplicity.Model.Listeners.MenuEventListener;
 import simplicity.Model.Listeners.StartGameListener;
 import simplicity.View.GameWindow;
@@ -263,5 +264,11 @@ public class MainMenu extends JPanel {
             for(MenuEventListener l : menuEventListeners) l.changedWindowed(width, height);
         }
         displayButtons();
+    }
+
+    @Override
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        g.drawImage(GameModel.BACKGROUND_IMG, 0, 0, this.getWidth(), this.getHeight(), null);
     }
 }

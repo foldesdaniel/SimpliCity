@@ -20,7 +20,10 @@ public class BuildTile extends JPanel {
 
     public BuildTile(Class pl) {
         this.placeable = newInstance(pl);
+        //String displayName = "<html><p style=\"text-align:center;margin:0;padding:0;background-color:rgb(200,255,200)\">" + this.placeable.getDisplayName().replaceAll(" ","<br>") + "</p></html>";
+        //this.nameLabel = new JLabel(displayName);
         this.nameLabel = new JLabel(this.placeable.getDisplayName());
+        this.nameLabel.setBackground(new Color(200,255,200));
         this.nameLabel.setFont(CFont.get(Font.PLAIN, 20));
         this.nameLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         BuildTileImage img = new BuildTileImage();
