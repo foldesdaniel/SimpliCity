@@ -12,6 +12,8 @@ import simplicity.Model.Listeners.InGameTimeTickListener;
 import simplicity.Model.Placeables.Workplace;
 import simplicity.Model.Placeables.Zones.Residential;
 
+import java.util.ArrayList;
+
 @AllArgsConstructor
 @Getter
 @Setter
@@ -21,6 +23,7 @@ public class Person implements InGameTimeTickListener {
     private int mood = (int) (Math.random() * 10 + 65);
     private int boostMood = 0;
     private Date age = new Date(18, 0, 0);
+
     private int[] born = new int[]{
             InGameTimeManager.getInstance().getInGameTime().getInGameYear(),
             InGameTimeManager.getInstance().getInGameTime().getInGameDay(),
@@ -51,10 +54,10 @@ public class Person implements InGameTimeTickListener {
     public void goToSchool(Education placeOfEducation) {
 
         if (placeOfEducation.areSpacesLeft() && !placeOfEducation.getPeople().contains(this)) {
-            placeOfEducation.getPeople().add(this);
+            placeOfEducation.addPerson(this);
             InGameTime igt = InGameTimeManager.getInstance().getInGameTime();
             placeOfEducation.getArrivalDates().add(
-                    new Date(igt.getInGameYear(), igt.getInGameDay(), igt.getInGameHour())
+                new Date(igt.getInGameYear(), igt.getInGameDay(), igt.getInGameHour())
             );
             this.education = placeOfEducation;
         }
@@ -62,14 +65,14 @@ public class Person implements InGameTimeTickListener {
 
     public void goToWork(Workplace placeOfWork) {
         if (placeOfWork.areSpacesLeft() && !placeOfWork.getPeople().contains(this)) {
-            placeOfWork.getPeople().add(this);
+            placeOfWork.addPerson(this);
             this.workplace = placeOfWork;
         }
     }
 
     public void moveIn(Residential home) {
         if (home.areSpacesLeft() && !home.getPeople().contains(this)) {
-            home.getPeople().add(this);
+            home.addPerson(this);
             this.home = home;
         }
     }
@@ -82,7 +85,7 @@ public class Person implements InGameTimeTickListener {
             this.age.addToYear(1);
             //if dead
             if (this.age.getYear() == this.lifeExpectancy) {
-                this.workplace.getPeople().remove(this);
+                this.workplace.removePerson(this);
                 this.workplace = null;
                 this.home = null;
                 this.mood = (int) (Math.random() * 10 + 45);

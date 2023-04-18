@@ -32,7 +32,13 @@ public class InfoTab extends JPanel implements PeopleChangeListener, MoralChange
 
     public void updateInfo(Placeable f) {
         this.removeAll();
+        if(this.lastInfo != null && this.lastInfo instanceof Zone z){
+            z.removePeopleChangeListener(this);
+        }
         this.lastInfo = f;
+        if(this.lastInfo != null && this.lastInfo instanceof Zone z){
+            z.addPeopleChangeListener(this);
+        }
         if (f == null) {
             this.init();
         } else {
@@ -73,5 +79,5 @@ public class InfoTab extends JPanel implements PeopleChangeListener, MoralChange
     public void onMoralChanged() {
         updateInfo(this.lastInfo);
     }
-    
+
 }

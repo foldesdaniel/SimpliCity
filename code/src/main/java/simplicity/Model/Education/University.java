@@ -32,7 +32,7 @@ public class University extends Education implements InGameTimeTickListener {
         if (studentIds.size() > 0) {
             studentIds.sort(Collections.reverseOrder());
             studentIds.forEach(index -> this.getArrivalDates().remove((int) index));
-            studentIds.forEach(index -> this.getPeople().remove((int) index));
+            studentIds.forEach(index -> this.removePerson((int) index));
             System.out.println(this.getPeople().size());
             System.out.println(this.getArrivalDates().size());
         }
