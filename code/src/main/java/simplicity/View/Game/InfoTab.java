@@ -26,7 +26,19 @@ public class InfoTab extends JPanel {
         if (f == null) {
             this.init();
         } else {
-            JLabel tempLabel = new JLabel("Info: " + f.toString());
+            Point position = f.getPosition();
+            Image img = f.getImage();
+            String name = f.getDisplayName();
+            Dimension size = f.getDisplaySize();
+            int tax = f.calculateTax();
+            int buildPrice = f.getBuildPrice();
+            JLabel tempLabel = new JLabel("<html>" +
+                "<b>" + name + "</b><br>" +
+                "Position: (" + position.x + "," + position.y + ")<br>" +
+                "Size: " + size.width + "x" + size.height + "<br>" +
+                "Tax: " + tax + "<br>" +
+                "Build price: " + buildPrice
+            + "</html>");
             tempLabel.setFont(CFont.get());
             this.add(tempLabel);
         }

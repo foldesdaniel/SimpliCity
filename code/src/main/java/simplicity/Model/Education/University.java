@@ -62,4 +62,9 @@ public class University extends Education implements InGameTimeTickListener {
         return GameModel.EDUCATION_UNIVERSITY_IMG;
     }
 
+    @Override
+    public Dimension getSize(){
+        return new Dimension(2, 2);
+    }
+
 }

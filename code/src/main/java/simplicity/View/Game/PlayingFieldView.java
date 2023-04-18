@@ -1,6 +1,7 @@
 package simplicity.View.Game;
 
 import simplicity.Model.Education.School;
+import simplicity.Model.Education.University;
 import simplicity.Model.Listeners.FieldClickListener;
 import simplicity.Model.GameModel;
 import simplicity.Model.Placeables.*;
@@ -102,6 +103,15 @@ public class PlayingFieldView extends JPanel implements MouseListener, MouseMoti
                 }
             }
         }
+        for (int i = 0; i < gridSize; i++) {
+            for (int j = 0; j < gridSize; j++) {
+                Point coord = new Point(
+                        fieldSize * i,
+                        fieldSize * j
+                );
+                g.drawImage(GameModel.GRASS_IMG, offsetX + coord.y, offsetY + coord.x, fieldSize, fieldSize, null);
+            }
+        }
         int shadowSize = fieldSize * 2;
         int shadowOpacity = 50;
         int shadowGap = (int)(fieldSize / 4.8);
@@ -133,37 +143,41 @@ public class PlayingFieldView extends JPanel implements MouseListener, MouseMoti
                     fieldSize * i,
                     fieldSize * j
                 );
-                // instead of this, a method of a grid element will be called to determine what image will be used
-                g.drawImage(GameModel.GRASS_IMG, offsetX + coord.y, offsetY + coord.x, fieldSize, fieldSize, null);
+                //if(!(model.grid(j,i) instanceof PlaceableTemp)) g.drawImage(GameModel.GRASS_IMG, offsetX + coord.y, offsetY + coord.x, fieldSize, fieldSize, null);
                 if(model.grid(j,i) != null){
                     Placeable leftNeighbor = (j > 0) ? model.grid(j - 1,i) : null;
                     Placeable rightNeighbor = (j < gridSize - 1) ? model.grid(j + 1,i) : null;
                     Placeable upNeighbor = (i > 0) ? model.grid(j,i - 1) : null;
                     Placeable downNeighbor = (i < gridSize - 1) ? model.grid(j,i + 1) : null;
                     Image img = model.grid(j,i).getImage(leftNeighbor, rightNeighbor, upNeighbor, downNeighbor);
-                    g.drawImage(img, offsetX + coord.y, offsetY + coord.x, fieldSize, fieldSize, null);
+                    Dimension size = model.grid(j,i).getSize();
+                    g.drawImage(img, offsetX + coord.y, offsetY + coord.x - (fieldSize * (size.height - 1)), fieldSize * size.width, fieldSize * size.height, null);
                 }
             }
         }
         g.setColor(Color.BLACK);
         if (hoverField != GameModel.NO_SELECTION) {
+            Placeable p = GamePanel.isPlacing() ? GamePanel.getPlacee() : model.grid(hoverField.x,hoverField.y);
+            Point placeholderPos = (p instanceof PlaceableTemp) ? new Point(hoverField.x - p.getPosition().x, p.getPosition().y - hoverField.y) : new Point(0,0);
+            int placeHolderOffsetX = ((p instanceof PlaceableTemp) ? placeholderPos.x : 0) * fieldSize;
+            int placeHolderOffsetY = ((p instanceof PlaceableTemp) ? placeholderPos.y : 0) * fieldSize;
+            Dimension size = (p == null) ? new Dimension(1,1) : p.getDisplaySize();
             double mult = 26 / 16.0;
-            int multSize = (int) Math.round(fieldSize * mult);
+            int multSizeX = (int) Math.round(fieldSize * size.width * mult);
+            int multSizeY = (int) Math.round(fieldSize * size.height * mult);
             double mult2 = 5 / 16.0;
-            int selOffset = (int) Math.round(fieldSize * mult2);
-            Dimension selectionSize = new Dimension(1,1);
+            int selOffsetX = (int) Math.round(fieldSize * size.width * mult2);
+            int selOffsetY = (int) Math.round(fieldSize * size.height * mult2 + (fieldSize * (size.height - 1)));
             if(GamePanel.isPlacing()){
-                Placeable placee = GamePanel.getPlacee();
-                Image img = placee.getImage();
-                // selectionSize = ...;
-                g.drawImage(img, offsetX + fieldSize * hoverField.x, offsetY + fieldSize * hoverField.y, fieldSize, fieldSize, null);
-                if(model.canPlace(placee, hoverField)){ // if can place
-                    g.drawImage(GameModel.SELECTION_VALID_IMG, offsetX + (fieldSize * hoverField.x) - selOffset, offsetY + (fieldSize * hoverField.y) - selOffset, multSize, multSize, null);
+                Image img = p.getImage();
+                g.drawImage(img, offsetX + fieldSize * hoverField.x, offsetY + fieldSize * (hoverField.y - (size.height - 1)), fieldSize * size.width, fieldSize * size.height, null);
+                if(model.canPlace(p, hoverField)){
+                    g.drawImage(GameModel.SELECTION_VALID_IMG, offsetX + (fieldSize * hoverField.x) - selOffsetX - placeHolderOffsetX, offsetY + (fieldSize * hoverField.y) - selOffsetY + placeHolderOffsetY, multSizeX, multSizeY, null);
                 }else{
-                    g.drawImage(GameModel.SELECTION_INVALID_IMG, offsetX + (fieldSize * hoverField.x) - selOffset, offsetY + (fieldSize * hoverField.y) - selOffset, multSize, multSize, null);
+                    g.drawImage(GameModel.SELECTION_INVALID_IMG, offsetX + (fieldSize * hoverField.x) - selOffsetX - placeHolderOffsetX, offsetY + (fieldSize * hoverField.y) - selOffsetY + placeHolderOffsetY, multSizeX, multSizeY, null);
                 }
             }else{
-                g.drawImage(GameModel.SELECTION_IMG, offsetX + (fieldSize * hoverField.x) - selOffset, offsetY + (fieldSize * hoverField.y) - selOffset, multSize, multSize, null);
+                g.drawImage(GameModel.SELECTION_IMG, offsetX + (fieldSize * hoverField.x) - selOffsetX - placeHolderOffsetX, offsetY + (fieldSize * hoverField.y) - selOffsetY + placeHolderOffsetY, multSizeX, multSizeY, null);
             }
 
             // g.drawRect(offsetX + (fieldSize * hoverField.x), offsetY + (fieldSize * hoverField.y), fieldSize, fieldSize);
@@ -205,7 +219,7 @@ public class PlayingFieldView extends JPanel implements MouseListener, MouseMoti
                 model.placeStadium(hoverField);
             }else if(placee instanceof School){
                 model.placeSchool(hoverField);
-            }else if(placee instanceof Service){
+            }else if(placee instanceof University){
                 model.placeUniversity(hoverField);
             }else if(placee instanceof Forest){
                 model.placeForest(hoverField);

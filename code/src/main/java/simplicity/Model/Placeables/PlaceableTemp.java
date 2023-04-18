@@ -21,12 +21,17 @@ public class PlaceableTemp extends Placeable {
 
     @Override
     public Image getImage(Placeable left, Placeable right, Placeable up, Placeable down) {
-        return placeable.getImage(left, right, up, down);
+        return null;
     }
 
     @Override
     public int hashCode() {
         return placeable.hashCode();
+    }
+
+    @Override
+    public Dimension getDisplaySize(){
+        return placeable.getSize();
     }
 
 }

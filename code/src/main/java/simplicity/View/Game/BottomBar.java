@@ -15,7 +15,6 @@ public class BottomBar extends JPanel implements MoralChangeListener, PeopleChan
     private final JLabel personCountLabel;
     private final JLabel moralLabel;
     private final JLabel wealthLabel;
-    private final JLabel separatorLabel;
     private final GameModel model;
 
     public BottomBar() {
@@ -26,37 +25,32 @@ public class BottomBar extends JPanel implements MoralChangeListener, PeopleChan
         this.personCountLabel = new JLabel("Person count: 0");
         this.moralLabel = new JLabel("Overall moral: 10");
         this.wealthLabel = new JLabel("Wealth: 0");
-        this.separatorLabel = new JLabel(" | ");
 
         Font font = CFont.get();
         this.personCountLabel.setFont(font);
         this.moralLabel.setFont(font);
         this.wealthLabel.setFont(font);
-        this.separatorLabel.setFont(font);
 
         Color textColor = new Color(0, 255, 0);
         this.personCountLabel.setForeground(textColor);
         this.moralLabel.setForeground(textColor);
         this.wealthLabel.setForeground(textColor);
-        this.separatorLabel.setForeground(textColor);
         this.setBackground(new Color(20, 20, 20));
 
         this.add(personCountLabel);
-        this.add(separatorLabel);
         this.add(moralLabel);
-        this.add(separatorLabel);
         this.add(wealthLabel);
         //this.setLayout(new FlowLayout());
     }
 
     @Override
     public void onMoralChanged() {
-        moralLabel.setText("Overall moral: " + model.getCityMood());
+        moralLabel.setText("Overall moral: " + model.getCityMood() + " |");
     }
 
     @Override
     public void onPeopleCountChange() {
-        personCountLabel.setText("Person count: " + model.getPeople().size());
+        personCountLabel.setText("Person count: " + model.getPeople().size() + " |");
     }
 
     @Override

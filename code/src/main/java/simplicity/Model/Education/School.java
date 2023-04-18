@@ -63,4 +63,9 @@ public class School extends Education implements InGameTimeTickListener {
         return GameModel.EDUCATION_SCHOOL_IMG;
     }
 
+    @Override
+    public Dimension getSize(){
+        return new Dimension(2, 1);
+    }
+
 }

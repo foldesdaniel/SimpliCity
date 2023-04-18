@@ -57,4 +57,8 @@ public abstract class Placeable {
         return new Dimension(1, 1);
     }
 
+    public Dimension getDisplaySize(){
+        return this.getSize();
+    }
+
 }
