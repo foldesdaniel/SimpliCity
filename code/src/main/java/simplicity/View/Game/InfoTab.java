@@ -2,24 +2,22 @@ package simplicity.View.Game;
 
 import simplicity.Model.GameModel;
 import simplicity.Model.Placeables.Placeable;
+import simplicity.View.Style.CFont;
 
 import javax.swing.*;
 import java.awt.*;
 
 public class InfoTab extends JPanel {
 
-    private final Font font; // temporary
-
     public InfoTab(){
         this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-        font = GameModel.CUSTOM_FONT.deriveFont(Font.PLAIN, 18);
         this.init();
     }
 
     public void init(){
         this.removeAll();
         JLabel tempLabel = new JLabel("Empty selection");
-        tempLabel.setFont(font);
+        tempLabel.setFont(CFont.get(Font.PLAIN, 20));
         this.add(tempLabel);
     }
 
@@ -28,8 +26,20 @@ public class InfoTab extends JPanel {
         if (f == null) {
             this.init();
         } else {
-            JLabel tempLabel = new JLabel("Info: " + f.toString());
-            tempLabel.setFont(font);
+            Point position = f.getPosition();
+            Image img = f.getImage();
+            String name = f.getDisplayName();
+            Dimension size = f.getDisplaySize();
+            int tax = f.calculateTax();
+            int buildPrice = f.getBuildPrice();
+            JLabel tempLabel = new JLabel("<html>" +
+                "<b>" + name + "</b><br>" +
+                "Position: (" + position.x + "," + position.y + ")<br>" +
+                "Size: " + size.width + "x" + size.height + "<br>" +
+                "Tax: " + tax + "<br>" +
+                "Build price: " + buildPrice
+            + "</html>");
+            tempLabel.setFont(CFont.get());
             this.add(tempLabel);
         }
     }

@@ -20,6 +20,8 @@ public class Person implements InGameTimeTickListener {
     private final InGameTime inGameTime;
     @Setter
     private int mood = (int) (Math.random() * 10 + 65);
+
+    private int boostMood = 0;
     private Date age = new Date(18, 0, 0);
     private int[] born = new int[]{
             InGameTimeManager.getInstance().getInGameTime().getInGameYear(),
