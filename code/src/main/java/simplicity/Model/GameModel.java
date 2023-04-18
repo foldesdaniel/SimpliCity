@@ -253,6 +253,9 @@ public class GameModel implements InGameTimeTickListener {
         Stadium pl = new Stadium(position);
         if(!canPlace(pl, position)) return;
         grid[position.x][position.y] = pl;
+        grid[position.x + 1][position.y] = pl;
+        grid[position.x][position.y + 1] = pl;
+        grid[position.x + 1][position.y + 1] = pl;
         int r = new Stadium(new Point(-1, -1)).getRadius();
         int price = new Stadium(new Point(-1, -1)).getBuildPrice();
         int maintenanceCost = new Stadium(new Point(-1, -1)).getMaintenanceCost();
@@ -284,6 +287,9 @@ public class GameModel implements InGameTimeTickListener {
 
     public void removeStadium(Point position) {
         grid[position.x][position.y] = null;
+        grid[position.x + 1][position.y] = null;
+        grid[position.x][position.y + 1] = null;
+        grid[position.x + 1][position.y + 1] = null;
         int r = new Stadium(new Point(-1, -1)).getRadius();
 
         int maintenanceCost = new Stadium(new Point(-1, -1)).getMaintenanceCost();
