@@ -244,9 +244,9 @@ public class GameModel implements InGameTimeTickListener {
         if(!canPlace(pl, position)) return;
         grid[position.x][position.y] = pl;
         fillTemps(pl, position);
-        int r = new Stadium(new Point(-1, -1)).getRadius();
-        int price = new Stadium(new Point(-1, -1)).getBuildPrice();
-        int maintenanceCost = new Stadium(new Point(-1, -1)).getMaintenanceCost();
+        int r = new Stadium(GameModel.NO_SELECTION).getRadius(); // TODO: placeholder radius
+        int price = new Stadium(GameModel.NO_SELECTION).getBuildPrice();
+        int maintenanceCost = new Stadium(GameModel.NO_SELECTION).getMaintenanceCost();
         finance.removeMoney(price);
         finance.addBuilt(price, "Stadium építés");
         finance.addYearlySpend(maintenanceCost, "Stadium fenntartási díj");
@@ -274,9 +274,9 @@ public class GameModel implements InGameTimeTickListener {
 
     public void removeStadium(Point position) {
         grid[position.x][position.y] = null;
-        int r = new Stadium(new Point(-1, -1)).getRadius();
+        int r = new Stadium(GameModel.NO_SELECTION).getRadius();
 
-        int maintenanceCost = new Stadium(new Point(-1, -1)).getMaintenanceCost();
+        int maintenanceCost = new Stadium(GameModel.NO_SELECTION).getMaintenanceCost();
         finance.removeYearlySpend(maintenanceCost, "Stadium fenntartási díj");
 
         for (int i = position.x - r; i <= position.x + r; ++i) {
@@ -303,9 +303,9 @@ public class GameModel implements InGameTimeTickListener {
         if(!canPlace(pl, position)) return;
         grid[position.x][position.y] = pl;
         fillTemps(pl, position);
-        int r = new Police(new Point(-1, -1)).getRadius();
-        int price = new Police(new Point(-1, -1)).getBuildPrice();
-        int maintenanceCost = new Police(new Point(-1, -1)).getMaintenanceCost();
+        int r = new Police(GameModel.NO_SELECTION).getRadius();
+        int price = new Police(GameModel.NO_SELECTION).getBuildPrice();
+        int maintenanceCost = new Police(GameModel.NO_SELECTION).getMaintenanceCost();
         finance.removeMoney(price);
         finance.addBuilt(price, "Rendőrség építés");
         finance.addYearlySpend(maintenanceCost, "Rendőrség fenntartási díj");
@@ -328,9 +328,9 @@ public class GameModel implements InGameTimeTickListener {
 
     public void removePolice(Point position) {
         grid[position.x][position.y] = null;
-        int r = new Stadium(new Point(-1, -1)).getRadius();
+        int r = new Stadium(GameModel.NO_SELECTION).getRadius();
 
-        int maintenanceCost = new Police(new Point(-1, -1)).getMaintenanceCost();
+        int maintenanceCost = new Police(GameModel.NO_SELECTION).getMaintenanceCost();
         finance.removeYearlySpend(maintenanceCost, "Rendőrség fenntartási díj");
 
         for (int i = position.x - r; i <= position.x + r; ++i) {
@@ -360,7 +360,7 @@ public class GameModel implements InGameTimeTickListener {
         grid[position.x][position.y] = pl;
         fillTemps(pl, position);
         int r = 5;
-        int price = new Industrial(new Point(-1, -1)).getBuildPrice();
+        int price = new Industrial(GameModel.NO_SELECTION).getBuildPrice();
         finance.removeMoney(price);
         finance.addBuilt(price, "Ipari zóna kijelölés");
 
@@ -400,9 +400,9 @@ public class GameModel implements InGameTimeTickListener {
         if(!canPlace(pl, position)) return;
         grid[position.x][position.y] = pl;
         fillTemps(pl, position);
-        int price = new Road(new Point(-1, -1)).getBuildPrice();
+        int price = new Road(GameModel.NO_SELECTION).getBuildPrice();
         finance.removeMoney(price);
-        int maintenanceCost = new Road(new Point(-1, -1)).getMaintenanceCost();
+        int maintenanceCost = new Road(GameModel.NO_SELECTION).getMaintenanceCost();
         finance.addBuilt(price, "Út építés");
         finance.addYearlySpend(maintenanceCost, "Út fenntartási díj");
 
@@ -440,7 +440,7 @@ public class GameModel implements InGameTimeTickListener {
         }
 
         grid[position.x][position.y] = null;
-        int maintenanceCost = new Road(new Point(-1, -1)).getMaintenanceCost();
+        int maintenanceCost = new Road(GameModel.NO_SELECTION).getMaintenanceCost();
         finance.removeYearlySpend(maintenanceCost, "Út fenntartási díj");
 
         return true;
@@ -451,7 +451,7 @@ public class GameModel implements InGameTimeTickListener {
         if(!canPlace(pl, position)) return;
         grid[position.x][position.y] = pl;
         fillTemps(pl, position);
-        int price = new Service(new Point(-1, -1)).getBuildPrice();
+        int price = new Service(GameModel.NO_SELECTION).getBuildPrice();
         finance.removeMoney(price);
         finance.addBuilt(price, "Szolgáltatási zóna kijelölés");
         for(WealthChangeListener l : this.wealthListeners) l.onWealthChange();
@@ -466,7 +466,7 @@ public class GameModel implements InGameTimeTickListener {
         if(!canPlace(pl, position)) return;
         grid[position.x][position.y] = pl;
         fillTemps(pl, position);
-        int price = new Residential(new Point(-1, -1)).getBuildPrice();
+        int price = new Residential(GameModel.NO_SELECTION).getBuildPrice();
         finance.removeMoney(price);
         finance.addBuilt(price, "Lakóhely zóna kijelölés");
         for(WealthChangeListener l : this.wealthListeners) l.onWealthChange();
@@ -481,8 +481,8 @@ public class GameModel implements InGameTimeTickListener {
         if(!canPlace(pl, position)) return;
         grid[position.x][position.y] = pl;
         fillTemps(pl, position);
-        int price = new School(new Point(-1, -1)).getBuildPrice();
-        int maintenanceCost = new School(new Point(-1, -1)).getMaintenanceCost();
+        int price = new School(GameModel.NO_SELECTION).getBuildPrice();
+        int maintenanceCost = new School(GameModel.NO_SELECTION).getMaintenanceCost();
         finance.removeMoney(price);
         finance.addBuilt(price, "Iskola építés");
         finance.addYearlySpend(maintenanceCost, "Iskola fenntartási díj");
@@ -492,7 +492,7 @@ public class GameModel implements InGameTimeTickListener {
     public void removeSchool(Point position) {
         grid[position.x][position.y] = null;
 
-        int maintenanceCost = new School(new Point(-1, -1)).getMaintenanceCost();
+        int maintenanceCost = new School(GameModel.NO_SELECTION).getMaintenanceCost();
         finance.removeYearlySpend(maintenanceCost, "Iskola fenntartási díj");
     }
 
@@ -514,7 +514,7 @@ public class GameModel implements InGameTimeTickListener {
         if(!canPlace(pl, position)) return;
         grid[position.x][position.y] = pl;
         fillTemps(pl, position);
-        finance.removeMoney(new University(new Point(-1, -1)).getBuildPrice());
+        finance.removeMoney(new University(GameModel.NO_SELECTION).getBuildPrice());
         for(WealthChangeListener l : this.wealthListeners) l.onWealthChange();
     }
 
@@ -526,7 +526,7 @@ public class GameModel implements InGameTimeTickListener {
         //Searching around home first
         Residential home = person.getHome();
         Point homePosition = home.getPosition();
-        int r = new Stadium(new Point(-1, -1)).getRadius();
+        int r = new Stadium(GameModel.NO_SELECTION).getRadius();
 
         for (int i = homePosition.x - r; i <= homePosition.x + r; ++i) {
             for (int j = homePosition.y - r; j <= homePosition.y + r; ++j) {
@@ -559,7 +559,7 @@ public class GameModel implements InGameTimeTickListener {
     private Boolean searchForPolice(Person person) {
         Residential home = person.getHome();
         Point homePosition = home.getPosition();
-        int r = new Police(new Point(-1, -1)).getRadius();
+        int r = new Police(GameModel.NO_SELECTION).getRadius();
 
         for (int i = homePosition.x - r; i <= homePosition.x + r; ++i) {
             for (int j = homePosition.y - r; j <= homePosition.y + r; ++j) {

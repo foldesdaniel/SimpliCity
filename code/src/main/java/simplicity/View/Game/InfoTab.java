@@ -29,7 +29,7 @@ public class InfoTab extends JPanel {
             Point position = f.getPosition();
             Image img = f.getImage();
             String name = f.getDisplayName();
-            Dimension size = f.getSize();
+            Dimension size = f.getDisplaySize();
             int tax = f.calculateTax();
             int buildPrice = f.getBuildPrice();
             JLabel tempLabel = new JLabel("<html>" +

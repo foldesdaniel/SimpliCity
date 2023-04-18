@@ -157,23 +157,27 @@ public class PlayingFieldView extends JPanel implements MouseListener, MouseMoti
         }
         g.setColor(Color.BLACK);
         if (hoverField != GameModel.NO_SELECTION) {
+            Placeable p = GamePanel.isPlacing() ? GamePanel.getPlacee() : model.grid(hoverField.x,hoverField.y);
+            Point placeholderPos = (p instanceof PlaceableTemp) ? new Point(hoverField.x - p.getPosition().x, p.getPosition().y - hoverField.y) : new Point(0,0);
+            int placeHolderOffsetX = ((p instanceof PlaceableTemp) ? placeholderPos.x : 0) * fieldSize;
+            int placeHolderOffsetY = ((p instanceof PlaceableTemp) ? placeholderPos.y : 0) * fieldSize;
+            Dimension size = (p == null) ? new Dimension(1,1) : p.getDisplaySize();
             double mult = 26 / 16.0;
-            int multSize = (int) Math.round(fieldSize * mult);
+            int multSizeX = (int) Math.round(fieldSize * size.width * mult);
+            int multSizeY = (int) Math.round(fieldSize * size.height * mult);
             double mult2 = 5 / 16.0;
-            int selOffset = (int) Math.round(fieldSize * mult2);
-            Dimension selectionSize = new Dimension(1,1);
+            int selOffsetX = (int) Math.round(fieldSize * size.width * mult2);
+            int selOffsetY = (int) Math.round(fieldSize * size.height * mult2 + (fieldSize * (size.height - 1)));
             if(GamePanel.isPlacing()){
-                Placeable placee = GamePanel.getPlacee();
-                Image img = placee.getImage();
-                Dimension size = placee.getSize();
+                Image img = p.getImage();
                 g.drawImage(img, offsetX + fieldSize * hoverField.x, offsetY + fieldSize * (hoverField.y - (size.height - 1)), fieldSize * size.width, fieldSize * size.height, null);
-                if(model.canPlace(placee, hoverField)){ // if can place
-                    g.drawImage(GameModel.SELECTION_VALID_IMG, offsetX + (fieldSize * hoverField.x) - selOffset, offsetY + (fieldSize * hoverField.y) - selOffset, multSize, multSize, null);
+                if(model.canPlace(p, hoverField)){
+                    g.drawImage(GameModel.SELECTION_VALID_IMG, offsetX + (fieldSize * hoverField.x) - selOffsetX - placeHolderOffsetX, offsetY + (fieldSize * hoverField.y) - selOffsetY + placeHolderOffsetY, multSizeX, multSizeY, null);
                 }else{
-                    g.drawImage(GameModel.SELECTION_INVALID_IMG, offsetX + (fieldSize * hoverField.x) - selOffset, offsetY + (fieldSize * hoverField.y) - selOffset, multSize, multSize, null);
+                    g.drawImage(GameModel.SELECTION_INVALID_IMG, offsetX + (fieldSize * hoverField.x) - selOffsetX - placeHolderOffsetX, offsetY + (fieldSize * hoverField.y) - selOffsetY + placeHolderOffsetY, multSizeX, multSizeY, null);
                 }
             }else{
-                g.drawImage(GameModel.SELECTION_IMG, offsetX + (fieldSize * hoverField.x) - selOffset, offsetY + (fieldSize * hoverField.y) - selOffset, multSize, multSize, null);
+                g.drawImage(GameModel.SELECTION_IMG, offsetX + (fieldSize * hoverField.x) - selOffsetX - placeHolderOffsetX, offsetY + (fieldSize * hoverField.y) - selOffsetY + placeHolderOffsetY, multSizeX, multSizeY, null);
             }
 
             // g.drawRect(offsetX + (fieldSize * hoverField.x), offsetY + (fieldSize * hoverField.y), fieldSize, fieldSize);

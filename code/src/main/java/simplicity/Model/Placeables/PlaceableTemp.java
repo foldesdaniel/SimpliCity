@@ -29,9 +29,9 @@ public class PlaceableTemp extends Placeable {
         return placeable.hashCode();
     }
 
-    /*@Override
-    public Dimension getSize(){
+    @Override
+    public Dimension getDisplaySize(){
         return placeable.getSize();
-    }*/
+    }
 
 }
