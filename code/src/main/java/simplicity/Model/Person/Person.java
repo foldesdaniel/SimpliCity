@@ -18,9 +18,7 @@ import simplicity.Model.Placeables.Zones.Residential;
 public class Person implements InGameTimeTickListener {
 
     private final InGameTime inGameTime;
-    @Setter
     private int mood = (int) (Math.random() * 10 + 65);
-
     private int boostMood = 0;
     private Date age = new Date(18, 0, 0);
     private int[] born = new int[]{
@@ -29,11 +27,8 @@ public class Person implements InGameTimeTickListener {
             InGameTimeManager.getInstance().getInGameTime().getInGameHour()
     };
     private int lifeExpectancy = (int) (Math.random() * 25 + 60);
-    @Setter
     private EducationLevel educationLevel = EducationLevel.PRIMARY;
-    @Getter
     private Workplace workplace = null;
-    @Setter
     private Education education = null;
     private Residential home = null;
 
@@ -47,6 +42,10 @@ public class Person implements InGameTimeTickListener {
         inGameTime.addInGameTimeTickListener(this);
 
         moveIn(home);
+    }
+
+    public int getMood() {
+        return mood + boostMood;
     }
 
     public void goToSchool(Education placeOfEducation) {
