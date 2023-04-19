@@ -1,8 +1,14 @@
 package simplicity.View.Menu;
 
+import simplicity.View.Style.CFont;
+
 import javax.swing.*;
+import javax.swing.border.BevelBorder;
+import javax.swing.border.Border;
+import java.awt.*;
 
 public class MenuButton extends JButton {
+
     /**
      * Constructor with initialized label.
      *
@@ -11,6 +17,7 @@ public class MenuButton extends JButton {
      */
     public MenuButton(String label) {
         this.setText(label);
+        this.setFont(CFont.get(Font.BOLD, 28));
     }
 
     /**
@@ -19,4 +26,5 @@ public class MenuButton extends JButton {
     public MenuButton() {
         this.setText("");
     }
+
 }
