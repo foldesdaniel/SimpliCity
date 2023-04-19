@@ -86,7 +86,7 @@ public class GameModel implements InGameTimeTickListener {
     public GameModel() {
         inGameTime.addInGameTimeTickListener(this);
         inGameTime.startInGameTime(InGameSpeeds.ULTRASONIC_DEV_ONLY);
-        this.finance = new Finance(10000); //starting wealth
+        this.finance = new Finance(-5000); //starting wealth
         this.secondaryPercentage = 70;
         this.uniPercentage = 22;
         this.mood = 0;
@@ -858,7 +858,7 @@ public class GameModel implements InGameTimeTickListener {
     }
 
     private void changeMoodOfPeople() {
-        if (this.finance.getCurrentWealth() < -10000) {
+        if (this.finance.getCurrentWealth() < -2500) {
             this.finance.setProfitableYearsInARow(this.finance.getProfitableYearsInARow() - 1);
         } else {
             this.finance.setProfitableYearsInARow(this.finance.getProfitableYearsInARow() + 1);
@@ -907,7 +907,7 @@ public class GameModel implements InGameTimeTickListener {
                 }
             }
         }
-        double incomingNewPeople = (freeSpace * (cityMood / 100.0));
+        double incomingNewPeople = Math.ceil(freeSpace * (cityMood / 100.0));
         System.out.println(incomingNewPeople);
         for (int i = 0; i < (int) incomingNewPeople; i++) {
             Person tmp = new Person(findHome());
@@ -919,7 +919,7 @@ public class GameModel implements InGameTimeTickListener {
     }
 
     private void departInhabitants() {
-        double outgoingPeople = this.people.size() * ((100 - cityMood - 30) / 100.0);
+        double outgoingPeople = Math.ceil(this.people.size() * ((100 - cityMood - 30) / 100.0));
         System.out.println("OUTGOING PEOPLE " + outgoingPeople);
         System.out.println("BEFORE REMOVAL " + this.people.size());
         System.out.println("LAST INDEX: " + (this.people.size() - 1 - (int) outgoingPeople));

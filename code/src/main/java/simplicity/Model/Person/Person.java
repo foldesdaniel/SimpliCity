@@ -48,7 +48,9 @@ public class Person implements InGameTimeTickListener {
     }
 
     public int getMood() {
-        return mood + boostMood;
+        if(mood + boostMood > 100) return Math.min(mood + boostMood, 100);
+        else if (mood + boostMood < 0) return Math.max(mood + boostMood, 0);
+        else return mood + boostMood;
     }
 
     public void goToSchool(Education placeOfEducation) {
