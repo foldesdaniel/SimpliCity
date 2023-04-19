@@ -13,7 +13,7 @@ public class Finance {
     private final ArrayList<FinanceData> yearlySpendList; //stores maintenance costs with their information
     private int currentWealth; //player's current money
     @Setter
-    private int profitableYearsInARow = 0;
+    private double profitableYearsInARow = 0;
 
     public Finance(int currentWealth) {
         this.currentWealth = currentWealth;

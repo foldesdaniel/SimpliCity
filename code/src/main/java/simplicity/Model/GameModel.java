@@ -86,7 +86,7 @@ public class GameModel implements InGameTimeTickListener {
     public GameModel() {
         inGameTime.addInGameTimeTickListener(this);
         inGameTime.startInGameTime(InGameSpeeds.ULTRASONIC_DEV_ONLY);
-        this.finance = new Finance(-5000); //starting wealth
+        this.finance = new Finance(-1000); //starting wealth
         this.secondaryPercentage = 70;
         this.uniPercentage = 22;
         this.mood = 0;
@@ -859,17 +859,17 @@ public class GameModel implements InGameTimeTickListener {
 
     private void changeMoodOfPeople() {
         if (this.finance.getCurrentWealth() < -2500) {
-            this.finance.setProfitableYearsInARow(this.finance.getProfitableYearsInARow() - 1);
+            this.finance.setProfitableYearsInARow(this.finance.getProfitableYearsInARow() - 0.5);
         } else {
-            this.finance.setProfitableYearsInARow(this.finance.getProfitableYearsInARow() + 1);
+            this.finance.setProfitableYearsInARow(this.finance.getProfitableYearsInARow() + 0.5);
         }
 
         double multiplier = 1;
-        if (this.finance.getProfitableYearsInARow() < -3) {
+        if (this.finance.getProfitableYearsInARow() < -1.5) {
             //gameover
-            multiplier = 0.7;
-        } else if (this.finance.getProfitableYearsInARow() > 3) {
-            multiplier = 1.3;
+            multiplier = 0.85;
+        } else if (this.finance.getProfitableYearsInARow() > 1.5) {
+            multiplier = 1.15;
         } else {
             multiplier = (10 + this.finance.getProfitableYearsInARow()) / 10.0;
         }
