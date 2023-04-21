@@ -54,4 +54,11 @@ public abstract class Zone extends Placeable {
         peopleChangeListeners.remove(l);
     }
 
+    public void deleteData() {
+        for (Person p : people) {
+            p.setWorkplace(null);
+            p.setEducation(null);
+        }
+    }
+
 }
