@@ -2,6 +2,7 @@ package simplicity.Model;
 
 import lombok.Getter;
 import simplicity.Model.Algorithm.NodeCount;
+import simplicity.Model.Education.EducationLevel;
 import simplicity.Model.Education.School;
 import simplicity.Model.Education.University;
 import simplicity.Model.Finances.Finance;
@@ -86,7 +87,7 @@ public class GameModel implements InGameTimeTickListener {
     public GameModel() {
         inGameTime.addInGameTimeTickListener(this);
         inGameTime.startInGameTime(InGameSpeeds.ULTRASONIC_DEV_ONLY);
-        this.finance = new Finance(10000); //starting wealth
+        this.finance = new Finance(-1000); //starting wealth
         this.secondaryPercentage = 70;
         this.uniPercentage = 22;
         this.mood = 0;
@@ -900,18 +901,18 @@ public class GameModel implements InGameTimeTickListener {
     }
 
     private void changeMoodOfPeople() {
-        if (this.finance.getCurrentWealth() < -10000) {
-            this.finance.setProfitableYearsInARow(this.finance.getProfitableYearsInARow() - 1);
+        if (this.finance.getCurrentWealth() < -2500) {
+            this.finance.setProfitableYearsInARow(this.finance.getProfitableYearsInARow() - 0.5);
         } else {
-            this.finance.setProfitableYearsInARow(this.finance.getProfitableYearsInARow() + 1);
+            this.finance.setProfitableYearsInARow(this.finance.getProfitableYearsInARow() + 0.5);
         }
 
         double multiplier = 1;
-        if (this.finance.getProfitableYearsInARow() < -3) {
+        if (this.finance.getProfitableYearsInARow() < -1.5) {
             //gameover
-            multiplier = 0.7;
-        } else if (this.finance.getProfitableYearsInARow() > 3) {
-            multiplier = 1.3;
+            multiplier = 0.85;
+        } else if (this.finance.getProfitableYearsInARow() > 1.5) {
+            multiplier = 1.15;
         } else {
             multiplier = (10 + this.finance.getProfitableYearsInARow()) / 10.0;
         }
@@ -949,7 +950,7 @@ public class GameModel implements InGameTimeTickListener {
                 }
             }
         }
-        double incomingNewPeople = (freeSpace * (cityMood / 100.0));
+        double incomingNewPeople = Math.ceil(freeSpace * (cityMood / 100.0));
         System.out.println(incomingNewPeople);
         for (int i = 0; i < (int) incomingNewPeople; i++) {
             Person tmp = new Person(findHome());
@@ -961,7 +962,7 @@ public class GameModel implements InGameTimeTickListener {
     }
 
     private void departInhabitants() {
-        double outgoingPeople = this.people.size() * ((100 - cityMood - 30) / 100.0);
+        double outgoingPeople = Math.ceil(this.people.size() * ((100 - cityMood - 30) / 100.0));
         System.out.println("OUTGOING PEOPLE " + outgoingPeople);
         System.out.println("BEFORE REMOVAL " + this.people.size());
         System.out.println("LAST INDEX: " + (this.people.size() - 1 - (int) outgoingPeople));
@@ -975,9 +976,9 @@ public class GameModel implements InGameTimeTickListener {
                     lp = p;
                 }
             }
-            if (lp.getWorkplace() != null) lp.getWorkplace().getPeople().remove(lp);
-            if (lp.getHome() != null) lp.getHome().getPeople().remove(lp);
-            if (lp.getEducation() != null) lp.getEducation().getPeople().remove(lp);
+            if (lp.getWorkplace() != null) lp.getWorkplace().removePerson(lp);
+            if (lp.getHome() != null) lp.getHome().removePerson(lp);
+            if (lp.getEducation() != null) lp.getEducation().removePerson(lp);
             this.people.remove(lp);
         }
         System.out.println("AFTER REMOVAL: " + this.people.size());
@@ -992,6 +993,34 @@ public class GameModel implements InGameTimeTickListener {
             }
         }
         return null;
+    }
+
+    private void findOccupation() {
+        int shouldStudy = occupationRatio();
+        // if it is a positive then shouldStudy amount of people should study
+        // if it is a negative then they should go to work
+        // to keep a 50/50 balance
+        for(int i = 0; i < this.people.size(); i++) {
+            if(this.people.get(i).getWorkplace() == null) {
+                if(this.people.get(i).getEducationLevel() == EducationLevel.PRIMARY) {
+                    //send person to either work or secondary school
+                } else if (this.people.get(i).getEducationLevel() == EducationLevel.SECONDARY) {
+                    //send person to either work or university
+                } else {
+                    //person has uni degree, send person to work
+                }
+            }
+        }
+    }
+
+    private int occupationRatio() {
+        int numEducation = 0;
+        int numWork = 0;
+        for(Person p: this.people) {
+            if(p.getWorkplace() != null) numWork++;
+            if(p.getEducation() != null) numEducation++;
+        }
+        return numWork - numEducation;
     }
 
     private boolean isNextToARoad(Point point) {
@@ -1023,6 +1052,7 @@ public class GameModel implements InGameTimeTickListener {
         if (this.inGameTime.getInGameDay() > 0 && this.inGameTime.getInGameDay() % 20 == 0 && this.inGameTime.getInGameHour() == 0) {
             if (isMoodGoodEnough()) {
                 welcomeNewInhabitants();
+                //findOccupation
 //                System.out.println("ADD");
             } else {
                 departInhabitants();
