@@ -762,8 +762,8 @@ public class GameModel implements InGameTimeTickListener {
         count = countIndustrial(person.getHome().getPosition());
         person.setBoostMood(-count * 5);
         {
-            if (getWorkplaceDistance(person) < 6) person.setMood(person.getMood() + 5);
-            else if (getWorkplaceDistance(person) < 12) person.setMood(person.getMood() + 3);
+            if (getWorkplaceDistance(person, "workplace") < 6) person.setMood(person.getMood() + 5);
+            else if (getWorkplaceDistance(person, "workplace") < 12) person.setMood(person.getMood() + 3);
             else person.setMood(person.getMood() + 1);
             //todo: apply only when person has workplace
         }
