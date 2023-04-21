@@ -2,6 +2,7 @@ package simplicity.Model;
 
 import lombok.Getter;
 import simplicity.Model.Algorithm.NodeCount;
+import simplicity.Model.Education.EducationLevel;
 import simplicity.Model.Education.School;
 import simplicity.Model.Education.University;
 import simplicity.Model.Finances.Finance;
@@ -952,6 +953,34 @@ public class GameModel implements InGameTimeTickListener {
         return null;
     }
 
+    private void findOccupation() {
+        int shouldStudy = occupationRatio();
+        // if it is a positive then shouldStudy amount of people should study
+        // if it is a negative then they should go to work
+        // to keep a 50/50 balance
+        for(int i = 0; i < this.people.size(); i++) {
+            if(this.people.get(i).getWorkplace() == null) {
+                if(this.people.get(i).getEducationLevel() == EducationLevel.PRIMARY) {
+                    //send person to either work or secondary school
+                } else if (this.people.get(i).getEducationLevel() == EducationLevel.SECONDARY) {
+                    //send person to either work or university
+                } else {
+                    //person has uni degree, send person to work
+                }
+            }
+        }
+    }
+
+    private int occupationRatio() {
+        int numEducation = 0;
+        int numWork = 0;
+        for(Person p: this.people) {
+            if(p.getWorkplace() != null) numWork++;
+            if(p.getEducation() != null) numEducation++;
+        }
+        return numWork - numEducation;
+    }
+
     private boolean isNextToARoad(Point point) {
         int x = point.x;
         int y = point.y;
@@ -981,6 +1010,7 @@ public class GameModel implements InGameTimeTickListener {
         if (this.inGameTime.getInGameDay() > 0 && this.inGameTime.getInGameDay() % 20 == 0 && this.inGameTime.getInGameHour() == 0) {
             if (isMoodGoodEnough()) {
                 welcomeNewInhabitants();
+                //findOccupation
 //                System.out.println("ADD");
             } else {
                 departInhabitants();
