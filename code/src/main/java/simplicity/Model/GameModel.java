@@ -627,12 +627,14 @@ public class GameModel implements InGameTimeTickListener {
         return false;
     }
 
-    private int getWorkplaceDistance(Person person) {
+    private int getWorkplaceDistance(Person person, String type) {
         Residential home = person.getHome();
         Point position = home.getPosition();
 
-        Workplace workplace = person.getWorkplace();
-        if (workplace == null) return -1;
+        Placeable workplace = null;
+        if (type.equals("workplace")) workplace = person.getWorkplace();
+        if (type.equals("school")) workplace = person.getEducation();
+        if (workplace == null) return 0;
         Point workplacePosition = workplace.getPosition();
 
         Queue<NodeCount> queue = new LinkedList<>();
