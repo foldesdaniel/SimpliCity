@@ -126,6 +126,70 @@ public class GameModel implements InGameTimeTickListener {
 
     }
 
+    private void boostPersonMoodBasedOnDistance(Person person, String type) {
+        //TODO: when object is deleted then recalculate the distance boost
+        if (getWorkplaceDistance(person, type) < 6) boostMood(person, 5);
+        else if (getWorkplaceDistance(person, type) < 12) boostMood(person, 3);
+        else boostMood(person, 1);
+    }
+
+    private boolean searchForJob(Person person, String type) {
+        Residential home = person.getHome();
+        Point position = home.getPosition();
+        int x = position.x;
+        int y = position.y;
+
+        for (int i = 0; i < gridSize; ++i) {
+            for (int j = 0; j < gridSize; ++j) {
+                if (!(x == i && y == j) && grid[i][j] != null) {
+                    //GO TO WORK
+                    if (type.equals("workplace")) {
+                        if (grid[i][j].getType() == FieldType.ZONE_INDUSTRIAL) {
+                            //INDUSTRIAL
+                            if (((Industrial)grid[i][j]).areSpacesLeft()) {
+                                person.goToWork(((Industrial)grid[i][j]));
+                                ((Industrial)grid[i][j]).addPerson(person);
+                                boostPersonMoodBasedOnDistance(person, type);
+                                return true;
+                            }
+                        }
+                        else if (grid[i][j].getType() == FieldType.ZONE_SERVICE) {
+                            //SERVICE
+                            if (((Service)grid[i][j]).areSpacesLeft()) {
+                                person.goToWork(((Service)grid[i][j]));
+                                ((Service)grid[i][j]).addPerson(person);
+                                boostPersonMoodBasedOnDistance(person, type);
+                                return true;
+                            }
+                        }
+                    }
+                    //GO TO SCHOOL
+                    else if (type.equals("school")) {
+                        if (grid[i][j].getType() == FieldType.SCHOOL) {
+                            //HIGH SCHOOL
+                            if (((School)grid[i][j]).areSpacesLeft()) {
+                                person.goToSchool(((School)grid[i][j]));
+                                ((School)grid[i][j]).addPerson(person);
+                                boostPersonMoodBasedOnDistance(person, type);
+                                return true;
+                            }
+                        }
+                        else if (grid[i][j].getType() == FieldType.UNIVERSITY) {
+                            //UNIVERSITY
+                            if (((University)grid[i][j]).areSpacesLeft()) {
+                                person.goToSchool(((University)grid[i][j]));
+                                ((University)grid[i][j]).addPerson(person);
+                                boostPersonMoodBasedOnDistance(person, type);
+                                return true;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
     private int countStadium(Point position) {
         int count = 0;
         int r = new Stadium(new Point(-1, -1)).getRadius();
@@ -303,12 +367,10 @@ public class GameModel implements InGameTimeTickListener {
                     if (grid[i][j] != null) {
                         if (grid[i][j].getType() == FieldType.ZONE_RESIDENTIAL) {
                             for (Person p : ((Residential) grid[i][j]).getPeople()) {
-                                //calculateMood(p);
                                 boostMood(p, 5);
                             }
                         } else if (grid[i][j].getType() == FieldType.ZONE_INDUSTRIAL || grid[i][j].getType() == FieldType.ZONE_SERVICE) {
                             for (Person p : ((Workplace) grid[i][j]).getPeople()) {
-                                //calculateMood(p);
                                 boostMood(p, 5);
                             }
                         }
@@ -332,12 +394,10 @@ public class GameModel implements InGameTimeTickListener {
                     if (grid[i][j] != null) {
                         if (grid[i][j].getType() == FieldType.ZONE_RESIDENTIAL) {
                             for (Person p : ((Residential) grid[i][j]).getPeople()) {
-                                //calculateMood(p);
                                 boostMood(p, -5);
                             }
                         } else if (grid[i][j].getType() == FieldType.ZONE_INDUSTRIAL || grid[i][j].getType() == FieldType.ZONE_SERVICE) {
                             for (Person p : ((Workplace) grid[i][j]).getPeople()) {
-                                //calculateMood(p);
                                 boostMood(p, -5);
                             }
                         }
@@ -365,7 +425,6 @@ public class GameModel implements InGameTimeTickListener {
                     if (grid[i][j] != null) {
                         if (grid[i][j].getType() == FieldType.ZONE_RESIDENTIAL) {
                             for (Person p : ((Residential) grid[i][j]).getPeople()) {
-                                //calculateMood(p);
                                 boostMood(p, 5);
                             }
                         }
@@ -389,12 +448,10 @@ public class GameModel implements InGameTimeTickListener {
                     if (grid[i][j] != null) {
                         if (grid[i][j].getType() == FieldType.ZONE_RESIDENTIAL) {
                             for (Person p : ((Residential) grid[i][j]).getPeople()) {
-                                //calculateMood(p);
                                 boostMood(p, -5);
                             }
                         } else if (grid[i][j].getType() == FieldType.ZONE_INDUSTRIAL || grid[i][j].getType() == FieldType.ZONE_SERVICE) {
                             for (Person p : ((Workplace) grid[i][j]).getPeople()) {
-                                //calculateMood(p);
                                 boostMood(p, -5);
                             }
                         }
@@ -421,7 +478,6 @@ public class GameModel implements InGameTimeTickListener {
                 if (i >= 0 && j >= 0 && i < gridSize && j < gridSize) {
                     if (grid[i][j] != null && grid[i][j].getType() == FieldType.ZONE_RESIDENTIAL) {
                         for (Person p : ((Residential) grid[i][j]).getPeople()) {
-                            //calculateMood(p);
                             boostMood(p, -5);
                         }
                     }
@@ -433,6 +489,7 @@ public class GameModel implements InGameTimeTickListener {
 
     public void removeIndustrial(Point position) {
         grid[position.x][position.y] = null;
+        ((Industrial)grid[position.x][position.y]).deleteData();
         int r = 5;
 
         for (int i = position.x - r; i <= position.x + r; ++i) {
@@ -440,7 +497,6 @@ public class GameModel implements InGameTimeTickListener {
                 if (i >= 0 && j >= 0 && i < gridSize && j < gridSize) {
                     if (grid[i][j] != null && grid[i][j].getType() == FieldType.ZONE_RESIDENTIAL) {
                         for (Person p : ((Residential) grid[i][j]).getPeople()) {
-                            //calculateMood(p);
                             boostMood(p, 5);
                         }
                     }
@@ -513,6 +569,7 @@ public class GameModel implements InGameTimeTickListener {
 
     public void removeService(Point position) {
         grid[position.x][position.y] = null;
+        ((Service)grid[position.x][position.y]).deleteData();
     }
 
     public void placeResidential(Point position) {
@@ -545,6 +602,7 @@ public class GameModel implements InGameTimeTickListener {
 
     public void removeSchool(Point position) {
         grid[position.x][position.y] = null;
+        ((School)grid[position.x][position.y]).deleteData();
 
         int maintenanceCost = new School(GameModel.NO_SELECTION).getMaintenanceCost();
         finance.removeYearlySpend(maintenanceCost, "Iskola fenntartási díj");
@@ -574,6 +632,7 @@ public class GameModel implements InGameTimeTickListener {
 
     public void removeUniversity(Point position) {
         grid[position.x][position.y] = null;
+        ((University)grid[position.x][position.y]).deleteData();
     }
 
     private Boolean searchForStadium(Person person) {
@@ -628,12 +687,14 @@ public class GameModel implements InGameTimeTickListener {
         return false;
     }
 
-    private int getWorkplaceDistance(Person person) {
+    private int getWorkplaceDistance(Person person, String type) {
         Residential home = person.getHome();
         Point position = home.getPosition();
 
-        Workplace workplace = person.getWorkplace();
-        if (workplace == null) return -1;
+        Placeable workplace = null;
+        if (type.equals("workplace")) workplace = person.getWorkplace();
+        if (type.equals("school")) workplace = person.getEducation();
+        if (workplace == null) return 0;
         Point workplacePosition = workplace.getPosition();
 
         Queue<NodeCount> queue = new LinkedList<>();
@@ -741,31 +802,12 @@ public class GameModel implements InGameTimeTickListener {
     }
 
     private void calculateMood(Person person) {
-        //TODO refactor
-        /*if (searchForStadium(person)) {
-            //person.setMood(person.getMood() + 5);
-            person.setBoostMood(5);
-        }
-        if (searchForPolice(person)) {
-            //person.setMood(person.getMood() + 5);
-            person.setBoostMood(5);
-        }
-        if (searchForIndustrial(person)) {
-            //person.setMood(person.getMood() - 5);
-            person.setBoostMood(-5);
-        }*/
         int count = countStadium(person.getHome().getPosition());
         person.setBoostMood(count * 5);
         count = countPolice(person.getHome().getPosition());
         person.setBoostMood(count * 5);
         count = countIndustrial(person.getHome().getPosition());
         person.setBoostMood(-count * 5);
-        {
-            if (getWorkplaceDistance(person) < 6) person.setMood(person.getMood() + 5);
-            else if (getWorkplaceDistance(person) < 12) person.setMood(person.getMood() + 3);
-            else person.setMood(person.getMood() + 1);
-            //todo: apply only when person has workplace
-        }
 
         //todo : searchForForest && boost mood based on tax
     }
