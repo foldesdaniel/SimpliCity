@@ -32,4 +32,11 @@ public abstract class Zone extends Placeable {
     public void addPerson(Person person) {
         people.add(person);
     }
+
+    public void deleteData() {
+        for (Person p : people) {
+            p.setWorkplace(null);
+            p.setEducation(null);
+        }
+    }
 }
