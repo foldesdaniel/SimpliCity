@@ -36,10 +36,22 @@ public abstract class Zone extends Placeable {
         for(PeopleChangeListener l : peopleChangeListeners) l.onPeopleCountChange();
     }
 
-    public void deleteData() {
-        for (Person p : people) {
-            p.setWorkplace(null);
-            p.setEducation(null);
-        }
+    public void removePerson(Person person){
+        people.remove(person);
+        for(PeopleChangeListener l : peopleChangeListeners) l.onPeopleCountChange();
     }
+
+    public void removePerson(int index){
+        people.remove(index);
+        for(PeopleChangeListener l : peopleChangeListeners) l.onPeopleCountChange();
+    }
+
+    public void addPeopleChangeListener(PeopleChangeListener l){
+        if(!peopleChangeListeners.contains(l)) peopleChangeListeners.add(l);
+    }
+
+    public void removePeopleChangeListener(PeopleChangeListener l){
+        peopleChangeListeners.remove(l);
+    }
+
 }
