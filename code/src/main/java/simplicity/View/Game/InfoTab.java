@@ -55,11 +55,25 @@ public class InfoTab extends JPanel implements PeopleChangeListener, MoralChange
             infoText += "Tax: " + tax + "<br>";
             infoText += "Build price: " + buildPrice + "<br>";
             if(f instanceof Zone ff){
+                infoText += "Capacity: " + ff.getPeople().size() + "/" + ff.getMaxPeople() + "<br>";
                 ArrayList<Person> people = ff.getPeople();
                 if(ff instanceof Residential fff) infoText += "Mood: " + fff.calculateZoneMood() + "<br>";
                 infoText += "People:<br><ul style=\"padding:0;\">";
                 for(int i=0;i<people.size();i++){
-                    infoText += "<li>" + people.get(i).getAge().getYear() + "yo (mood: " + people.get(i).getMood() + ")</li>";
+                    Person person = people.get(i);
+                    infoText += "<li>" + person.getAge().getYear() + "yo (mood: " + person.getMood() + ")";
+                    infoText += "<ul><li>";
+                    if(ff instanceof Residential fff){
+                        if(person.getEducation() != null){
+                            infoText += "School: " + person.getEducation();
+                        }else if(person.getWorkplace() != null){
+                            infoText += "Workplace: " + person.getWorkplace();
+                        }else{
+                            infoText += "No school or workplace";
+                        }
+                    }
+                    infoText += "</li></ul>";
+                    infoText += "</li>";
                 }
                 infoText += "</ul>";
             }

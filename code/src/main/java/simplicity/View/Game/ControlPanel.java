@@ -2,6 +2,7 @@ package simplicity.View.Game;
 
 import simplicity.Model.GameModel;
 import simplicity.Model.Placeables.Placeable;
+import simplicity.View.Components.ControlPanelTabButton;
 import simplicity.View.Style.CFont;
 
 import javax.swing.*;
@@ -28,8 +29,8 @@ public class ControlPanel extends JPanel {
         this.setLayout(new GridBagLayout());
         JPanel btnContainer = new JPanel();
         font = CFont.get(Font.PLAIN, 22);
-        infoBtn = new JButton("infobtn");
-        buildBtn = new JButton("buildbtn");
+        infoBtn = new ControlPanelTabButton("infobtn");
+        buildBtn = new ControlPanelTabButton("buildbtn");
         infoBtn.setFont(font);
         buildBtn.setFont(font);
         infoBtn.addActionListener((e) -> showInfoTab());
