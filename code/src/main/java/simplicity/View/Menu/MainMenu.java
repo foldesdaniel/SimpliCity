@@ -25,10 +25,8 @@ public class MainMenu extends JPanel {
         this.menuEventListeners = new ArrayList<>();
         this.startGameListeners = new ArrayList<>();
 
-        int windowWidth = GameWindow.getWindowWidth();
-        int windowHeight = GameWindow.getWindowHeight();
-        this.setLayout(null);
-        this.setSize(new Dimension(windowWidth, windowHeight));
+        this.updateMenuSize();
+        this.setLayout(new BorderLayout());
         this.setBackground(new Color(100, 100, 100));
         this.setVisible(true);
 
@@ -48,14 +46,19 @@ public class MainMenu extends JPanel {
      */
     private void displayButtons() {
         this.removeAll();
+        this.revalidate();
         this.repaint();
 
-        int windowWidth = GameWindow.getWindowWidth();
-        int windowHeight = GameWindow.getWindowHeight();
+        int windowWidth = this.getWidth();
+        int windowHeight = this.getHeight();
         int gap = windowHeight/8;
         int width = windowWidth/5;
         int height = windowHeight/12;
         int x, y;
+
+        JPanel mainMenuPanel = new JPanel();
+        mainMenuPanel.setLayout(null);
+        mainMenuPanel.setOpaque(false);
 
         //Load game
         MenuButton loadGame_btn = new MenuButton("LOAD GAME");
@@ -63,7 +66,7 @@ public class MainMenu extends JPanel {
         y = windowHeight/2 - gap/2 - height/2;
         loadGame_btn.setBounds(x, y, width, height);
         //TODO -> implement actionlistener to display loading list
-        this.add(loadGame_btn);
+        mainMenuPanel.add(loadGame_btn);
 
         //New game
         MenuButton newGame_btn = new MenuButton("NEW GAME");
@@ -71,7 +74,7 @@ public class MainMenu extends JPanel {
         y = windowHeight/2 - gap/2 - gap - height/2;
         newGame_btn.setBounds(x, y, width, height);
         newGame_btn.addActionListener(e -> displayInputCityName());
-        this.add(newGame_btn);
+        mainMenuPanel.add(newGame_btn);
 
         //Settings
         MenuButton settings_btn = new MenuButton("SETTINGS");
@@ -79,7 +82,7 @@ public class MainMenu extends JPanel {
         y = windowHeight/2 + gap/2 - height/2;
         settings_btn.setBounds(x, y, width, height);
         settings_btn.addActionListener(e -> displaySettings(false, true));
-        this.add(settings_btn);
+        mainMenuPanel.add(settings_btn);
 
         //Exit
         MenuButton exit_btn = new MenuButton("EXIT");
@@ -87,7 +90,9 @@ public class MainMenu extends JPanel {
         y = windowHeight/2 + gap/2 + gap - height/2;
         exit_btn.setBounds(x, y, width, height);
         exit_btn.addActionListener(e -> System.exit(0));
-        this.add(exit_btn);
+        mainMenuPanel.add(exit_btn);
+
+        this.add(mainMenuPanel, BorderLayout.CENTER);
     }
 
     /**
@@ -95,15 +100,20 @@ public class MainMenu extends JPanel {
      */
     private void displayInputCityName() {
         this.removeAll();
+        this.revalidate();
         this.repaint();
 
-        int windowWidth = GameWindow.getWindowWidth();
-        int windowHeight = GameWindow.getWindowHeight();
+        int windowWidth = this.getWidth();
+        int windowHeight = this.getHeight();
         int gap = windowHeight/11;
         int width;
         int height = windowHeight/14;
 
         int x, y;
+
+        JPanel newGamePanel = new JPanel();
+        newGamePanel.setLayout(null);
+        newGamePanel.setOpaque(false);
 
         //Label
         MenuLabel cityName_lbl = new MenuLabel("Please enter your city name");
@@ -111,14 +121,14 @@ public class MainMenu extends JPanel {
         x = windowWidth/2 - width/2;
         y = windowHeight/2 - (gap*2) - height/2;
         cityName_lbl.setBounds(x, y, width, height);
-        this.add(cityName_lbl);
+        newGamePanel.add(cityName_lbl);
 
         //Input field
         MenuTextField input = new MenuTextField();
         x = windowWidth/2 - width/2;
         y = windowHeight/2 - height/2 - gap;
         input.setBounds(x, y, width, height/2);
-        this.add(input);
+        newGamePanel.add(input);
 
         //Start
         MenuButton start_btn = new MenuButton("START");
@@ -127,7 +137,7 @@ public class MainMenu extends JPanel {
         y = windowHeight/2 - height/2;
         start_btn.setBounds(x, y, width, height);
         start_btn.addActionListener((ActionEvent) -> startGame());
-        this.add(start_btn);
+        newGamePanel.add(start_btn);
 
         //Back
         MenuButton back_btn = new MenuButton("BACK");
@@ -135,15 +145,15 @@ public class MainMenu extends JPanel {
         y = windowHeight/2 + gap - height/2;
         back_btn.setBounds(x, y, width, height);
         back_btn.addActionListener(e -> displayButtons());
-        this.add(back_btn);
+        newGamePanel.add(back_btn);
+
+        this.add(newGamePanel, BorderLayout.CENTER);
     }
 
     /**
      * Displays the actual game panel
      */
     private void startGame(){
-        int windowWidth = GameWindow.getWindowWidth();
-        int windowHeight = GameWindow.getWindowHeight();
         for(StartGameListener l : startGameListeners) l.onGameStart();
     }
 
@@ -166,19 +176,23 @@ public class MainMenu extends JPanel {
         this.revalidate();
         this.repaint();
 
-        int windowWidth = GameWindow.getWindowWidth();
-        int windowHeight = GameWindow.getWindowHeight();
+        int windowWidth = this.getWidth();
+        int windowHeight = this.getHeight();
         int gap = windowHeight/8;
         int width = windowWidth/5;
         int height = windowHeight/12;
         int x, y;
+
+        JPanel settingsMenu = new JPanel();
+        settingsMenu.setLayout(null);
+        settingsMenu.setOpaque(false);
 
         //Label
         MenuLabel res_lbl = new MenuLabel("Resolution");
         x = windowWidth/2 - width/2;
         y = windowHeight/2 - gap/2 - gap - gap/2 - height/2;
         res_lbl.setBounds(x, y, width, height);
-        this.add(res_lbl);
+        settingsMenu.add(res_lbl);
 
         //Resolution type
         String options[] = {"Windowed Fullscreen", "Windowed"};
@@ -205,7 +219,7 @@ public class MainMenu extends JPanel {
                 }
             }
         });
-        this.add(res_type);
+        settingsMenu.add(res_type);
 
         //Resolutions
         options = new String[] {"960x540", "1280x720", "1600x900"};
@@ -221,7 +235,7 @@ public class MainMenu extends JPanel {
                 }
             }
         }
-        this.add(resolutions);
+        settingsMenu.add(resolutions);
 
         //Apply
         MenuButton apply_btn = new MenuButton("APPLY");
@@ -238,7 +252,7 @@ public class MainMenu extends JPanel {
             });
         }
         else apply_btn.addActionListener(e -> this.setWindowSize(windowWidth, windowHeight, true));
-        this.add(apply_btn);
+        settingsMenu.add(apply_btn);
 
         //Back
         MenuButton back_btn = new MenuButton("BACK");
@@ -246,7 +260,9 @@ public class MainMenu extends JPanel {
         y = windowHeight/2 + gap/2 + gap - height/2;
         back_btn.setBounds(x, y, width, height);
         back_btn.addActionListener(e -> displayButtons());
-        this.add(back_btn);
+        settingsMenu.add(back_btn);
+
+        this.add(settingsMenu, BorderLayout.CENTER);
     }
 
     /**
@@ -263,12 +279,31 @@ public class MainMenu extends JPanel {
         }else{
             for(MenuEventListener l : menuEventListeners) l.changedWindowed(width, height);
         }
+        updateMenuSize();
         displayButtons();
     }
 
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        g.drawImage(GameModel.BACKGROUND_IMG, 0, 0, this.getWidth(), this.getHeight(), null);
+        Image img = GameModel.BACKGROUND_IMG;
+        Dimension originalImgSize = new Dimension(img.getWidth(null),img.getHeight(null));
+        double imgRatio = originalImgSize.width / (double) originalImgSize.height;
+        double ratio = this.getWidth() / (double) this.getHeight();
+        int imgWidth = (int)Math.ceil(
+            (imgRatio > ratio) ? this.getHeight()*imgRatio : this.getWidth()
+        );
+        int imgHeight = (int)Math.ceil(
+            (imgRatio > ratio) ? this.getHeight() : this.getWidth()/imgRatio
+        );
+        // background image will always be centered and cover the panel
+        g.drawImage(img, (this.getWidth()/2)-(imgWidth/2), (this.getHeight()/2)-(imgHeight/2), imgWidth, imgHeight, null);
     }
+
+    private void updateMenuSize(){
+        int windowWidth = GameWindow.getWindowWidth();
+        int windowHeight = GameWindow.getWindowHeight();
+        this.setSize(new Dimension(windowWidth, windowHeight));
+    }
+
 }
