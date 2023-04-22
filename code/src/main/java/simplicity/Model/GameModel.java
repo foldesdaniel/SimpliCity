@@ -762,17 +762,17 @@ public class GameModel implements InGameTimeTickListener {
                     if (type.equals("workplace")) {
                         if (grid[i][j].getType() == FieldType.ZONE_INDUSTRIAL) {
                             //INDUSTRIAL
-                            if (((Industrial) grid[i][j]).areSpacesLeft()) {
+                            if (((Industrial) grid[i][j]).areSpacesLeft() && getWorkplaceDistance(person, "workplace") > 0) {
                                 person.goToWork(((Industrial) grid[i][j]));
-                                ((Industrial) grid[i][j]).addPerson(person);
+//                                ((Industrial) grid[i][j]).addPerson(person);
                                 boostPersonMoodBasedOnDistance(person, type);
                                 return true;
                             }
                         } else if (grid[i][j].getType() == FieldType.ZONE_SERVICE) {
                             //SERVICE
-                            if (((Service) grid[i][j]).areSpacesLeft()) {
+                            if (((Service) grid[i][j]).areSpacesLeft() && getWorkplaceDistance(person, "workplace") > 0) {
                                 person.goToWork(((Service) grid[i][j]));
-                                ((Service) grid[i][j]).addPerson(person);
+//                                ((Service) grid[i][j]).addPerson(person);
                                 boostPersonMoodBasedOnDistance(person, type);
                                 return true;
                             }
@@ -782,9 +782,9 @@ public class GameModel implements InGameTimeTickListener {
                     else if (type.equals("secondary")) {
                         if (grid[i][j].getType() == FieldType.SCHOOL) {
                             //HIGH SCHOOL
-                            if (((School) grid[i][j]).areSpacesLeft()) {
+                            if (((School) grid[i][j]).areSpacesLeft() && getWorkplaceDistance(person, "secondary") > 0) {
                                 person.goToSchool(((School) grid[i][j]));
-                                ((School) grid[i][j]).addPerson(person);
+//                                ((School) grid[i][j]).addPerson(person);
                                 boostPersonMoodBasedOnDistance(person, type);
                                 return true;
                             }
@@ -793,9 +793,9 @@ public class GameModel implements InGameTimeTickListener {
                     else if (type.equals("uni")) {
                          if (grid[i][j].getType() == FieldType.UNIVERSITY) {
                             //UNIVERSITY
-                            if (((University) grid[i][j]).areSpacesLeft()) {
+                            if (((University) grid[i][j]).areSpacesLeft() && getWorkplaceDistance(person, "uni") > 0) {
                                 person.goToSchool(((University) grid[i][j]));
-                                ((University) grid[i][j]).addPerson(person);
+//                                ((University) grid[i][j]).addPerson(person);
                                 boostPersonMoodBasedOnDistance(person, type);
                                 return true;
                             }
