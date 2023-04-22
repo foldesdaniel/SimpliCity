@@ -2,6 +2,7 @@ package simplicity.Model;
 
 import lombok.Getter;
 import simplicity.Model.Algorithm.NodeCount;
+import simplicity.Model.Education.EducationLevel;
 import simplicity.Model.Education.School;
 import simplicity.Model.Education.University;
 import simplicity.Model.Finances.Finance;
@@ -92,7 +93,8 @@ public class GameModel implements InGameTimeTickListener {
         grid[0][0] = new Residential(new Point(0, 0));
         grid[1][0] = new Residential(new Point(1, 0));
         grid[0][1] = new Road(new Point(0, 1));
-        grid[1][1] = new Residential(new Point(1, 1));
+        grid[1][1] = new Road(new Point(1, 1));
+        grid[1][2] = new Residential(new Point(1, 2));
 //        grid[0][3] = new Road(new Point(0,3));
 //        grid[0][4] = new Road(new Point(0,4));
 //        grid[0][5] = new Road(new Point(0,5));
@@ -626,6 +628,7 @@ public class GameModel implements InGameTimeTickListener {
     }
 
     private int getWorkplaceDistance(Person person, String type) {
+        if(type.equals("uni") || type.equals("secondary")) type = "school";
         Residential home = person.getHome();
         Point position = home.getPosition();
 
@@ -776,7 +779,7 @@ public class GameModel implements InGameTimeTickListener {
                         }
                     }
                     //GO TO SCHOOL
-                    else if (type.equals("school")) {
+                    else if (type.equals("secondary")) {
                         if (grid[i][j].getType() == FieldType.SCHOOL) {
                             //HIGH SCHOOL
                             if (((School) grid[i][j]).areSpacesLeft()) {
@@ -785,7 +788,10 @@ public class GameModel implements InGameTimeTickListener {
                                 boostPersonMoodBasedOnDistance(person, type);
                                 return true;
                             }
-                        } else if (grid[i][j].getType() == FieldType.UNIVERSITY) {
+                        }
+                    }
+                    else if (type.equals("uni")) {
+                         if (grid[i][j].getType() == FieldType.UNIVERSITY) {
                             //UNIVERSITY
                             if (((University) grid[i][j]).areSpacesLeft()) {
                                 person.goToSchool(((University) grid[i][j]));
@@ -798,6 +804,7 @@ public class GameModel implements InGameTimeTickListener {
                 }
             }
         }
+
         return false;
     }
 
@@ -951,21 +958,21 @@ public class GameModel implements InGameTimeTickListener {
             }
         }
         double incomingNewPeople = Math.ceil(freeSpace * (cityMood / 100.0));
-        System.out.println(incomingNewPeople);
+//        System.out.println(incomingNewPeople);
         for (int i = 0; i < (int) incomingNewPeople; i++) {
             Person tmp = new Person(findHome());
             calculateMood(tmp);
             this.people.add(tmp);
             for (PeopleChangeListener l : peopleChangeListeners) l.onPeopleCountChange();
         }
-        System.out.println(this.people.size());
+//        System.out.println(this.people.size());
     }
 
     private void departInhabitants() {
         double outgoingPeople = Math.ceil(this.people.size() * ((100 - cityMood - 30) / 100.0));
-        System.out.println("OUTGOING PEOPLE " + outgoingPeople);
-        System.out.println("BEFORE REMOVAL " + this.people.size());
-        System.out.println("LAST INDEX: " + (this.people.size() - 1 - (int) outgoingPeople));
+//        System.out.println("OUTGOING PEOPLE " + outgoingPeople);
+//        System.out.println("BEFORE REMOVAL " + this.people.size());
+//        System.out.println("LAST INDEX: " + (this.people.size() - 1 - (int) outgoingPeople));
         //remove outgoingPeople amount of people from this.people who have the lowest mood
         for (int i = 0; i < outgoingPeople; i++) {
             int lowestMood = 101;
@@ -976,12 +983,13 @@ public class GameModel implements InGameTimeTickListener {
                     lp = p;
                 }
             }
+            //TODO lp could be null
             if (lp.getWorkplace() != null) lp.getWorkplace().removePerson(lp);
             if (lp.getHome() != null) lp.getHome().removePerson(lp);
             if (lp.getEducation() != null) lp.getEducation().removePerson(lp);
             this.people.remove(lp);
         }
-        System.out.println("AFTER REMOVAL: " + this.people.size());
+//        System.out.println("AFTER REMOVAL: " + this.people.size());
     }
 
     private Residential findHome() {
@@ -997,34 +1005,71 @@ public class GameModel implements InGameTimeTickListener {
 
     private void findOccupation() {
         int shouldStudy = occupationRatio();
+        System.out.println("Num of people: " + this.people.size());
+        System.out.println("Occupation ratio: " + shouldStudy);
         // if it is a positive then shouldStudy amount of people should study
         // if it is a negative then they should go to work
         // to keep a 50/50 balance
-        //TODO factor in if they should go to secondary or uni
         if (shouldStudy > 0) {
             int wentStudying = 0;
             for (int i = 0; i < this.people.size() && wentStudying != shouldStudy; i++) {
-                if (this.people.get(i).getWorkplace() == null && this.people.get(i).getEducation() == null) {
-                    if (searchForJob(this.people.get(i), "school")) wentStudying++;
+                if (this.people.get(i).getWorkplace() == null &&  this.people.get(i).getEducation() == null) {
+                    if(this.people.get(i).getEducationLevel() == EducationLevel.PRIMARY) {
+                        System.out.println("Searching for secondary!");
+                        if (searchForJob(this.people.get(i), "secondary")) {
+                            wentStudying++;
+                            System.out.println("Went to secondary");
+                        } else {
+                            searchForJob(this.people.get(i), "workplace");
+                        }
+                    } else if (this.people.get(i).getEducationLevel() == EducationLevel.SECONDARY) {
+                        if (searchForJob(this.people.get(i), "uni")) {
+                            wentStudying++;
+                            System.out.println("Went to uni");
+                        } else {
+                            searchForJob(this.people.get(i), "workplace");
+                        }
+                    }
                 }
             }
         } else if (shouldStudy < 0) {
             int wentWorking = 0;
             for (int i = 0; i < this.people.size() && wentWorking != shouldStudy; i++) {
-                if (this.people.get(i).getWorkplace() == null && this.people.get(i).getEducation() == null) {
-                    if (searchForJob(this.people.get(i), "workplace")) wentWorking--;
-                }
-            }
-        } else {
-            for (Person person : this.people) {
-                if (person.getWorkplace() == null && person.getEducation() == null) {
-                    if (!searchForJob(person, "workplace")) {
-                        searchForJob(person, "school");
+                if (this.people.get(i).getWorkplace() == null  && this.people.get(i).getEducation() == null) {
+                    if (searchForJob(this.people.get(i), "workplace")) {
+                        wentWorking--;
+                        System.out.println("Went working");
+                    } else {
+                        System.out.println("No workplace found");
                     }
                 }
             }
         }
-
+        else {
+            for (Person person : this.people) {
+                if (person.getWorkplace() == null && person.getEducation() == null) {
+                    if(person.getEducationLevel() == EducationLevel.PRIMARY) {
+                        if(!searchForJob(person, "secondary")) {
+                            System.out.println("Didnt find secondary!");
+                            if(!searchForJob(person, "workplace")){
+                                System.out.println("Didnt find workplace");
+                            }
+                        } else {
+                            System.out.println("Found secondary");
+                        }
+                    } else if (person.getEducationLevel() == EducationLevel.SECONDARY) {
+                        if(!searchForJob(person, "uni")) {
+                            System.out.println("Didnt find uni!");
+                            if(!searchForJob(person, "workplace")){
+                                System.out.println("Didnt find workplace");
+                            }
+                        } else {
+                            System.out.println("Found Uni");
+                        }
+                    }
+                }
+            }
+        }
     }
 
     private int occupationRatio() {
@@ -1032,8 +1077,10 @@ public class GameModel implements InGameTimeTickListener {
         int numWork = 0;
         for (Person p : this.people) {
             if (p.getWorkplace() != null) numWork++;
-            if (p.getEducation() != null) numEducation++;
+            else if (p.getEducation() != null) numEducation++;
         }
+        System.out.println("People in education: " + numEducation);
+        System.out.println("People in work: " + numWork);
         return numWork - numEducation;
     }
 
@@ -1066,7 +1113,7 @@ public class GameModel implements InGameTimeTickListener {
         if (this.inGameTime.getInGameDay() > 0 && this.inGameTime.getInGameDay() % 20 == 0 && this.inGameTime.getInGameHour() == 0) {
             if (isMoodGoodEnough()) {
                 welcomeNewInhabitants();
-                //findOccupation
+                findOccupation();
 //                System.out.println("ADD");
             } else {
                 departInhabitants();
