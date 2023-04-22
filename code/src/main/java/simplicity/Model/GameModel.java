@@ -758,20 +758,24 @@ public class GameModel implements InGameTimeTickListener {
         for (int i = 0; i < gridSize; ++i) {
             for (int j = 0; j < gridSize; ++j) {
                 if (!(x == i && y == j) && grid[i][j] != null) {
+                    Placeable current = grid[i][j];
+                    if (current instanceof PlaceableTemp) {
+                        current = ((PlaceableTemp)current).getPlaceable();
+                    }
                     //GO TO WORK
                     if (type.equals("workplace")) {
-                        if (grid[i][j].getType() == FieldType.ZONE_INDUSTRIAL) {
+                        if (current.getType() == FieldType.ZONE_INDUSTRIAL) {
                             //INDUSTRIAL
-                            if (((Industrial) grid[i][j]).areSpacesLeft() && getWorkplaceDistance(person, "workplace") > 0) {
-                                person.goToWork(((Industrial) grid[i][j]));
+                            if (((Industrial) current).areSpacesLeft() && getWorkplaceDistance(person, "workplace") > 0 && !((Industrial) current).getPeople().contains(person)) {
+                                person.goToWork(((Industrial) current));
 //                                ((Industrial) grid[i][j]).addPerson(person);
                                 boostPersonMoodBasedOnDistance(person, type);
                                 return true;
                             }
-                        } else if (grid[i][j].getType() == FieldType.ZONE_SERVICE) {
+                        } else if (current.getType() == FieldType.ZONE_SERVICE) {
                             //SERVICE
-                            if (((Service) grid[i][j]).areSpacesLeft() && getWorkplaceDistance(person, "workplace") > 0) {
-                                person.goToWork(((Service) grid[i][j]));
+                            if (((Service) current).areSpacesLeft() && getWorkplaceDistance(person, "workplace") > 0 && !((Service) current).getPeople().contains(person)) {
+                                person.goToWork(((Service) current));
 //                                ((Service) grid[i][j]).addPerson(person);
                                 boostPersonMoodBasedOnDistance(person, type);
                                 return true;
@@ -780,10 +784,10 @@ public class GameModel implements InGameTimeTickListener {
                     }
                     //GO TO SCHOOL
                     else if (type.equals("secondary")) {
-                        if (grid[i][j].getType() == FieldType.SCHOOL) {
+                        if (current.getType() == FieldType.SCHOOL) {
                             //HIGH SCHOOL
-                            if (((School) grid[i][j]).areSpacesLeft() && getWorkplaceDistance(person, "secondary") > 0) {
-                                person.goToSchool(((School) grid[i][j]));
+                            if (((School) current).areSpacesLeft() && getWorkplaceDistance(person, "secondary") > 0 && !((School) current).getPeople().contains(person)) {
+                                person.goToSchool(((School) current));
 //                                ((School) grid[i][j]).addPerson(person);
                                 boostPersonMoodBasedOnDistance(person, type);
                                 return true;
@@ -791,10 +795,10 @@ public class GameModel implements InGameTimeTickListener {
                         }
                     }
                     else if (type.equals("uni")) {
-                         if (grid[i][j].getType() == FieldType.UNIVERSITY) {
+                         if (current.getType() == FieldType.UNIVERSITY) {
                             //UNIVERSITY
-                            if (((University) grid[i][j]).areSpacesLeft() && getWorkplaceDistance(person, "uni") > 0) {
-                                person.goToSchool(((University) grid[i][j]));
+                            if (((University) current).areSpacesLeft() && getWorkplaceDistance(person, "uni") > 0 && !((University) current).getPeople().contains(person)) {
+                                person.goToSchool(((University) current));
 //                                ((University) grid[i][j]).addPerson(person);
                                 boostPersonMoodBasedOnDistance(person, type);
                                 return true;
