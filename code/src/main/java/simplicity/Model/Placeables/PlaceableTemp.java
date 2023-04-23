@@ -1,5 +1,6 @@
 package simplicity.Model.Placeables;
 
+import lombok.Getter;
 import simplicity.Model.Placeables.Placeable;
 
 import java.awt.*;
@@ -7,6 +8,7 @@ import java.util.Objects;
 
 public class PlaceableTemp extends Placeable {
 
+    @Getter
     private final Placeable placeable;
 
     public PlaceableTemp(Placeable placeable){
