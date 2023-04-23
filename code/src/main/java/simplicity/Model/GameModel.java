@@ -769,7 +769,7 @@ public class GameModel implements InGameTimeTickListener {
                     if (type.equals("workplace")) {
                         if (current.getType() == FieldType.ZONE_INDUSTRIAL) {
                             //INDUSTRIAL
-                            if (((Industrial) current).areSpacesLeft() && getWorkplaceDistance(person, "workplace") > 0 && !((Industrial) current).getPeople().contains(person)) {
+                            if (((Industrial) current).areSpacesLeft() && isPath(convertToNumMatrix(person.getHome(), (Industrial) current, null)) && !((Industrial) current).getPeople().contains(person)) {
 //                            if (((Industrial) current).areSpacesLeft() && !((Industrial) current).getPeople().contains(person)) {
                                 System.out.println("In Industrial");
                                 person.goToWork(((Industrial) current));
@@ -779,7 +779,7 @@ public class GameModel implements InGameTimeTickListener {
                             }
                         } else if (current.getType() == FieldType.ZONE_SERVICE) {
                             //SERVICE
-                            if (((Service) current).areSpacesLeft() && getWorkplaceDistance(person, "workplace") > 0 && !((Service) current).getPeople().contains(person)) {
+                            if (((Service) current).areSpacesLeft() && isPath(convertToNumMatrix(person.getHome(), (Service) current, null)) && !((Service) current).getPeople().contains(person)) {
 //                            if (((Service) current).areSpacesLeft() && !((Service) current).getPeople().contains(person)) {
                                 System.out.println("In Service");
                                 person.goToWork(((Service) current));
@@ -793,7 +793,7 @@ public class GameModel implements InGameTimeTickListener {
                     else if (type.equals("secondary")) {
                         if (current.getType() == FieldType.SCHOOL) {
                             //HIGH SCHOOL
-                            if (((School) current).areSpacesLeft() && getWorkplaceDistance(person, "secondary") > 0 && !((School) current).getPeople().contains(person)) {
+                            if (((School) current).areSpacesLeft() && isPath(convertToNumMatrix(person.getHome(), (School) current, null)) && !((School) current).getPeople().contains(person)) {
 //                            if (((School) current).areSpacesLeft() && !((School) current).getPeople().contains(person)) {
                                 System.out.println("In School");
                                 person.goToSchool(((School) current));
@@ -806,7 +806,7 @@ public class GameModel implements InGameTimeTickListener {
                     else if (type.equals("uni")) {
                          if (current.getType() == FieldType.UNIVERSITY) {
                             //UNIVERSITY
-                            if (((University) current).areSpacesLeft() && getWorkplaceDistance(person, "uni") > 0 && !((University) current).getPeople().contains(person)) {
+                            if (((University) current).areSpacesLeft() && isPath(convertToNumMatrix(person.getHome(), (University) current, null)) && !((University) current).getPeople().contains(person)) {
 //                            if (((University) current).areSpacesLeft() && !((University) current).getPeople().contains(person)) {
                                 System.out.println("In Uni");
                                 person.goToSchool(((University) current));
@@ -835,8 +835,8 @@ public class GameModel implements InGameTimeTickListener {
     }
 
     private boolean canRoadBeDestroyed(Placeable startPoint, Placeable endPoint, Placeable toBeDestroyed) {
-        boolean directPath = isPath(convertToNumMatrix(startPoint, endPoint, null), gridSize);
-        boolean moreThanOnePath = isPath(convertToNumMatrix(startPoint, endPoint, toBeDestroyed), gridSize);
+        boolean directPath = isPath(convertToNumMatrix(startPoint, endPoint, null));
+        boolean moreThanOnePath = isPath(convertToNumMatrix(startPoint, endPoint, toBeDestroyed));
         return directPath && (moreThanOnePath);
     }
 
@@ -854,7 +854,8 @@ public class GameModel implements InGameTimeTickListener {
         return matrix;
     }
 
-    private boolean isPath(int[][] matrix, int n) {
+    private boolean isPath(int[][] matrix) {
+        int n = gridSize;
         boolean[][] visited = new boolean[n][n];
         boolean flag = false;
 
