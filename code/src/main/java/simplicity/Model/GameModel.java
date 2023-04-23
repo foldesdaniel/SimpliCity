@@ -95,6 +95,9 @@ public class GameModel implements InGameTimeTickListener {
         grid[0][1] = new Road(new Point(0, 1));
         grid[1][1] = new Road(new Point(1, 1));
         grid[1][2] = new Residential(new Point(1, 2));
+        grid[0][2] = new Industrial(new Point(0,2));
+        grid[2][1] = new School(new Point(2,1));
+
 //        grid[0][3] = new Road(new Point(0,3));
 //        grid[0][4] = new Road(new Point(0,4));
 //        grid[0][5] = new Road(new Point(0,5));
@@ -767,6 +770,8 @@ public class GameModel implements InGameTimeTickListener {
                         if (current.getType() == FieldType.ZONE_INDUSTRIAL) {
                             //INDUSTRIAL
                             if (((Industrial) current).areSpacesLeft() && getWorkplaceDistance(person, "workplace") > 0 && !((Industrial) current).getPeople().contains(person)) {
+//                            if (((Industrial) current).areSpacesLeft() && !((Industrial) current).getPeople().contains(person)) {
+                                System.out.println("In Industrial");
                                 person.goToWork(((Industrial) current));
 //                                ((Industrial) grid[i][j]).addPerson(person);
                                 boostPersonMoodBasedOnDistance(person, type);
@@ -775,6 +780,8 @@ public class GameModel implements InGameTimeTickListener {
                         } else if (current.getType() == FieldType.ZONE_SERVICE) {
                             //SERVICE
                             if (((Service) current).areSpacesLeft() && getWorkplaceDistance(person, "workplace") > 0 && !((Service) current).getPeople().contains(person)) {
+//                            if (((Service) current).areSpacesLeft() && !((Service) current).getPeople().contains(person)) {
+                                System.out.println("In Service");
                                 person.goToWork(((Service) current));
 //                                ((Service) grid[i][j]).addPerson(person);
                                 boostPersonMoodBasedOnDistance(person, type);
@@ -787,6 +794,8 @@ public class GameModel implements InGameTimeTickListener {
                         if (current.getType() == FieldType.SCHOOL) {
                             //HIGH SCHOOL
                             if (((School) current).areSpacesLeft() && getWorkplaceDistance(person, "secondary") > 0 && !((School) current).getPeople().contains(person)) {
+//                            if (((School) current).areSpacesLeft() && !((School) current).getPeople().contains(person)) {
+                                System.out.println("In School");
                                 person.goToSchool(((School) current));
 //                                ((School) grid[i][j]).addPerson(person);
                                 boostPersonMoodBasedOnDistance(person, type);
@@ -798,6 +807,8 @@ public class GameModel implements InGameTimeTickListener {
                          if (current.getType() == FieldType.UNIVERSITY) {
                             //UNIVERSITY
                             if (((University) current).areSpacesLeft() && getWorkplaceDistance(person, "uni") > 0 && !((University) current).getPeople().contains(person)) {
+//                            if (((University) current).areSpacesLeft() && !((University) current).getPeople().contains(person)) {
+                                System.out.println("In Uni");
                                 person.goToSchool(((University) current));
 //                                ((University) grid[i][j]).addPerson(person);
                                 boostPersonMoodBasedOnDistance(person, type);
@@ -1008,85 +1019,35 @@ public class GameModel implements InGameTimeTickListener {
     }
 
     private void findOccupation() {
-        int shouldStudy = occupationRatio();
-        System.out.println("Num of people: " + this.people.size());
-        System.out.println("Occupation ratio: " + shouldStudy);
-        // if it is a positive then shouldStudy amount of people should study
-        // if it is a negative then they should go to work
-        // to keep a 50/50 balance
-        if (shouldStudy > 0) {
-            int wentStudying = 0;
-            for (int i = 0; i < this.people.size() && wentStudying != shouldStudy; i++) {
-                if (this.people.get(i).getWorkplace() == null &&  this.people.get(i).getEducation() == null) {
-                    if(this.people.get(i).getEducationLevel() == EducationLevel.PRIMARY) {
-                        System.out.println("Searching for secondary!");
-                        if (searchForJob(this.people.get(i), "secondary")) {
-                            wentStudying++;
-                            System.out.println("Went to secondary");
-                        } else {
-                            searchForJob(this.people.get(i), "workplace");
-                        }
-                    } else if (this.people.get(i).getEducationLevel() == EducationLevel.SECONDARY) {
-                        if (searchForJob(this.people.get(i), "uni")) {
-                            wentStudying++;
-                            System.out.println("Went to uni");
-                        } else {
-                            searchForJob(this.people.get(i), "workplace");
-                        }
-                    }
-                }
-            }
-        } else if (shouldStudy < 0) {
-            int wentWorking = 0;
-            for (int i = 0; i < this.people.size() && wentWorking != shouldStudy; i++) {
-                if (this.people.get(i).getWorkplace() == null  && this.people.get(i).getEducation() == null) {
-                    if (searchForJob(this.people.get(i), "workplace")) {
-                        wentWorking--;
-                        System.out.println("Went working");
-                    } else {
-                        System.out.println("No workplace found");
-                    }
-                }
-            }
-        }
-        else {
-            for (Person person : this.people) {
-                if (person.getWorkplace() == null && person.getEducation() == null) {
-                    if(person.getEducationLevel() == EducationLevel.PRIMARY) {
-                        if(!searchForJob(person, "secondary")) {
-                            System.out.println("Didnt find secondary!");
-                            if(!searchForJob(person, "workplace")){
-                                System.out.println("Didnt find workplace");
-                            }
-                        } else {
-                            System.out.println("Found secondary");
-                        }
+        printCurrentEmployment();
+        Random random = new Random();
+        for (Person person : this.people) {
+            if (person.getEducation() == null && person.getWorkplace() == null) {
+                int occupation = random.nextInt(2);
+                //0 - study
+                //1 - work
+                if (occupation == 0) {
+                    if (person.getEducationLevel() == EducationLevel.PRIMARY) {
+                        searchForJob(person, "secondary");
                     } else if (person.getEducationLevel() == EducationLevel.SECONDARY) {
-                        if(!searchForJob(person, "uni")) {
-                            System.out.println("Didnt find uni!");
-                            if(!searchForJob(person, "workplace")){
-                                System.out.println("Didnt find workplace");
-                            }
-                        } else {
-                            System.out.println("Found Uni");
-                        }
-                    }
+                        searchForJob(person, "uni");
+                    } else searchForJob(person, "workplace");
+                } else {
+                    searchForJob(person, "workplace");
                 }
             }
+
         }
+        printCurrentEmployment();
     }
 
-    private int occupationRatio() {
-        int numEducation = 0;
-        int numWork = 0;
-        for (Person p : this.people) {
-            if (p.getWorkplace() != null) numWork++;
-            else if (p.getEducation() != null) numEducation++;
+    private void printCurrentEmployment() {
+        for(Person p : this.people) {
+            System.out.println("M: " + p.getMood() + " | E: " + p.getEducation() + " | W: " + p.getWorkplace());
         }
-        System.out.println("People in education: " + numEducation);
-        System.out.println("People in work: " + numWork);
-        return numWork - numEducation;
+        System.out.println("-------------------------");
     }
+
 
     private boolean isNextToARoad(Point point) {
         int x = point.x;
