@@ -747,9 +747,9 @@ public class GameModel implements InGameTimeTickListener {
 
     private void boostPersonMoodBasedOnDistance(Person person, String type) {
         //TODO: when object is deleted then recalculate the distance boost
-        if (getWorkplaceDistance(person, type) < 6) boostMood(person, 6);
-        else if (getWorkplaceDistance(person, type) < 12) boostMood(person, 4);
-        else boostMood(person, 2);
+        if (getWorkplaceDistance(person, type) < 6) boostMood(person, 4);
+        else if (getWorkplaceDistance(person, type) < 12) boostMood(person, -2);
+        else boostMood(person, -7);
     }
 
     private boolean searchForJob(Person person, String type) {
@@ -1098,6 +1098,20 @@ public class GameModel implements InGameTimeTickListener {
         return false;
     }
 
+    private void newYearMaintenanceCost() {
+        int sum = 0;
+        for (int i = 0; i < gridSize; ++i) {
+            for (int j = 0; j < gridSize; ++j) {
+                if ((grid[i][j] != null)) {
+                    sum += grid[i][j].calculateMaintenance();
+
+                }
+            }
+        }
+        //TODO: ??? finance class : implement show yearly maintenance cost ???
+        finance.removeMoney(sum);
+    }
+
     @Override
     public void timeTick() {
         if (this.inGameTime.getInGameHour() > 0) {
@@ -1128,6 +1142,7 @@ public class GameModel implements InGameTimeTickListener {
             //and city mood change
             changeMoodOfPeople();
             newYearTaxCollection();
+            newYearMaintenanceCost();
         }
         for (WealthChangeListener l : this.wealthListeners) l.onWealthChange();
         for (MoralChangeListener l : this.moralListeners) l.onMoralChanged();

@@ -12,7 +12,7 @@ import java.awt.*;
 public class Industrial extends Workplace {
 
     public Industrial(Point position) {
-        super(FieldType.ZONE_INDUSTRIAL, position, 6000, 20, 100);
+        super(FieldType.ZONE_INDUSTRIAL, position, 6000, 20, 200);
     }
 
     @Override

@@ -49,6 +49,7 @@ public class Person implements InGameTimeTickListener {
 
     public Person(Residential home, int cityMood) {
         this.mood = cityMood;
+        this.mood = (int) (Math.random() * 5 + (cityMood - 5));
 
         inGameTime = InGameTimeManager.getInstance().getInGameTime();
         inGameTime.addInGameTimeTickListener(this);

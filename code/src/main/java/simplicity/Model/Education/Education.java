@@ -26,4 +26,9 @@ public abstract class Education extends Zone {
     public int calculateTax() {
         return 0;
     }
+
+    @Override
+    public int calculateMaintenance() {
+        return maintenanceCost;
+    }
 }

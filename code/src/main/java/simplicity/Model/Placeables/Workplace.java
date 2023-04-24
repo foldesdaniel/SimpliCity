@@ -18,4 +18,9 @@ public abstract class Workplace extends Zone {
     public int calculateTax() {
         return this.getPeople().size() * this.taxPerPerson;
     }
+
+    @Override
+    public int calculateMaintenance() {
+        return 0;
+    }
 }

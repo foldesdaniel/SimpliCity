@@ -18,7 +18,7 @@ public class School extends Education implements InGameTimeTickListener {
     private final InGameTime inGameTime;
 
     public School( Point position) {
-        super(FieldType.SCHOOL, position, 7000, 20, 500);
+        super(FieldType.SCHOOL, position, 7000, 20, 1500);
         inGameTime = InGameTimeManager.getInstance().getInGameTime();
         inGameTime.addInGameTimeTickListener(this);
     }

@@ -14,11 +14,16 @@ public class Road extends Placeable {
     private int maintenanceCost;
     public Road(Point position) {
         super(FieldType.ROAD, position, 600);
-        this.maintenanceCost = 500;
+        this.maintenanceCost = 100;
     }
 
     @Override
     public int calculateTax() {
+        return maintenanceCost;
+    }
+
+    @Override
+    public int calculateMaintenance() {
         return 0;
     }
 
