@@ -956,6 +956,43 @@ public class GameModel implements InGameTimeTickListener {
                         }
                     }
                 }
+                //change mood based on tax
+                if (this.grid[i][j] instanceof Residential) {
+                    int size = ((Residential) this.grid[i][j]).getPeople().size();
+                    int max = ((Residential) this.grid[i][j]).getMaxPeople();
+
+                    for (Person p : ((Residential) this.grid[i][j]).getPeople()) {
+                        if (size == max) boostMood(p, -7);
+                        else if (size > 2 * max / 3) boostMood(p, -4);
+                        else if (size > max / 2) boostMood(p, -1);
+                        else if (size > max / 3) boostMood(p, 2);
+                        else boostMood(p, 5);
+                    }
+                }
+                else if (this.grid[i][j] instanceof Service) {
+                    int size = ((Service) this.grid[i][j]).getPeople().size();
+                    int max = ((Service) this.grid[i][j]).getMaxPeople();
+
+                    for (Person p : ((Service) this.grid[i][j]).getPeople()) {
+                        if (size == max) boostMood(p, -7);
+                        else if (size > 2 * max / 3) boostMood(p, -4);
+                        else if (size > max / 2) boostMood(p, -1);
+                        else if (size > max / 3) boostMood(p, 2);
+                        else boostMood(p, 5);
+                    }
+                }
+                else if (this.grid[i][j] instanceof Industrial) {
+                    int size = ((Industrial) this.grid[i][j]).getPeople().size();
+                    int max = ((Industrial) this.grid[i][j]).getMaxPeople();
+
+                    for (Person p : ((Industrial) this.grid[i][j]).getPeople()) {
+                        if (size == max) boostMood(p, -7);
+                        else if (size > 2 * max / 3) boostMood(p, -4);
+                        else if (size > max / 2) boostMood(p, -1);
+                        else if (size > max / 3) boostMood(p, 2);
+                        else boostMood(p, 5);
+                    }
+                }
             }
         }
     }
