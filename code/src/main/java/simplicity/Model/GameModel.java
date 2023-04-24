@@ -1090,6 +1090,7 @@ public class GameModel implements InGameTimeTickListener {
             //triggers new year tax collection
             //and city mood change
             changeMoodOfPeople();
+            newYearTaxCollection();
         }
         for (WealthChangeListener l : this.wealthListeners) l.onWealthChange();
         for (MoralChangeListener l : this.moralListeners) l.onMoralChanged();
