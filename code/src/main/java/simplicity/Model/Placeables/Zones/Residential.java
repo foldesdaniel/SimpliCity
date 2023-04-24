@@ -14,7 +14,7 @@ public class Residential extends Zone {
     private final int taxPerInhabitant;
 
     public Residential(Point position) {
-        super(FieldType.ZONE_RESIDENTIAL, position, 1000, 4);
+        super(FieldType.ZONE_RESIDENTIAL, position, 7000, 4);
         this.taxPerInhabitant = 100;
     }
 

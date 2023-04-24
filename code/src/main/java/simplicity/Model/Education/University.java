@@ -18,7 +18,7 @@ public class University extends Education implements InGameTimeTickListener {
     private final InGameTime inGameTime;
 
     public University(Point position) {
-        super(FieldType.UNIVERSITY, position, 1000, 20, 800);
+        super(FieldType.UNIVERSITY, position, 9000, 20, 800);
         inGameTime = InGameTimeManager.getInstance().getInGameTime();
         inGameTime.addInGameTimeTickListener(this);
     }

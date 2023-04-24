@@ -13,7 +13,7 @@ public class Road extends Placeable {
     @Getter
     private int maintenanceCost;
     public Road(Point position) {
-        super(FieldType.ROAD, position, 1000);
+        super(FieldType.ROAD, position, 600);
         this.maintenanceCost = 500;
     }
 

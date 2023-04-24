@@ -47,6 +47,15 @@ public class Person implements InGameTimeTickListener {
         moveIn(home);
     }
 
+    public Person(Residential home, int cityMood) {
+        this.mood = cityMood;
+
+        inGameTime = InGameTimeManager.getInstance().getInGameTime();
+        inGameTime.addInGameTimeTickListener(this);
+
+        moveIn(home);
+    }
+
     public int getMood() {
         if(mood + boostMood > 100) return Math.min(mood + boostMood, 100);
         else if (mood + boostMood < 0) return Math.max(mood + boostMood, 0);
