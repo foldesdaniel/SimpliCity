@@ -96,7 +96,9 @@ public class GameModel implements InGameTimeTickListener {
         grid[1][1] = new Road(new Point(1, 1));
         grid[1][2] = new Residential(new Point(1, 2));
         grid[0][2] = new Industrial(new Point(0,2));
-        grid[2][1] = new School(new Point(2,1));
+        School s1 = new School(new Point(2,1));
+        grid[2][1] = s1;
+        grid[3][1] = new PlaceableTemp(s1);
 
 //        grid[0][3] = new Road(new Point(0,3));
 //        grid[0][4] = new Road(new Point(0,4));
@@ -743,6 +745,8 @@ public class GameModel implements InGameTimeTickListener {
 
     private void boostMood(Person p, int boost) {
         p.setBoostMood(p.getBoostMood() + boost);
+        for (MoralChangeListener l : this.moralListeners) l.onMoralChanged();
+
     }
 
     private void boostPersonMoodBasedOnDistance(Person person, String type) {
@@ -830,6 +834,7 @@ public class GameModel implements InGameTimeTickListener {
         person.setBoostMood(count * 5);
         count = countIndustrial(person.getHome().getPosition());
         person.setBoostMood(-count * 5);
+        for (MoralChangeListener l : this.moralListeners) l.onMoralChanged();
 
         //todo : searchForForest && boost mood based on tax
     }
@@ -905,6 +910,7 @@ public class GameModel implements InGameTimeTickListener {
         if (numOfZones != 0) {
             this.cityMood = cityMood / numOfZones;
         }
+        for (MoralChangeListener l : this.moralListeners) l.onMoralChanged();
     }
 
     public void addMoralChangeListener(MoralChangeListener l) {
@@ -958,6 +964,7 @@ public class GameModel implements InGameTimeTickListener {
                 }
             }
         }
+        for (MoralChangeListener l : this.moralListeners) l.onMoralChanged();
     }
 
     private boolean isMoodGoodEnough() {
@@ -980,6 +987,7 @@ public class GameModel implements InGameTimeTickListener {
             calculateMood(tmp);
             this.people.add(tmp);
             for (PeopleChangeListener l : peopleChangeListeners) l.onPeopleCountChange();
+            for (MoralChangeListener l : this.moralListeners) l.onMoralChanged();
         }
 //        System.out.println(this.people.size());
     }

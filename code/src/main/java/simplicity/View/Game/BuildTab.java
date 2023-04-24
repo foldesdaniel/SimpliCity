@@ -7,6 +7,7 @@ import simplicity.Model.Placeables.Zones.Industrial;
 import simplicity.Model.Placeables.Zones.Residential;
 import simplicity.Model.Placeables.Zones.Service;
 import simplicity.View.Style.CFont;
+import simplicity.View.Style.WrapLayout;
 
 import javax.swing.*;
 import java.awt.*;
@@ -20,12 +21,10 @@ public class BuildTab extends JPanel {
         this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         this.zones = new JPanel();
         this.buildings = new JPanel();
-        GridLayout layout = new GridLayout(0, 3);
-        // layout.setVgap(4);
-        // layout.setHgap(4);
-        this.zones.setLayout(layout);
-        this.buildings.setLayout(layout);
+        this.zones.setLayout(new WrapLayout(1, 4, 4));
+        this.buildings.setLayout(new WrapLayout(1, 4, 4));
         this.init();
+
     }
 
     public void init() {
@@ -37,8 +36,7 @@ public class BuildTab extends JPanel {
         buildingsTitle.setFont(CFont.get(Font.BOLD, 24));
         buildingsTitle.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        BuildTile bt = new BuildTile(Residential.class);
-        this.zones.add(bt);
+        this.zones.add(new BuildTile(Residential.class));
         this.zones.add(new BuildTile(Service.class));
         this.zones.add(new BuildTile(Industrial.class));
         this.buildings.add(new BuildTile(Road.class));
@@ -57,4 +55,10 @@ public class BuildTab extends JPanel {
         this.add(this.buildings);
     }
 
+    @Override
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        this.zones.setMaximumSize(this.zones.getLayout().preferredLayoutSize(this.zones));
+        this.buildings.setMaximumSize(this.buildings.getLayout().preferredLayoutSize(this.buildings));
+    }
 }

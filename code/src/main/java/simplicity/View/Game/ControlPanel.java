@@ -24,8 +24,11 @@ public class ControlPanel extends JPanel {
         infoTab = new InfoTab();
         buildTab = new BuildTab();
         container = new JPanel();
-        container.setPreferredSize(new Dimension(10, 1000));
+        container.setLayout(new BoxLayout(container, BoxLayout.Y_AXIS));
+        //container.setAlignmentX(Component.LEFT_ALIGNMENT);
+        // container.setPreferredSize(new Dimension(10, 1000));
         GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(0, 24, 0, 24);
         this.setLayout(new GridBagLayout());
         JPanel btnContainer = new JPanel();
         font = CFont.get(Font.PLAIN, 22);
@@ -41,8 +44,10 @@ public class ControlPanel extends JPanel {
         btnContainer.add(infoBtn);
         btnContainer.add(buildBtn);
         this.add(btnContainer, GamePanel.changeGbc(gbc, 0, 0, 1, 1, 1, 0));
-        this.add(Box.createRigidArea(new Dimension(0, 16)));
-        this.add(container, GamePanel.changeGbc(gbc, 1, 0, 1, 1, 1, 1));
+        this.add(Box.createRigidArea(new Dimension(0, 20)));
+        JScrollPane scrollPane = new JScrollPane(container,JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        scrollPane.setBorder(BorderFactory.createEmptyBorder());
+        this.add(scrollPane, GamePanel.changeGbc(gbc, 1, 0, 1, 1, 1, 1));
     }
 
     public void updateInfo(Placeable f) {
