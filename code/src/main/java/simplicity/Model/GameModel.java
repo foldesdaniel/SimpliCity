@@ -966,7 +966,7 @@ public class GameModel implements InGameTimeTickListener {
                         else if (size > 2 * max / 3) boostMood(p, -4);
                         else if (size > max / 2) boostMood(p, -1);
                         else if (size > max / 3) boostMood(p, 2);
-                        else boostMood(p, 5);
+                        else boostMood(p, 7);
                     }
                 }
                 else if (this.grid[i][j] instanceof Service) {
@@ -978,7 +978,7 @@ public class GameModel implements InGameTimeTickListener {
                         else if (size > 2 * max / 3) boostMood(p, -4);
                         else if (size > max / 2) boostMood(p, -1);
                         else if (size > max / 3) boostMood(p, 2);
-                        else boostMood(p, 5);
+                        else boostMood(p, 7);
                     }
                 }
                 else if (this.grid[i][j] instanceof Industrial) {
@@ -990,7 +990,7 @@ public class GameModel implements InGameTimeTickListener {
                         else if (size > 2 * max / 3) boostMood(p, -4);
                         else if (size > max / 2) boostMood(p, -1);
                         else if (size > max / 3) boostMood(p, 2);
-                        else boostMood(p, 5);
+                        else boostMood(p, 7);
                     }
                 }
             }
