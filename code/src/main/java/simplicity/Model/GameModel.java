@@ -98,7 +98,11 @@ public class GameModel implements InGameTimeTickListener {
         grid[0][2] = new Industrial(new Point(0,2));
         School s1 = new School(new Point(2,1));
         grid[2][1] = s1;
-        grid[3][1] = new PlaceableTemp(s1);
+        grid[3][1] = new PlaceableTemp(s1, new Point(3,1));
+        grid[4][1] = new Road(new Point(4,1));
+        grid[5][1] = new Residential(new Point(5,1));
+
+        System.out.println(isPath(convertToNumMatrix(grid[5][1],grid[3][1],null)));
 
 //        grid[0][3] = new Road(new Point(0,3));
 //        grid[0][4] = new Road(new Point(0,4));
@@ -281,7 +285,7 @@ public class GameModel implements InGameTimeTickListener {
         for (int i = 0; i < size.height; i++) {
             for (int j = 0; j < size.width; j++) {
                 if (i == 0 && j == 0) continue;
-                this.grid[position.x + j][position.y - i] = new PlaceableTemp(p);
+                this.grid[position.x + j][position.y - i] = new PlaceableTemp(p, position);
             }
         }
     }
