@@ -23,17 +23,18 @@ public class GameWindow extends JFrame implements MenuEventListener, StartGameLi
     public GameWindow() {
         this.setTitle(GameModel.GAME_TITLE);
         this.changedFullscreen();
-        this.setUndecorated(true);
-        this.setResizable(false);
         //this.changedWindowed(960,480);
-        this.setLocationRelativeTo(null);
+        this.setResizable(false);
+        this.setUndecorated(true);
         this.getContentPane().setLayout(new BorderLayout());
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         mainMenu = new MainMenu();
         mainMenu.addMenuEventListener(this);
         mainMenu.addStartGameListener(this);
         this.add(mainMenu, BorderLayout.CENTER);
-        /*JMenu menuCategory1 = new JMenu("File");
+
+        /*System.setProperty("apple.laf.useScreenMenuBar", "true");
+        JMenu menuCategory1 = new JMenu("File");
         JMenuItem menuItem1 = new JMenuItem("opt1");
         JMenuItem menuItem2 = new JMenuItem("opt2");
         menuCategory1.add(menuItem1);
@@ -41,6 +42,7 @@ public class GameWindow extends JFrame implements MenuEventListener, StartGameLi
         JMenuBar menuBar = new JMenuBar();
         menuBar.add(menuCategory1);
         this.setJMenuBar(menuBar);*/ // it's a little broken on macos
+
         this.pack();
     }
 
@@ -52,6 +54,7 @@ public class GameWindow extends JFrame implements MenuEventListener, StartGameLi
         this.setSize(new Dimension(width, height));
         this.setPreferredSize(new Dimension(width, height));
         this.updateSize();
+        this.setLocationRelativeTo(null);
     }
 
     @Override
@@ -63,6 +66,7 @@ public class GameWindow extends JFrame implements MenuEventListener, StartGameLi
         this.setSize(new Dimension(windowWidth, windowHeight));
         this.setPreferredSize(new Dimension(windowWidth, windowHeight));
         this.updateSize();
+        this.setLocationRelativeTo(null);
     }
 
     public void updateSize() {
