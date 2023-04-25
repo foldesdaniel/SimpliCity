@@ -1050,7 +1050,11 @@ public class GameModel implements InGameTimeTickListener {
             //TODO lp could be null
             if (lp.getWorkplace() != null) lp.getWorkplace().removePerson(lp);
             if (lp.getHome() != null) lp.getHome().removePerson(lp);
-            if (lp.getEducation() != null) lp.getEducation().removePerson(lp);
+            if (lp.getEducation() != null) {
+                int indexOfPerson = lp.getEducation().getPeople().indexOf(lp);
+                lp.getEducation().getArrivalDates().remove(indexOfPerson);
+                lp.getEducation().removePerson(lp);
+            }
             this.people.remove(lp);
         }
 //        System.out.println("AFTER REMOVAL: " + this.people.size());
