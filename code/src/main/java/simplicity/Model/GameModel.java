@@ -231,16 +231,6 @@ public class GameModel implements InGameTimeTickListener {
         }
     }
 
-    public boolean gridPlace(Placeable p, int i, int j) {
-        if (this.grid[i][j] == null) {
-            p.setPosition(new Point(i, j));
-            this.grid[i][j] = p;
-            return true;
-        } else {
-            return false;
-        }
-    }
-
     private boolean[][] freeSpaces() {
         boolean[][] spaces = new boolean[this.gridSize][this.gridSize];
         for (int i = 0; i < gridSize; i++) {
@@ -276,7 +266,6 @@ public class GameModel implements InGameTimeTickListener {
             for (int j = 0; j < p.getSize().width; j++) {
                 //if (grid[x + j][y - i] != null) {
                 if (!freeSpaces[y - i][x + j]) {
-                    System.out.println("cant place 2");
                     return false;
                 }
             }

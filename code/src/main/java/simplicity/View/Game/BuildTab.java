@@ -16,13 +16,16 @@ public class BuildTab extends JPanel {
 
     private final JPanel zones;
     private final JPanel buildings;
+    private final JPanel other;
 
     public BuildTab(){
         this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         this.zones = new JPanel();
         this.buildings = new JPanel();
+        this.other = new JPanel();
         this.zones.setLayout(new WrapLayout(1, 4, 4));
         this.buildings.setLayout(new WrapLayout(1, 4, 4));
+        this.other.setLayout(new WrapLayout(1, 4, 4));
         this.init();
     }
 
@@ -45,6 +48,12 @@ public class BuildTab extends JPanel {
         this.buildings.add(new BuildTile(School.class));
         this.buildings.add(new BuildTile(University.class));
 
+        JButton exitBtn = new JButton();
+        exitBtn.addActionListener((e) -> GamePanel.stopPlacing());
+        exitBtn.setText("Exit building mode");
+        exitBtn.setFont(CFont.get());
+        this.other.add(exitBtn);
+
         this.add(zonesTitle);
         this.add(Box.createRigidArea(new Dimension(0, 16)));
         this.add(this.zones);
@@ -53,10 +62,7 @@ public class BuildTab extends JPanel {
         this.add(Box.createRigidArea(new Dimension(0, 16)));
         this.add(this.buildings);
         this.add(Box.createRigidArea(new Dimension(0, 16)));
-        JButton exitBtn = new JButton();
-        exitBtn.addActionListener((e) -> GamePanel.stopPlacing());
-        exitBtn.setText("Exit building mode");
-        this.add(exitBtn);
+        this.add(this.other);
     }
 
     @Override

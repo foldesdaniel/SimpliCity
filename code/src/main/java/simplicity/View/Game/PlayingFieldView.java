@@ -233,8 +233,12 @@ public class PlayingFieldView extends JPanel implements MouseListener, MouseMoti
     }
 
     private void mouseRightClicked(MouseEvent e) {
-        boolean fieldHit = hoverField != GameModel.NO_SELECTION;
-        // if (fieldHit) model.grid(hoverField.x,hoverField.y).toggleTeszt();
+        if(GamePanel.isPlacing()){
+            GamePanel.stopPlacing();
+        }else{
+            boolean fieldHit = hoverField != GameModel.NO_SELECTION;
+            // ...
+        }
         this.repaint();
     }
 
