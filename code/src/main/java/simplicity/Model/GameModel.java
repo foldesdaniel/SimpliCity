@@ -65,7 +65,7 @@ public class GameModel implements InGameTimeTickListener {
     private int secondaryPercentage;
     private int uniPercentage;
     @Getter
-    private int cityMood = 50;
+    private int cityMood = 60;
     private Placeable grid[][];
     private Finance finance;
     private int industrialCount = 0;
@@ -75,7 +75,7 @@ public class GameModel implements InGameTimeTickListener {
     public GameModel() {
         inGameTime.addInGameTimeTickListener(this);
         inGameTime.startInGameTime(InGameSpeeds.ULTRASONIC_DEV_ONLY);
-        this.finance = new Finance(-1000); //starting wealth
+        this.finance = new Finance(35000); //starting wealth
         this.secondaryPercentage = 70;
         this.uniPercentage = 22;
         this.mood = 0;
@@ -174,7 +174,7 @@ public class GameModel implements InGameTimeTickListener {
             }
         }
 
-        return count;
+        return count / 4;
     }
 
     private int countPolice(Point position) {
@@ -315,12 +315,12 @@ public class GameModel implements InGameTimeTickListener {
                         if (grid[i][j].getType() == FieldType.ZONE_RESIDENTIAL) {
                             for (Person p : ((Residential) grid[i][j]).getPeople()) {
                                 //calculateMood(p);
-                                boostMood(p, 5);
+                                boostMood(p, 7);
                             }
                         } else if (grid[i][j].getType() == FieldType.ZONE_INDUSTRIAL || grid[i][j].getType() == FieldType.ZONE_SERVICE) {
                             for (Person p : ((Workplace) grid[i][j]).getPeople()) {
                                 //calculateMood(p);
-                                boostMood(p, 5);
+                                boostMood(p, 7);
                             }
                         }
                     }
@@ -344,12 +344,12 @@ public class GameModel implements InGameTimeTickListener {
                         if (grid[i][j].getType() == FieldType.ZONE_RESIDENTIAL) {
                             for (Person p : ((Residential) grid[i][j]).getPeople()) {
                                 //calculateMood(p);
-                                boostMood(p, -5);
+                                boostMood(p, -7);
                             }
                         } else if (grid[i][j].getType() == FieldType.ZONE_INDUSTRIAL || grid[i][j].getType() == FieldType.ZONE_SERVICE) {
                             for (Person p : ((Workplace) grid[i][j]).getPeople()) {
                                 //calculateMood(p);
-                                boostMood(p, -5);
+                                boostMood(p, -7);
                             }
                         }
                     }
@@ -377,7 +377,7 @@ public class GameModel implements InGameTimeTickListener {
                         if (grid[i][j].getType() == FieldType.ZONE_RESIDENTIAL) {
                             for (Person p : ((Residential) grid[i][j]).getPeople()) {
                                 //calculateMood(p);
-                                boostMood(p, 5);
+                                boostMood(p, 6);
                             }
                         }
                     }
@@ -401,12 +401,12 @@ public class GameModel implements InGameTimeTickListener {
                         if (grid[i][j].getType() == FieldType.ZONE_RESIDENTIAL) {
                             for (Person p : ((Residential) grid[i][j]).getPeople()) {
                                 //calculateMood(p);
-                                boostMood(p, -5);
+                                boostMood(p, -6);
                             }
                         } else if (grid[i][j].getType() == FieldType.ZONE_INDUSTRIAL || grid[i][j].getType() == FieldType.ZONE_SERVICE) {
                             for (Person p : ((Workplace) grid[i][j]).getPeople()) {
                                 //calculateMood(p);
-                                boostMood(p, -5);
+                                boostMood(p, -6);
                             }
                         }
                     }
@@ -433,7 +433,7 @@ public class GameModel implements InGameTimeTickListener {
                     if (grid[i][j] != null && grid[i][j].getType() == FieldType.ZONE_RESIDENTIAL) {
                         for (Person p : ((Residential) grid[i][j]).getPeople()) {
                             //calculateMood(p);
-                            boostMood(p, -5);
+                            boostMood(p, -7);
                         }
                     }
                 }
@@ -453,7 +453,7 @@ public class GameModel implements InGameTimeTickListener {
                     if (grid[i][j] != null && grid[i][j].getType() == FieldType.ZONE_RESIDENTIAL) {
                         for (Person p : ((Residential) grid[i][j]).getPeople()) {
                             //calculateMood(p);
-                            boostMood(p, 5);
+                            boostMood(p, 7);
                         }
                     }
                 }
@@ -761,9 +761,9 @@ public class GameModel implements InGameTimeTickListener {
 
     private void boostPersonMoodBasedOnDistance(Person person, String type) {
         //TODO: when object is deleted then recalculate the distance boost
-        if (getWorkplaceDistance(person, type) < 6) boostMood(person, 5);
-        else if (getWorkplaceDistance(person, type) < 12) boostMood(person, 3);
-        else boostMood(person, 1);
+        if (getWorkplaceDistance(person, type) < 6) boostMood(person, 4);
+        else if (getWorkplaceDistance(person, type) < 12) boostMood(person, -2);
+        else boostMood(person, -7);
     }
 
     private boolean searchForJob(Person person, String type) {
@@ -843,14 +843,13 @@ public class GameModel implements InGameTimeTickListener {
 
     private void calculateMood(Person person) {
         int count = countStadium(person.getHome().getPosition());
-        person.setBoostMood(count * 5);
+        person.setBoostMood(count * 7);
         count = countPolice(person.getHome().getPosition());
-        person.setBoostMood(count * 5);
+        person.setBoostMood(count * 6);
         count = countIndustrial(person.getHome().getPosition());
-        person.setBoostMood(-count * 5);
+        person.setBoostMood(-count * 6);
         for (MoralChangeListener l : this.moralListeners) l.onMoralChanged();
-
-        //todo : searchForForest && boost mood based on tax
+        //todo : searchForForest
     }
 
     private boolean canRoadBeDestroyed(Placeable startPoint, Placeable endPoint, Placeable toBeDestroyed) {
@@ -944,7 +943,7 @@ public class GameModel implements InGameTimeTickListener {
     }
 
     private void changeMoodOfPeople() {
-        if (this.finance.getCurrentWealth() < -2500) {
+        if (this.finance.getCurrentWealth() < -8000) {
             this.finance.setProfitableYearsInARow(this.finance.getProfitableYearsInARow() - 0.5);
         } else {
             this.finance.setProfitableYearsInARow(this.finance.getProfitableYearsInARow() + 0.5);
@@ -976,13 +975,50 @@ public class GameModel implements InGameTimeTickListener {
                         }
                     }
                 }
+                //change mood based on tax
+                if (this.grid[i][j] instanceof Residential) {
+                    int size = ((Residential) this.grid[i][j]).getPeople().size();
+                    int max = ((Residential) this.grid[i][j]).getMaxPeople();
+
+                    for (Person p : ((Residential) this.grid[i][j]).getPeople()) {
+                        if (size == max) boostMood(p, -4);
+                        else if (size > 2 * max / 3) boostMood(p, -2);
+                        else if (size > max / 2) boostMood(p, 1);
+                        else if (size > max / 3) boostMood(p, 2);
+                        else boostMood(p, 7);
+                    }
+                }
+                else if (this.grid[i][j] instanceof Service) {
+                    int size = ((Service) this.grid[i][j]).getPeople().size();
+                    int max = ((Service) this.grid[i][j]).getMaxPeople();
+
+                    for (Person p : ((Service) this.grid[i][j]).getPeople()) {
+                        if (size == max) boostMood(p, -4);
+                        else if (size > 2 * max / 3) boostMood(p, -2);
+                        else if (size > max / 2) boostMood(p, 1);
+                        else if (size > max / 3) boostMood(p, 2);
+                        else boostMood(p, 7);
+                    }
+                }
+                else if (this.grid[i][j] instanceof Industrial) {
+                    int size = ((Industrial) this.grid[i][j]).getPeople().size();
+                    int max = ((Industrial) this.grid[i][j]).getMaxPeople();
+
+                    for (Person p : ((Industrial) this.grid[i][j]).getPeople()) {
+                        if (size == max) boostMood(p, -4);
+                        else if (size > 2 * max / 3) boostMood(p, -2);
+                        else if (size > max / 2) boostMood(p, 1);
+                        else if (size > max / 3) boostMood(p, 2);
+                        else boostMood(p, 7);
+                    }
+                }
             }
         }
         for (MoralChangeListener l : this.moralListeners) l.onMoralChanged();
     }
 
     private boolean isMoodGoodEnough() {
-        return this.cityMood >= 25;
+        return this.cityMood >= 30;
     }
 
     private void welcomeNewInhabitants() {
@@ -997,7 +1033,7 @@ public class GameModel implements InGameTimeTickListener {
         double incomingNewPeople = Math.ceil(freeSpace * (cityMood / 100.0));
 //        System.out.println(incomingNewPeople);
         for (int i = 0; i < (int) incomingNewPeople; i++) {
-            Person tmp = new Person(findHome());
+            Person tmp = new Person(findHome(), cityMood);
             calculateMood(tmp);
             this.people.add(tmp);
             for (PeopleChangeListener l : peopleChangeListeners) l.onPeopleCountChange();
@@ -1058,6 +1094,11 @@ public class GameModel implements InGameTimeTickListener {
                 } else {
                     searchForJob(person, "workplace");
                 }
+
+                //reduce person mood if job not found
+                if (person.getEducation() == null && person.getWorkplace() == null) {
+                    boostMood(person, -4);
+                }
             }
 
         }
@@ -1081,6 +1122,20 @@ public class GameModel implements InGameTimeTickListener {
         if (y - 1 >= 0 && this.grid[x][y - 1] instanceof Road) return true;
         if (y + 1 < this.gridSize && this.grid[x][y + 1] instanceof Road) return true;
         return false;
+    }
+
+    private void newYearMaintenanceCost() {
+        int sum = 0;
+        for (int i = 0; i < gridSize; ++i) {
+            for (int j = 0; j < gridSize; ++j) {
+                if ((grid[i][j] != null)) {
+                    sum += grid[i][j].calculateMaintenance();
+
+                }
+            }
+        }
+        //TODO: ??? finance class : implement show yearly maintenance cost ???
+        finance.removeMoney(sum);
     }
 
     @Override
@@ -1113,6 +1168,7 @@ public class GameModel implements InGameTimeTickListener {
             //and city mood change
             changeMoodOfPeople();
             newYearTaxCollection();
+            newYearMaintenanceCost();
         }
         for (WealthChangeListener l : this.wealthListeners) l.onWealthChange();
         for (MoralChangeListener l : this.moralListeners) l.onMoralChanged();

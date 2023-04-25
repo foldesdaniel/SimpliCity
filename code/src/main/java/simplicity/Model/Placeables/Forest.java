@@ -30,4 +30,9 @@ public class Forest extends Placeable {
         return GameModel.FOREST_IMG;
     }
 
+    @Override
+    public int calculateMaintenance() {
+        return 0;
+    }
+
 }

@@ -22,6 +22,11 @@ public class PlaceableTemp extends Placeable {
     }
 
     @Override
+    public int calculateMaintenance() {
+        return placeable.calculateMaintenance();
+    }
+
+    @Override
     public Image getImage(Placeable left, Placeable right, Placeable up, Placeable down) {
         return null;
     }

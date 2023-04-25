@@ -14,7 +14,7 @@ public class Residential extends Zone {
     private final int taxPerInhabitant;
 
     public Residential(Point position) {
-        super(FieldType.ZONE_RESIDENTIAL, position, 1000, 4);
+        super(FieldType.ZONE_RESIDENTIAL, position, 5000, 4);
         this.taxPerInhabitant = 100;
     }
 
@@ -34,6 +34,11 @@ public class Residential extends Zone {
     @Override
     public Image getImage(Placeable left, Placeable right, Placeable up, Placeable down) {
         return GameModel.ZONE_RESIDENTIAL_IMG;
+    }
+
+    @Override
+    public int calculateMaintenance() {
+        return 0;
     }
 
 }

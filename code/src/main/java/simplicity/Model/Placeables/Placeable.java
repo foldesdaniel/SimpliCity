@@ -26,6 +26,8 @@ public abstract class Placeable {
 
     public abstract int calculateTax();
 
+    public abstract int calculateMaintenance();
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
