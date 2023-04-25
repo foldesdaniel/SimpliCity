@@ -18,6 +18,10 @@ public class MenuButton extends JButton {
     public MenuButton(String label) {
         this.setText(label);
         this.setFont(CFont.get(Font.BOLD, 28));
+        Dimension buttonSize = new Dimension(200,50); // TODO: media query-like sizing based on resolution
+        this.setPreferredSize(buttonSize);
+        this.setMinimumSize(buttonSize);
+        this.setMaximumSize(buttonSize);
     }
 
     /**

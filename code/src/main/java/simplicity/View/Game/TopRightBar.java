@@ -65,6 +65,14 @@ public class TopRightBar extends JPanel implements InGameTimeListener {
                 inGameTime.startInGameTime(InGameSpeeds.ULTRASONIC_DEV_ONLY);
             }
         });
+        JButton btn6 = new JButton("Bored");
+        btn6.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                inGameTime.stopInGameTime();
+                inGameTime.startInGameTime(InGameSpeeds.ULTRASUPERSONIC_DEV_ONLY);
+            }
+        });
         btn2.setFont(font);
         btn3.setFont(font);
         btn4.setFont(font);
@@ -80,6 +88,7 @@ public class TopRightBar extends JPanel implements InGameTimeListener {
         this.add(btn3);
         this.add(btn4);
         this.add(btn5);
+        this.add(btn6);
     }
 
     @Override

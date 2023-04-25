@@ -16,6 +16,8 @@ public class BuildTile extends JPanel {
     private boolean isHovering = false;
     private final Cursor cursorNormal = Cursor.getDefaultCursor();
     private final Cursor cursorHand = Cursor.getPredefinedCursor(Cursor.HAND_CURSOR);
+    private boolean isDragging;
+    private Point dragStart;
 
     public static final int MINIMUM_WIDTH = 96;
 
@@ -51,6 +53,24 @@ public class BuildTile extends JPanel {
                     setCursor(cursorNormal);
                     img.setCursor(cursorNormal);
                     repaint();
+                }
+            }
+            @Override
+            public void mouseDragged(MouseEvent e) {
+                if(!isDragging){
+                    isDragging = true;
+                    dragStart = e.getPoint();
+                }
+            }
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                if (isDragging) {
+                    isDragging = false;
+                    Point dragPointer = new Point(e.getPoint().x - dragStart.x, e.getPoint().y - dragStart.y);
+                    double distance = Math.sqrt(Math.pow(dragPointer.x, 2) + Math.pow(dragPointer.y, 2));
+                    if (distance <= GameModel.DRAG_THRESHOLD) {
+                        mouseClicked(e);
+                    }
                 }
             }
             @Override

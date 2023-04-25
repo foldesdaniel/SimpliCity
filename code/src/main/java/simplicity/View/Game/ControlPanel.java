@@ -1,11 +1,15 @@
 package simplicity.View.Game;
 
+import com.formdev.flatlaf.ui.FlatScrollBarUI;
 import simplicity.Model.GameModel;
 import simplicity.Model.Placeables.Placeable;
 import simplicity.View.Components.ControlPanelTabButton;
 import simplicity.View.Style.CFont;
+import simplicity.View.Style.ScrollBarUI;
 
 import javax.swing.*;
+import javax.swing.plaf.ColorUIResource;
+import javax.swing.plaf.basic.BasicScrollBarUI;
 import java.awt.*;
 
 public class ControlPanel extends JPanel {
@@ -47,6 +51,10 @@ public class ControlPanel extends JPanel {
         this.add(Box.createRigidArea(new Dimension(0, 20)));
         JScrollPane scrollPane = new JScrollPane(container,JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         scrollPane.setBorder(BorderFactory.createEmptyBorder());
+        //UIManager.put("ScrollBar.thumb", new ColorUIResource(Color.RED));
+        scrollPane.getVerticalScrollBar().setUI(new ScrollBarUI());
+        scrollPane.getHorizontalScrollBar().setUI(new ScrollBarUI());
+
         this.add(scrollPane, GamePanel.changeGbc(gbc, 1, 0, 1, 1, 1, 1));
     }
 

@@ -9,7 +9,9 @@ public enum InGameSpeeds {
     FAST(500),
     FASTEST(333),
 
-    ULTRASONIC_DEV_ONLY(5);
+    ULTRASONIC_DEV_ONLY(5),
+
+    ULTRASUPERSONIC_DEV_ONLY(1);
 
     @Getter
     private int speed;

@@ -26,7 +26,8 @@ public class MainMenu extends JPanel {
         this.startGameListeners = new ArrayList<>();
 
         this.updateMenuSize();
-        this.setLayout(new BorderLayout());
+        //this.setLayout(new BorderLayout());
+        this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         this.setBackground(new Color(100, 100, 100));
         this.setVisible(true);
 
@@ -51,48 +52,42 @@ public class MainMenu extends JPanel {
 
         int windowWidth = this.getWidth();
         int windowHeight = this.getHeight();
-        int gap = windowHeight/8;
-        int width = windowWidth/5;
-        int height = windowHeight/12;
-        int x, y;
+        int gap = windowHeight/32;
 
         JPanel mainMenuPanel = new JPanel();
-        mainMenuPanel.setLayout(null);
+        mainMenuPanel.setLayout(new BoxLayout(mainMenuPanel, BoxLayout.Y_AXIS));
         mainMenuPanel.setOpaque(false);
 
         //Load game
         MenuButton loadGame_btn = new MenuButton("LOAD GAME");
-        x = windowWidth/2 - width/2;
-        y = windowHeight/2 - gap/2 - height/2;
-        loadGame_btn.setBounds(x, y, width, height);
+        loadGame_btn.setAlignmentX(Component.CENTER_ALIGNMENT);
         //TODO -> implement actionlistener to display loading list
-        mainMenuPanel.add(loadGame_btn);
+        //mainMenuPanel.add(loadGame_btn);
+        //mainMenuPanel.add(Box.createRigidArea(new Dimension(0, gap)));
 
         //New game
         MenuButton newGame_btn = new MenuButton("NEW GAME");
-        x = windowWidth/2 - width/2;
-        y = windowHeight/2 - gap/2 - gap - height/2;
-        newGame_btn.setBounds(x, y, width, height);
+        newGame_btn.setAlignmentX(Component.CENTER_ALIGNMENT);
         newGame_btn.addActionListener(e -> displayInputCityName());
         mainMenuPanel.add(newGame_btn);
+        mainMenuPanel.add(Box.createRigidArea(new Dimension(0, gap)));
 
         //Settings
         MenuButton settings_btn = new MenuButton("SETTINGS");
-        x = windowWidth/2 - width/2;
-        y = windowHeight/2 + gap/2 - height/2;
-        settings_btn.setBounds(x, y, width, height);
+        settings_btn.setAlignmentX(Component.CENTER_ALIGNMENT);
         settings_btn.addActionListener(e -> displaySettings(false, true));
         mainMenuPanel.add(settings_btn);
+        mainMenuPanel.add(Box.createRigidArea(new Dimension(0, gap)));
 
         //Exit
         MenuButton exit_btn = new MenuButton("EXIT");
-        x = windowWidth/2 - width/2;
-        y = windowHeight/2 + gap/2 + gap - height/2;
-        exit_btn.setBounds(x, y, width, height);
+        exit_btn.setAlignmentX(Component.CENTER_ALIGNMENT);
         exit_btn.addActionListener(e -> System.exit(0));
         mainMenuPanel.add(exit_btn);
 
+        this.add(Box.createVerticalGlue());
         this.add(mainMenuPanel, BorderLayout.CENTER);
+        this.add(Box.createVerticalGlue());
     }
 
     /**
@@ -112,7 +107,7 @@ public class MainMenu extends JPanel {
         int x, y;
 
         JPanel newGamePanel = new JPanel();
-        newGamePanel.setLayout(null);
+        newGamePanel.setLayout(new BoxLayout(newGamePanel, BoxLayout.Y_AXIS));
         newGamePanel.setOpaque(false);
 
         //Label
@@ -147,7 +142,9 @@ public class MainMenu extends JPanel {
         back_btn.addActionListener(e -> displayButtons());
         newGamePanel.add(back_btn);
 
+        this.add(Box.createVerticalGlue());
         this.add(newGamePanel, BorderLayout.CENTER);
+        this.add(Box.createVerticalGlue());
     }
 
     /**
@@ -184,7 +181,7 @@ public class MainMenu extends JPanel {
         int x, y;
 
         JPanel settingsMenu = new JPanel();
-        settingsMenu.setLayout(null);
+        settingsMenu.setLayout(new BoxLayout(settingsMenu, BoxLayout.Y_AXIS));
         settingsMenu.setOpaque(false);
 
         //Label
@@ -262,7 +259,9 @@ public class MainMenu extends JPanel {
         back_btn.addActionListener(e -> displayButtons());
         settingsMenu.add(back_btn);
 
+        this.add(Box.createVerticalGlue());
         this.add(settingsMenu, BorderLayout.CENTER);
+        this.add(Box.createVerticalGlue());
     }
 
     /**

@@ -52,6 +52,7 @@ public class GameModel implements InGameTimeTickListener {
     public static final Font CUSTOM_FONT = ResourceLoader.loadFont("vt323.ttf");
     public static final Color BG_DARK = new Color(61, 63, 65); // default flatlaf dark
     public static final Point NO_SELECTION = new Point(-1, -1);
+    public static final int DRAG_THRESHOLD = 5;
     private static GameModel instance;
     private final InGameTime inGameTime = InGameTimeManager.getInstance().getInGameTime();
     //just for testing purposes
