@@ -924,7 +924,7 @@ public class GameModel implements InGameTimeTickListener {
     }
 
     private void changeMoodOfPeople() {
-        if (this.finance.getCurrentWealth() < -2500) {
+        if (this.finance.getCurrentWealth() < -8000) {
             this.finance.setProfitableYearsInARow(this.finance.getProfitableYearsInARow() - 0.5);
         } else {
             this.finance.setProfitableYearsInARow(this.finance.getProfitableYearsInARow() + 0.5);
@@ -998,7 +998,7 @@ public class GameModel implements InGameTimeTickListener {
     }
 
     private boolean isMoodGoodEnough() {
-        return this.cityMood >= 25;
+        return this.cityMood >= 30;
     }
 
     private void welcomeNewInhabitants() {
@@ -1072,6 +1072,11 @@ public class GameModel implements InGameTimeTickListener {
                     } else searchForJob(person, "workplace");
                 } else {
                     searchForJob(person, "workplace");
+                }
+
+                //reduce person mood if job not found
+                if (person.getEducation() == null && person.getWorkplace() == null) {
+                    boostMood(person, -4);
                 }
             }
 
