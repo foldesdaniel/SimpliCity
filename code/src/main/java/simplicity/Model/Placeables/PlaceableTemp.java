@@ -11,8 +11,8 @@ public class PlaceableTemp extends Placeable {
     @Getter
     private final Placeable placeable;
 
-    public PlaceableTemp(Placeable placeable){
-        super(placeable.getType(), placeable.getPosition(), placeable.getBuildPrice());
+    public PlaceableTemp(Placeable placeable, Point p){
+        super(placeable.getType(), p, placeable.getBuildPrice());
         this.placeable = placeable;
     }
 
