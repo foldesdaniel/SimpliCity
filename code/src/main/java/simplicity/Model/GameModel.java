@@ -90,17 +90,29 @@ public class GameModel implements InGameTimeTickListener {
         
         //this.printGrid();
 
-        grid[0][0] = new Residential(new Point(0, 0));
-        grid[1][0] = new Residential(new Point(1, 0));
-        grid[0][1] = new Road(new Point(0, 1));
-        grid[1][1] = new Road(new Point(1, 1));
-        grid[1][2] = new Residential(new Point(1, 2));
-        grid[0][2] = new Industrial(new Point(0,2));
-        School s1 = new School(new Point(2,1));
-        grid[2][1] = s1;
-        grid[3][1] = new PlaceableTemp(s1, new Point(3,1));
-        grid[4][1] = new Road(new Point(4,1));
-        grid[5][1] = new Residential(new Point(5,1));
+//        grid[0][0] = new Residential(new Point(0, 0));
+//        grid[1][0] = new Residential(new Point(1, 0));
+//        grid[0][1] = new Road(new Point(0, 1));
+//        grid[1][1] = new Road(new Point(1, 1));
+//        grid[1][2] = new Residential(new Point(1, 2));
+//        grid[0][2] = new Industrial(new Point(0,2));
+//        School s1 = new School(new Point(2,1));
+//        grid[2][1] = s1;
+//        grid[3][1] = new PlaceableTemp(s1, new Point(3,1));
+//        grid[4][1] = new Road(new Point(4,1));
+//        grid[5][1] = new Residential(new Point(5,1));
+
+        placeRoad(new Point(1, 1));
+        placeRoad(new Point(2, 0));
+        placeRoad(new Point(2, 1));
+        placeRoad(new Point(2, 2));
+        placeResidential(new Point(1, 0));
+        Person p = new Person();
+        p.moveIn((Residential)grid[1][0]);
+        placeService(new Point(1, 2));
+        p.goToWork((Service)grid[1][2]);
+
+        System.out.println(removeRoad(((Road)grid[1][1]).getPosition()));
 
 //        System.out.println(isPath(convertToNumMatrix(grid[5][1],grid[3][1],null)));
 //
@@ -475,7 +487,7 @@ public class GameModel implements InGameTimeTickListener {
         for (WealthChangeListener l : this.wealthListeners) l.onWealthChange();
     }
 
-    public Boolean removeRoad(Point position) {
+    public boolean removeRoad(Point position) {
         for (int i = 0; i < gridSize; ++i) {
             for (int j = 0; j < gridSize; ++j) {
                 if (grid[i][j] != null && grid[i][j].getType() == FieldType.ZONE_RESIDENTIAL) {
@@ -779,7 +791,6 @@ public class GameModel implements InGameTimeTickListener {
                             //INDUSTRIAL
                             if (((Industrial) current).areSpacesLeft() && isPath(convertToNumMatrix(person.getHome(), temp, null)) && !((Industrial) current).getPeople().contains(person)) {
 //                            if (((Industrial) current).areSpacesLeft() && !((Industrial) current).getPeople().contains(person)) {
-                                System.out.println("In Industrial");
                                 person.goToWork(((Industrial) current));
 //                                ((Industrial) grid[i][j]).addPerson(person);
                                 boostPersonMoodBasedOnDistance(person, type);
@@ -789,7 +800,6 @@ public class GameModel implements InGameTimeTickListener {
                             //SERVICE
                             if (((Service) current).areSpacesLeft() && isPath(convertToNumMatrix(person.getHome(), temp, null)) && !((Service) current).getPeople().contains(person)) {
 //                            if (((Service) current).areSpacesLeft() && !((Service) current).getPeople().contains(person)) {
-                                System.out.println("In Service");
                                 person.goToWork(((Service) current));
 //                                ((Service) grid[i][j]).addPerson(person);
                                 boostPersonMoodBasedOnDistance(person, type);
@@ -803,7 +813,6 @@ public class GameModel implements InGameTimeTickListener {
                             //HIGH SCHOOL
                             if (((School) current).areSpacesLeft() && isPath(convertToNumMatrix(person.getHome(), temp, null)) && !((School) current).getPeople().contains(person)) {
 //                            if (((School) current).areSpacesLeft() && !((School) current).getPeople().contains(person)) {
-                                System.out.println("In School");
                                 person.goToSchool(((School) current));
 //                                ((School) grid[i][j]).addPerson(person);
                                 boostPersonMoodBasedOnDistance(person, type);
@@ -816,7 +825,6 @@ public class GameModel implements InGameTimeTickListener {
                             //UNIVERSITY
                             if (((University) current).areSpacesLeft() && isPath(convertToNumMatrix(person.getHome(), temp, null)) && !((University) current).getPeople().contains(person)) {
 //                            if (((University) current).areSpacesLeft() && !((University) current).getPeople().contains(person)) {
-                                System.out.println("In Uni");
                                 person.goToSchool(((University) current));
 //                                ((University) grid[i][j]).addPerson(person);
                                 boostPersonMoodBasedOnDistance(person, type);
@@ -1068,7 +1076,6 @@ public class GameModel implements InGameTimeTickListener {
     }
 
     private void findOccupation() {
-        printCurrentEmployment();
         Random random = new Random();
         for (Person person : this.people) {
             if (person.getEducation() == null && person.getWorkplace() == null) {
@@ -1092,7 +1099,6 @@ public class GameModel implements InGameTimeTickListener {
             }
 
         }
-        printCurrentEmployment();
     }
 
     private void printCurrentEmployment() {
