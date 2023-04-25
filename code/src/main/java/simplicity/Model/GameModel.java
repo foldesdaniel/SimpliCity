@@ -86,8 +86,7 @@ public class GameModel implements InGameTimeTickListener {
         /*for (int i = 0; i < 10; i++) {
             this.people.add(new Person());
         }*/
-
-        //TESTING feature/14_mood
+        
         //this.printGrid();
 
         grid[0][0] = new Residential(new Point(0, 0));
@@ -96,7 +95,19 @@ public class GameModel implements InGameTimeTickListener {
         grid[1][1] = new Road(new Point(1, 1));
         grid[1][2] = new Residential(new Point(1, 2));
         grid[0][2] = new Industrial(new Point(0,2));
-        grid[2][1] = new School(new Point(2,1));
+        School s1 = new School(new Point(2,1));
+        grid[2][1] = s1;
+        grid[3][1] = new PlaceableTemp(s1, new Point(3,1));
+        grid[4][1] = new Road(new Point(4,1));
+        grid[5][1] = new Residential(new Point(5,1));
+
+//        System.out.println(isPath(convertToNumMatrix(grid[5][1],grid[3][1],null)));
+//
+//        placeUniversity(new Point(6,6));
+//        placeRoad(new Point(7,4));
+//        placeResidential(new Point(7,3));
+//        System.out.println((grid[7][5] instanceof PlaceableTemp) + " " + grid[7][5].getPosition());
+//        System.out.println((grid[3][1] instanceof PlaceableTemp) + " " + grid[3][1].getPosition());
 
 //        grid[0][3] = new Road(new Point(0,3));
 //        grid[0][4] = new Road(new Point(0,4));
@@ -279,7 +290,8 @@ public class GameModel implements InGameTimeTickListener {
         for (int i = 0; i < size.height; i++) {
             for (int j = 0; j < size.width; j++) {
                 if (i == 0 && j == 0) continue;
-                this.grid[position.x + j][position.y - i] = new PlaceableTemp(p);
+                Point newPos = new Point(position.x + j, position.y - i);
+                this.grid[newPos.x][newPos.y] = new PlaceableTemp(p, newPos);
             }
         }
     }
@@ -743,6 +755,8 @@ public class GameModel implements InGameTimeTickListener {
 
     private void boostMood(Person p, int boost) {
         p.setBoostMood(p.getBoostMood() + boost);
+        for (MoralChangeListener l : this.moralListeners) l.onMoralChanged();
+
     }
 
     private void boostPersonMoodBasedOnDistance(Person person, String type) {
@@ -762,14 +776,18 @@ public class GameModel implements InGameTimeTickListener {
             for (int j = 0; j < gridSize; ++j) {
                 if (!(x == i && y == j) && grid[i][j] != null) {
                     Placeable current = grid[i][j];
+                    Placeable temp;
                     if (current instanceof PlaceableTemp) {
+                        temp = current;
                         current = ((PlaceableTemp)current).getPlaceable();
+                    } else {
+                        temp = current;
                     }
                     //GO TO WORK
                     if (type.equals("workplace")) {
                         if (current.getType() == FieldType.ZONE_INDUSTRIAL) {
                             //INDUSTRIAL
-                            if (((Industrial) current).areSpacesLeft() && isPath(convertToNumMatrix(person.getHome(), (Industrial) current, null)) && !((Industrial) current).getPeople().contains(person)) {
+                            if (((Industrial) current).areSpacesLeft() && isPath(convertToNumMatrix(person.getHome(), temp, null)) && !((Industrial) current).getPeople().contains(person)) {
 //                            if (((Industrial) current).areSpacesLeft() && !((Industrial) current).getPeople().contains(person)) {
                                 System.out.println("In Industrial");
                                 person.goToWork(((Industrial) current));
@@ -779,7 +797,7 @@ public class GameModel implements InGameTimeTickListener {
                             }
                         } else if (current.getType() == FieldType.ZONE_SERVICE) {
                             //SERVICE
-                            if (((Service) current).areSpacesLeft() && isPath(convertToNumMatrix(person.getHome(), (Service) current, null)) && !((Service) current).getPeople().contains(person)) {
+                            if (((Service) current).areSpacesLeft() && isPath(convertToNumMatrix(person.getHome(), temp, null)) && !((Service) current).getPeople().contains(person)) {
 //                            if (((Service) current).areSpacesLeft() && !((Service) current).getPeople().contains(person)) {
                                 System.out.println("In Service");
                                 person.goToWork(((Service) current));
@@ -793,7 +811,7 @@ public class GameModel implements InGameTimeTickListener {
                     else if (type.equals("secondary")) {
                         if (current.getType() == FieldType.SCHOOL) {
                             //HIGH SCHOOL
-                            if (((School) current).areSpacesLeft() && isPath(convertToNumMatrix(person.getHome(), (School) current, null)) && !((School) current).getPeople().contains(person)) {
+                            if (((School) current).areSpacesLeft() && isPath(convertToNumMatrix(person.getHome(), temp, null)) && !((School) current).getPeople().contains(person)) {
 //                            if (((School) current).areSpacesLeft() && !((School) current).getPeople().contains(person)) {
                                 System.out.println("In School");
                                 person.goToSchool(((School) current));
@@ -806,7 +824,7 @@ public class GameModel implements InGameTimeTickListener {
                     else if (type.equals("uni")) {
                          if (current.getType() == FieldType.UNIVERSITY) {
                             //UNIVERSITY
-                            if (((University) current).areSpacesLeft() && isPath(convertToNumMatrix(person.getHome(), (University) current, null)) && !((University) current).getPeople().contains(person)) {
+                            if (((University) current).areSpacesLeft() && isPath(convertToNumMatrix(person.getHome(), temp, null)) && !((University) current).getPeople().contains(person)) {
 //                            if (((University) current).areSpacesLeft() && !((University) current).getPeople().contains(person)) {
                                 System.out.println("In Uni");
                                 person.goToSchool(((University) current));
@@ -830,7 +848,7 @@ public class GameModel implements InGameTimeTickListener {
         person.setBoostMood(count * 6);
         count = countIndustrial(person.getHome().getPosition());
         person.setBoostMood(-count * 6);
-
+        for (MoralChangeListener l : this.moralListeners) l.onMoralChanged();
         //todo : searchForForest
     }
 
@@ -905,6 +923,7 @@ public class GameModel implements InGameTimeTickListener {
         if (numOfZones != 0) {
             this.cityMood = cityMood / numOfZones;
         }
+        for (MoralChangeListener l : this.moralListeners) l.onMoralChanged();
     }
 
     public void addMoralChangeListener(MoralChangeListener l) {
@@ -995,6 +1014,7 @@ public class GameModel implements InGameTimeTickListener {
                 }
             }
         }
+        for (MoralChangeListener l : this.moralListeners) l.onMoralChanged();
     }
 
     private boolean isMoodGoodEnough() {
@@ -1017,6 +1037,7 @@ public class GameModel implements InGameTimeTickListener {
             calculateMood(tmp);
             this.people.add(tmp);
             for (PeopleChangeListener l : peopleChangeListeners) l.onPeopleCountChange();
+            for (MoralChangeListener l : this.moralListeners) l.onMoralChanged();
         }
 //        System.out.println(this.people.size());
     }

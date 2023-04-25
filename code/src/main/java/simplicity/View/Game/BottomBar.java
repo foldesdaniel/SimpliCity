@@ -19,9 +19,6 @@ public class BottomBar extends JPanel implements MoralChangeListener, PeopleChan
 
     public BottomBar() {
         this.model = GameModel.getInstance();
-        this.model.addMoralChangeListener(this);
-        this.model.addPeopleChangeListener(this);
-        this.model.addWealthChangeListener(this);
         this.personCountLabel = new JLabel("Person count: 0");
         this.moralLabel = new JLabel("Overall moral: 10");
         this.wealthLabel = new JLabel("Wealth: 0");
@@ -40,7 +37,10 @@ public class BottomBar extends JPanel implements MoralChangeListener, PeopleChan
         this.add(personCountLabel);
         this.add(moralLabel);
         this.add(wealthLabel);
-        //this.setLayout(new FlowLayout());
+
+        this.model.addMoralChangeListener(this);
+        this.model.addPeopleChangeListener(this);
+        this.model.addWealthChangeListener(this);
     }
 
     @Override
