@@ -24,7 +24,6 @@ public class BuildTab extends JPanel {
         this.zones.setLayout(new WrapLayout(1, 4, 4));
         this.buildings.setLayout(new WrapLayout(1, 4, 4));
         this.init();
-
     }
 
     public void init() {
@@ -53,6 +52,11 @@ public class BuildTab extends JPanel {
         this.add(buildingsTitle);
         this.add(Box.createRigidArea(new Dimension(0, 16)));
         this.add(this.buildings);
+        this.add(Box.createRigidArea(new Dimension(0, 16)));
+        JButton exitBtn = new JButton();
+        exitBtn.addActionListener((e) -> GamePanel.stopPlacing());
+        exitBtn.setText("Exit building mode");
+        this.add(exitBtn);
     }
 
     @Override

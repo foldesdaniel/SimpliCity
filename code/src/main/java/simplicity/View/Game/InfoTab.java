@@ -68,25 +68,29 @@ public class InfoTab extends JPanel implements PeopleChangeListener, MoralChange
                 ArrayList<Person> people = ff.getPeople();
                 if(ff instanceof Residential fff) infoText += "Mood: " + fff.calculateZoneMood() + "<br>";
                 infoText += "People:<br><ul style=\"padding:0;\">";
-                for(int i=0;i<people.size();i++){
-                    Person person = people.get(i);
-                    infoText += "<li>" + person.getAge().getYear() + "yo (mood: " + person.getMood() + ")";
-                    if(ff instanceof Residential fff){
-                        infoText += "<ul><li>";
-                        if(person.getEducation() != null){
-                            infoText += "School: " + person.getEducation();
-                        }else if(person.getWorkplace() != null){
-                            infoText += "Workplace: " + person.getWorkplace();
-                        }else{
-                            infoText += "No school or workplace";
+                if(people.size() == 0){
+                    infoText += "There are no people here";
+                }else{
+                    for(int i=0;i<people.size();i++){
+                        Person person = people.get(i);
+                        infoText += "<li>" + person.getAge().getYear() + "yo (mood: " + person.getMood() + ")";
+                        if(ff instanceof Residential fff){
+                            infoText += "<ul><li>";
+                            if(person.getEducation() != null){
+                                infoText += "School: " + person.getEducation();
+                            }else if(person.getWorkplace() != null){
+                                infoText += "Workplace: " + person.getWorkplace();
+                            }else{
+                                infoText += "No school or workplace";
+                            }
+                            infoText += "</li></ul>";
+                        }else if(ff instanceof Workplace || ff instanceof Education){
+                            infoText += "<ul><li>";
+                            infoText += "Home: " + person.getHome();
+                            infoText += "</li></ul>";
                         }
-                        infoText += "</li></ul>";
-                    }else if(ff instanceof Workplace || ff instanceof Education){
-                        infoText += "<ul><li>";
-                        infoText += "Home: " + person.getHome();
-                        infoText += "</li></ul>";
+                        infoText += "</li>";
                     }
-                    infoText += "</li>";
                 }
                 infoText += "</ul>";
             }

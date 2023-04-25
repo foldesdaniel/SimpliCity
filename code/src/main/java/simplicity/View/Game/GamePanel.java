@@ -84,11 +84,15 @@ public class GamePanel extends JPanel implements FieldClickListener {
         placee = p;
     }
 
-    public static Placeable stopPlacing(){
+    public static Placeable stopPlacing(boolean restart){
         Placeable p = placee;
-        isPlacing = false;
-        placee = null;
+        isPlacing = restart;
+        placee = restart ? BuildTile.newInstance(placee.getClass()) : null;
         return p;
+    }
+
+    public static Placeable stopPlacing(){
+        return stopPlacing(false);
     }
 
     public static boolean isPlacing(){

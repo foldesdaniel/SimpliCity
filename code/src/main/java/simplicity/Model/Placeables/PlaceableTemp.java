@@ -32,6 +32,11 @@ public class PlaceableTemp extends Placeable {
     }
 
     @Override
+    public Point getDisplayPosition(){
+        return placeable.getPosition();
+    }
+
+    @Override
     public Dimension getDisplaySize(){
         return placeable.getSize();
     }

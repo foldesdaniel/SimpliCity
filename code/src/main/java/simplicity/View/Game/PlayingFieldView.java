@@ -158,7 +158,7 @@ public class PlayingFieldView extends JPanel implements MouseListener, MouseMoti
         g.setColor(Color.BLACK);
         if (hoverField != GameModel.NO_SELECTION) {
             Placeable p = GamePanel.isPlacing() ? GamePanel.getPlacee() : model.grid(hoverField.x,hoverField.y);
-            Point placeholderPos = (p instanceof PlaceableTemp) ? new Point(hoverField.x - p.getPosition().x, p.getPosition().y - hoverField.y) : new Point(0,0);
+            Point placeholderPos = (p instanceof PlaceableTemp) ? new Point(hoverField.x - p.getDisplayPosition().x, p.getDisplayPosition().y - hoverField.y) : new Point(0,0);
             int placeHolderOffsetX = ((p instanceof PlaceableTemp) ? placeholderPos.x : 0) * fieldSize;
             int placeHolderOffsetY = ((p instanceof PlaceableTemp) ? placeholderPos.y : 0) * fieldSize;
             Dimension size = (p == null) ? new Dimension(1,1) : p.getDisplaySize();
@@ -204,7 +204,7 @@ public class PlayingFieldView extends JPanel implements MouseListener, MouseMoti
     private void mouseLeftClicked(MouseEvent e) {
         boolean fieldHit = hoverField != GameModel.NO_SELECTION;
         if(GamePanel.isPlacing()){
-            Placeable placee = GamePanel.stopPlacing();
+            Placeable placee = GamePanel.stopPlacing(true);
             if(placee instanceof Residential){
                 model.placeResidential(hoverField);
             }else if(placee instanceof Service){

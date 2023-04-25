@@ -72,7 +72,7 @@ public class BuildTile extends JPanel {
         // this.repaint();
     }
 
-    private Placeable newInstance(Class pl) {
+    public static Placeable newInstance(Class pl) {
         try{
             return (Placeable) pl.getConstructor(Point.class).newInstance(GameModel.NO_SELECTION);
         }catch(Exception ex){
