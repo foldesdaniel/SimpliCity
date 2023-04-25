@@ -24,6 +24,10 @@ public abstract class Placeable {
         this.position = position;
     }
 
+    public Point getDisplayPosition(){
+        return this.getPosition();
+    }
+
     public abstract int calculateTax();
 
     @Override

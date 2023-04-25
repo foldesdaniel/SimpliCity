@@ -2,7 +2,6 @@ package simplicity.View.Game;
 
 import simplicity.Model.GameModel;
 import simplicity.Model.Placeables.Placeable;
-import simplicity.View.Style.CFont;
 
 import javax.swing.*;
 import java.awt.*;
@@ -13,7 +12,7 @@ public class BuildTile extends JPanel {
 
     private Placeable placeable;
     private final WrapLabel nameLabel;
-    private final Dimension imageSize = new Dimension(32, 32);
+    private final Dimension defaultImageSize = new Dimension(32, 32);
     private boolean isHovering = false;
     private final Cursor cursorNormal = Cursor.getDefaultCursor();
     private final Cursor cursorHand = Cursor.getPredefinedCursor(Cursor.HAND_CURSOR);
@@ -38,7 +37,7 @@ public class BuildTile extends JPanel {
         container.add(img);
         container.add(this.nameLabel);
         container.setOpaque(false);
-        //container.setBackground(new Color(0,255,0));
+        //container.setBackground(new Color(200,255,200));
         this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         this.add(Box.createVerticalGlue());
         this.add(container);
@@ -72,7 +71,7 @@ public class BuildTile extends JPanel {
         // this.repaint();
     }
 
-    private Placeable newInstance(Class pl) {
+    public static Placeable newInstance(Class pl) {
         try{
             return (Placeable) pl.getConstructor(Point.class).newInstance(GameModel.NO_SELECTION);
         }catch(Exception ex){
@@ -83,8 +82,6 @@ public class BuildTile extends JPanel {
 
     public void updateNameLabel(){
         this.nameLabel.fitHeight(this.getPreferredSize().width);
-        //this.nameLabel.setSize(new Dimension(this.getPreferredSize().width,this.nameLabel.getPreferredSize().height));
-        System.out.println("wrapper size is " + this.nameLabel.getPreferredSize() + " and line count is " + this.nameLabel.getLineCount());
     }
 
     @Override
@@ -98,6 +95,14 @@ public class BuildTile extends JPanel {
     class BuildTileImage extends JPanel {
 
         BuildTileImage(){
+            int pw = placeable.getSize().width;
+            int ph = placeable.getSize().height;
+            Dimension imageSize = (pw > ph) ? (
+                new Dimension(defaultImageSize.width, (int)Math.round((ph/(double)pw)*defaultImageSize.height))
+            ) : (
+                new Dimension((int)Math.round((pw/(double)ph)*defaultImageSize.width), defaultImageSize.height)
+            );
+            System.out.println("buildtile image size should be " + imageSize + ", " + (ph/(double)pw) + ", " + (pw/(double)ph));
             this.setPreferredSize(imageSize);
             this.setSize(imageSize);
             this.setMaximumSize(imageSize);
