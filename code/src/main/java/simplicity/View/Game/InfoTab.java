@@ -19,11 +19,10 @@ import java.util.ArrayList;
 public class InfoTab extends JPanel implements PeopleChangeListener, MoralChangeListener {
 
     private Placeable lastInfo = null;
-    private final Dimension imageSize = new Dimension(32,32);
+    private final Dimension defaultImageSize = new Dimension(32,32);
 
     public InfoTab(){
         this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-        //this.setBackground(new Color(255,0,0));
         GameModel.getInstance().addPeopleChangeListener(this);
         this.init();
     }
@@ -50,7 +49,10 @@ public class InfoTab extends JPanel implements PeopleChangeListener, MoralChange
         if (f == null) {
             this.init();
         } else {
-            //this.add(new InfoIcon(f));
+            InfoIcon icon = new InfoIcon(f);
+            icon.setAlignmentX(Component.LEFT_ALIGNMENT);
+            this.add(icon);
+            this.add(Box.createRigidArea(new Dimension(0, 4)));
             Point position = f.getPosition();
             Image img = f.getImage();
             String name = f.getDisplayName();
@@ -68,32 +70,37 @@ public class InfoTab extends JPanel implements PeopleChangeListener, MoralChange
                 ArrayList<Person> people = ff.getPeople();
                 if(ff instanceof Residential fff) infoText += "Mood: " + fff.calculateZoneMood() + "<br>";
                 infoText += "People:<br><ul style=\"padding:0;\">";
-                for(int i=0;i<people.size();i++){
-                    Person person = people.get(i);
-                    infoText += "<li>" + person.getAge().getYear() + "yo (mood: " + person.getMood() + ")";
-                    if(ff instanceof Residential fff){
-                        infoText += "<ul><li>";
-                        if(person.getEducation() != null){
-                            infoText += "School: " + person.getEducation();
-                        }else if(person.getWorkplace() != null){
-                            infoText += "Workplace: " + person.getWorkplace();
-                        }else{
-                            infoText += "No school or workplace";
+                if(people.size() == 0){
+                    infoText += "There are no people here";
+                }else{
+                    for(int i=0;i<people.size();i++){
+                        Person person = people.get(i);
+                        infoText += "<li>" + person.getAge().getYear() + "yo (mood: " + person.getMood() + ")";
+                        if(ff instanceof Residential fff){
+                            infoText += "<ul><li>";
+                            if(person.getEducation() != null){
+                                infoText += "School: " + person.getEducation();
+                            }else if(person.getWorkplace() != null){
+                                infoText += "Workplace: " + person.getWorkplace();
+                            }else{
+                                infoText += "No school or workplace";
+                            }
+                            infoText += "</li></ul>";
+                        }else if(ff instanceof Workplace || ff instanceof Education){
+                            infoText += "<ul><li>";
+                            infoText += "Home: " + person.getHome();
+                            infoText += "</li></ul>";
                         }
-                        infoText += "</li></ul>";
-                    }else if(ff instanceof Workplace || ff instanceof Education){
-                        infoText += "<ul><li>";
-                        infoText += "Home: " + person.getHome();
-                        infoText += "</li></ul>";
+                        infoText += "</li>";
                     }
-                    infoText += "</li>";
                 }
                 infoText += "</ul>";
             }
             infoText += "</html>";
-            JLabel tempLabel = new JLabel(infoText);
-            tempLabel.setFont(CFont.get());
-            this.add(tempLabel);
+            JLabel infoLabel = new JLabel(infoText);
+            infoLabel.setFont(CFont.get());
+            infoLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+            this.add(infoLabel);
         }
     }
 
@@ -113,8 +120,12 @@ public class InfoTab extends JPanel implements PeopleChangeListener, MoralChange
 
         InfoIcon(Placeable p){
             this.p = p;
+            double x = p.getSize().width / (double)p.getSize().height;
+            Dimension imageSize = new Dimension((int)Math.round(x*32),32);
+
             this.setPreferredSize(imageSize);
             this.setSize(imageSize);
+            this.setMinimumSize(imageSize);
             this.setMaximumSize(imageSize);
             this.repaint();
         }

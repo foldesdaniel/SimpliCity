@@ -158,7 +158,7 @@ public class PlayingFieldView extends JPanel implements MouseListener, MouseMoti
         g.setColor(Color.BLACK);
         if (hoverField != GameModel.NO_SELECTION) {
             Placeable p = GamePanel.isPlacing() ? GamePanel.getPlacee() : model.grid(hoverField.x,hoverField.y);
-            Point placeholderPos = (p instanceof PlaceableTemp) ? new Point(hoverField.x - p.getPosition().x, p.getPosition().y - hoverField.y) : new Point(0,0);
+            Point placeholderPos = (p instanceof PlaceableTemp) ? new Point(hoverField.x - p.getDisplayPosition().x, p.getDisplayPosition().y - hoverField.y) : new Point(0,0);
             int placeHolderOffsetX = ((p instanceof PlaceableTemp) ? placeholderPos.x : 0) * fieldSize;
             int placeHolderOffsetY = ((p instanceof PlaceableTemp) ? placeholderPos.y : 0) * fieldSize;
             Dimension size = (p == null) ? new Dimension(1,1) : p.getDisplaySize();
@@ -201,31 +201,35 @@ public class PlayingFieldView extends JPanel implements MouseListener, MouseMoti
         }
     }
 
+    private void placingClick(){
+        Placeable placee = GamePanel.stopPlacing(true);
+        if(placee instanceof Residential){
+            model.placeResidential(hoverField);
+        }else if(placee instanceof Service){
+            model.placeService(hoverField);
+        }else if(placee instanceof Industrial){
+            model.placeIndustrial(hoverField);
+        }else if(placee instanceof Road){
+            model.placeRoad(hoverField);
+        }else if(placee instanceof Police){
+            model.placePolice(hoverField);
+        }else if(placee instanceof Stadium){
+            model.placeStadium(hoverField);
+        }else if(placee instanceof School){
+            model.placeSchool(hoverField);
+        }else if(placee instanceof University){
+            model.placeUniversity(hoverField);
+        }else if(placee instanceof Forest){
+            model.placeForest(hoverField);
+        }
+        //model.gridPlace(placee, hoverField.x, hoverField.y);
+        this.repaint();
+    }
+
     private void mouseLeftClicked(MouseEvent e) {
         boolean fieldHit = hoverField != GameModel.NO_SELECTION;
         if(GamePanel.isPlacing()){
-            Placeable placee = GamePanel.stopPlacing();
-            if(placee instanceof Residential){
-                model.placeResidential(hoverField);
-            }else if(placee instanceof Service){
-                model.placeService(hoverField);
-            }else if(placee instanceof Industrial){
-                model.placeIndustrial(hoverField);
-            }else if(placee instanceof Road){
-                model.placeRoad(hoverField);
-            }else if(placee instanceof Police){
-                model.placePolice(hoverField);
-            }else if(placee instanceof Stadium){
-                model.placeStadium(hoverField);
-            }else if(placee instanceof School){
-                model.placeSchool(hoverField);
-            }else if(placee instanceof University){
-                model.placeUniversity(hoverField);
-            }else if(placee instanceof Forest){
-                model.placeForest(hoverField);
-            }
-            //model.gridPlace(placee, hoverField.x, hoverField.y);
-            this.repaint();
+            this.placingClick();
         }else{
             fieldClickListener.fieldClicked(fieldHit ? model.grid(hoverField.x,hoverField.y) : null);
         }
@@ -233,8 +237,12 @@ public class PlayingFieldView extends JPanel implements MouseListener, MouseMoti
     }
 
     private void mouseRightClicked(MouseEvent e) {
-        boolean fieldHit = hoverField != GameModel.NO_SELECTION;
-        // if (fieldHit) model.grid(hoverField.x,hoverField.y).toggleTeszt();
+        if(GamePanel.isPlacing()){
+            GamePanel.stopPlacing();
+        }else{
+            boolean fieldHit = hoverField != GameModel.NO_SELECTION;
+            // ...
+        }
         this.repaint();
     }
 
@@ -248,7 +256,7 @@ public class PlayingFieldView extends JPanel implements MouseListener, MouseMoti
             isDraggingGrid = false;
             Point dragPointer = new Point(e.getPoint().x - dragStart.x, e.getPoint().y - dragStart.y);
             double distance = Math.sqrt(Math.pow(dragPointer.x, 2) + Math.pow(dragPointer.y, 2));
-            if (distance <= 5) {
+            if (distance <= GameModel.DRAG_THRESHOLD) {
                 mouseRightClicked(e);
             }
         }
@@ -256,7 +264,7 @@ public class PlayingFieldView extends JPanel implements MouseListener, MouseMoti
             isLeftDragging = false;
             Point dragPointer = new Point(e.getPoint().x - dragStart.x, e.getPoint().y - dragStart.y);
             double distance = Math.sqrt(Math.pow(dragPointer.x, 2) + Math.pow(dragPointer.y, 2));
-            if (distance <= 5) {
+            if (distance <= GameModel.DRAG_THRESHOLD) {
                 mouseLeftClicked(e);
             } else {
                 // System.out.println("actual drag");
@@ -345,7 +353,13 @@ public class PlayingFieldView extends JPanel implements MouseListener, MouseMoti
 
     private void onHoverChange() {
         boolean fieldHit = hoverField != GameModel.NO_SELECTION;
-        if (isLeftDragging) fieldClickListener.fieldClicked(fieldHit ? model.grid(hoverField.x,hoverField.y) : null);
+        if(isLeftDragging) {
+            if(GamePanel.isPlacing()){
+                this.placingClick();
+            }else{
+                fieldClickListener.fieldClicked(fieldHit ? model.grid(hoverField.x, hoverField.y) : null);
+            }
+        }
     }
 
     private static final int minFieldSize = 10;

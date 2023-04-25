@@ -13,6 +13,7 @@ public class WrapLabel extends JTextPane {
 
     public WrapLabel(){
         this.setOpaque(false);
+        this.setFocusable(false);
         //this.setBackground(new Color(0,0,255));
         this.baseHeight = this.getPreferredSize().height;
         this.setBorder(new EmptyBorder(0,0,0,0));

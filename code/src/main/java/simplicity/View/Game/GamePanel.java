@@ -6,6 +6,7 @@ import simplicity.View.GameWindow;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.KeyEvent;
 
 public class GamePanel extends JPanel implements FieldClickListener {
 
@@ -32,6 +33,20 @@ public class GamePanel extends JPanel implements FieldClickListener {
         controlPanel = new ControlPanel();
         playingField = new PlayingFieldView();
         bottomBar = new BottomBar();
+
+        KeyboardFocusManager kbmanager = KeyboardFocusManager.getCurrentKeyboardFocusManager();
+        kbmanager.addKeyEventDispatcher(new KeyEventDispatcher() {
+            @Override
+            public boolean dispatchKeyEvent(KeyEvent e) {
+                if(e.getID() == KeyEvent.KEY_PRESSED){
+                    if(e.getKeyCode() == KeyEvent.VK_ESCAPE){
+                        GamePanel.stopPlacing();
+                        playingField.repaint();
+                    }
+                }
+                return false;
+            }
+        });
 
         this.gbc = new GridBagConstraints();
         JPanel mainPanel = new JPanel();
@@ -84,11 +99,15 @@ public class GamePanel extends JPanel implements FieldClickListener {
         placee = p;
     }
 
-    public static Placeable stopPlacing(){
+    public static Placeable stopPlacing(boolean restart){
         Placeable p = placee;
-        isPlacing = false;
-        placee = null;
+        isPlacing = restart;
+        placee = restart ? BuildTile.newInstance(placee.getClass()) : null;
         return p;
+    }
+
+    public static Placeable stopPlacing(){
+        return stopPlacing(false);
     }
 
     public static boolean isPlacing(){
