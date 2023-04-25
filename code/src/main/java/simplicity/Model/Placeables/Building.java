@@ -23,4 +23,8 @@ public abstract class Building extends Placeable {
         return 0;
     }
 
+    @Override
+    public int calculateMaintenance() {
+        return maintenanceCost;
+    }
 }
