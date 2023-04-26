@@ -7,6 +7,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionAdapter;
 
 public class BuildTile extends JPanel {
 
@@ -16,8 +17,9 @@ public class BuildTile extends JPanel {
     private boolean isHovering = false;
     private final Cursor cursorNormal = Cursor.getDefaultCursor();
     private final Cursor cursorHand = Cursor.getPredefinedCursor(Cursor.HAND_CURSOR);
-    private boolean isDragging;
+    private boolean isDragging = false;
     private Point dragStart;
+    private boolean tempNoHover = false;
 
     public static final int MINIMUM_WIDTH = 96;
 
@@ -47,20 +49,14 @@ public class BuildTile extends JPanel {
         this.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                if(!GamePanel.isPlacing()) {
+                //if(!GamePanel.isPlacing()) {
                     GamePanel.setPlacing(placeable);
                     placeable = newInstance(pl);
                     setCursor(cursorNormal);
                     img.setCursor(cursorNormal);
+                    tempNoHover = true;
                     repaint();
-                }
-            }
-            @Override
-            public void mouseDragged(MouseEvent e) {
-                if(!isDragging){
-                    isDragging = true;
-                    dragStart = e.getPoint();
-                }
+                //}
             }
             @Override
             public void mouseReleased(MouseEvent e) {
@@ -76,16 +72,25 @@ public class BuildTile extends JPanel {
             @Override
             public void mouseEntered(MouseEvent e) {
                 isHovering = true;
-                if(!GamePanel.isPlacing()){
+                //if(!GamePanel.isPlacing()){
                     setCursor(cursorHand);
                     img.setCursor(cursorHand);
-                }
+                //}
                 repaint();
             }
             @Override
             public void mouseExited(MouseEvent e) {
                 isHovering = false;
                 repaint();
+            }
+        });
+        this.addMouseMotionListener(new MouseMotionAdapter() {
+            @Override
+            public void mouseDragged(MouseEvent e) {
+                if(!isDragging){
+                    isDragging = true;
+                    dragStart = e.getPoint();
+                }
             }
         });
         // this.repaint();
@@ -106,10 +111,12 @@ public class BuildTile extends JPanel {
 
     @Override
     protected void paintComponent(Graphics g) {
-        super.paintComponent(g);
-        if(isHovering && !GamePanel.isPlacing()){
+        //super.paintComponent(g);
+        //if(isHovering && !GamePanel.isPlacing()){
+        if(isHovering && !tempNoHover){
             g.drawImage(GameModel.TILE_HOVER_IMG, 0, 0, this.getWidth(), this.getHeight(), null);
         }
+        tempNoHover = false;
     }
 
     class BuildTileImage extends JPanel {
@@ -122,7 +129,6 @@ public class BuildTile extends JPanel {
             ) : (
                 new Dimension((int)Math.round((pw/(double)ph)*defaultImageSize.width), defaultImageSize.height)
             );
-            System.out.println("buildtile image size should be " + imageSize + ", " + (ph/(double)pw) + ", " + (pw/(double)ph));
             this.setPreferredSize(imageSize);
             this.setSize(imageSize);
             this.setMaximumSize(imageSize);

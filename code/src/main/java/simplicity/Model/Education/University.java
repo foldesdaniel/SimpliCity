@@ -28,7 +28,6 @@ public class University extends Education implements InGameTimeTickListener {
         for (int i = 0; i < studentIds.size(); i++) {
             this.getPeople().get(i).setEducationLevel(levelOfEducation);
             this.getPeople().get(i).setEducation(null);
-//            System.out.println(this.getPeople().get(i).getEducationLevel() + " GRADUATED");
         }
         if (studentIds.size() > 0) {
             studentIds.sort(Collections.reverseOrder());
@@ -41,17 +40,8 @@ public class University extends Education implements InGameTimeTickListener {
 
     @Override
     public final void timeTick() {
-//        System.out.println("time changed: " + this.inGameTime.getInGameYear() + this.inGameTime.getInGameDay() + this.inGameTime.getInGameHour());
         ArrayList<Integer> graduates = new ArrayList<>();
         for (int i = 0; i < this.getArrivalDates().size(); i++) {
-            //[0] year, [1] day, [2] hour
-            //change to
-//            this.getArrivalDates().get(i).getYear() + 2 == inGameTime.getInGameYear() &&
-//            this.getArrivalDates().get(i).getDay() == inGameTime.getInGameDay() &&
-//            this.getArrivalDates().get(i).getHour() == inGameTime.getInGameHour()
-            //to complete Uni it is 2 years
-//            this.getArrivalDates().get(i).getDay() + 1 == this.inGameTime.getInGameDay()
-//                    && this.getArrivalDates().get(i).getHour() == this.inGameTime.getInGameHour()
             if (this.getArrivalDates().get(i).getYear() + 2 == inGameTime.getInGameYear() &&
                     this.getArrivalDates().get(i).getDay() == inGameTime.getInGameDay() &&
                     this.getArrivalDates().get(i).getHour() == inGameTime.getInGameHour()) {

@@ -4,6 +4,7 @@ import simplicity.Model.GameModel;
 import simplicity.Model.Listeners.MenuEventListener;
 import simplicity.Model.Listeners.StartGameListener;
 import simplicity.View.GameWindow;
+import simplicity.View.Style.CFont;
 
 import javax.swing.*;
 import java.awt.*;
@@ -50,7 +51,6 @@ public class MainMenu extends JPanel {
         this.revalidate();
         this.repaint();
 
-        int windowWidth = this.getWidth();
         int windowHeight = this.getHeight();
         int gap = windowHeight/32;
 
@@ -98,13 +98,8 @@ public class MainMenu extends JPanel {
         this.revalidate();
         this.repaint();
 
-        int windowWidth = this.getWidth();
         int windowHeight = this.getHeight();
-        int gap = windowHeight/11;
-        int width;
-        int height = windowHeight/14;
-
-        int x, y;
+        int gap = windowHeight/40;
 
         JPanel newGamePanel = new JPanel();
         newGamePanel.setLayout(new BoxLayout(newGamePanel, BoxLayout.Y_AXIS));
@@ -112,33 +107,26 @@ public class MainMenu extends JPanel {
 
         //Label
         MenuLabel cityName_lbl = new MenuLabel("Please enter your city name");
-        width = windowWidth/5;
-        x = windowWidth/2 - width/2;
-        y = windowHeight/2 - (gap*2) - height/2;
-        cityName_lbl.setBounds(x, y, width, height);
+        cityName_lbl.setAlignmentX(Component.CENTER_ALIGNMENT);
         newGamePanel.add(cityName_lbl);
+        newGamePanel.add(Box.createRigidArea(new Dimension(0, gap)));
 
         //Input field
         MenuTextField input = new MenuTextField();
-        x = windowWidth/2 - width/2;
-        y = windowHeight/2 - height/2 - gap;
-        input.setBounds(x, y, width, height/2);
+        input.setAlignmentX(Component.CENTER_ALIGNMENT);
         newGamePanel.add(input);
+        newGamePanel.add(Box.createRigidArea(new Dimension(0, gap)));
 
         //Start
         MenuButton start_btn = new MenuButton("START");
-        width = windowWidth/8;
-        x = windowWidth/2 - width/2;
-        y = windowHeight/2 - height/2;
-        start_btn.setBounds(x, y, width, height);
+        start_btn.setAlignmentX(Component.CENTER_ALIGNMENT);
         start_btn.addActionListener((ActionEvent) -> startGame());
         newGamePanel.add(start_btn);
+        newGamePanel.add(Box.createRigidArea(new Dimension(0, gap)));
 
         //Back
         MenuButton back_btn = new MenuButton("BACK");
-        x = windowWidth/2 - width/2;
-        y = windowHeight/2 + gap - height/2;
-        back_btn.setBounds(x, y, width, height);
+        back_btn.setAlignmentX(Component.CENTER_ALIGNMENT);
         back_btn.addActionListener(e -> displayButtons());
         newGamePanel.add(back_btn);
 
@@ -175,10 +163,7 @@ public class MainMenu extends JPanel {
 
         int windowWidth = this.getWidth();
         int windowHeight = this.getHeight();
-        int gap = windowHeight/8;
-        int width = windowWidth/5;
-        int height = windowHeight/12;
-        int x, y;
+        int gap = windowHeight/40;
 
         JPanel settingsMenu = new JPanel();
         settingsMenu.setLayout(new BoxLayout(settingsMenu, BoxLayout.Y_AXIS));
@@ -186,14 +171,14 @@ public class MainMenu extends JPanel {
 
         //Label
         MenuLabel res_lbl = new MenuLabel("Resolution");
-        x = windowWidth/2 - width/2;
-        y = windowHeight/2 - gap/2 - gap - gap/2 - height/2;
-        res_lbl.setBounds(x, y, width, height);
+        res_lbl.setAlignmentX(Component.CENTER_ALIGNMENT);
         settingsMenu.add(res_lbl);
+        settingsMenu.add(Box.createRigidArea(new Dimension(0, gap)));
 
         //Resolution type
         String options[] = {"Windowed Fullscreen", "Windowed"};
         MenuComboBox res_type = new MenuComboBox(options);
+        res_type.setAlignmentX(Component.CENTER_ALIGNMENT);
         String display;
         if (!firstTime) {
             display = displayResolutions ? "Windowed" : "Windowed Fullscreen";
@@ -204,9 +189,6 @@ public class MainMenu extends JPanel {
             display = (windowWidth == fullScreenWidth) ? "Windowed Fullscreen" : "Windowed";
             res_type.setSelectedItem(display);
         }
-        x = windowWidth/2 - width/2;
-        y = windowHeight/2 - gap/2 - gap - height/2;
-        res_type.setBounds(x, y, width, height);
         res_type.addItemListener(new ItemListener() {
             @Override
             public void itemStateChanged(ItemEvent e) {
@@ -217,13 +199,12 @@ public class MainMenu extends JPanel {
             }
         });
         settingsMenu.add(res_type);
+        settingsMenu.add(Box.createRigidArea(new Dimension(0, gap)));
 
         //Resolutions
         options = new String[] {"960x540", "1280x720", "1600x900"};
         MenuComboBox resolutions = new MenuComboBox(display.equals("Windowed") ? options : new String[]{});
-        x = windowWidth/2 - width/2;
-        y = windowHeight/2 - gap/2 - height/2;
-        resolutions.setBounds(x, y, width, height);
+        resolutions.setAlignmentX(Component.CENTER_ALIGNMENT);
         resolutions.setEnabled(display.equals("Windowed"));
         if (display.equals("Windowed")) {
             for (String res : options) {
@@ -233,13 +214,11 @@ public class MainMenu extends JPanel {
             }
         }
         settingsMenu.add(resolutions);
+        settingsMenu.add(Box.createRigidArea(new Dimension(0, gap)));
 
         //Apply
         MenuButton apply_btn = new MenuButton("APPLY");
-        x = windowWidth/2 - width/2;
-        y = windowHeight/2 + gap/2 - height/2;
-        apply_btn.setBounds(x, y, width, height);
-
+        apply_btn.setAlignmentX(Component.CENTER_ALIGNMENT);
         if (display.equals("Windowed")) {
             apply_btn.addActionListener(e -> {
                 String res = String.valueOf(resolutions.getSelectedItem());
@@ -250,12 +229,11 @@ public class MainMenu extends JPanel {
         }
         else apply_btn.addActionListener(e -> this.setWindowSize(windowWidth, windowHeight, true));
         settingsMenu.add(apply_btn);
+        settingsMenu.add(Box.createRigidArea(new Dimension(0, gap)));
 
         //Back
         MenuButton back_btn = new MenuButton("BACK");
-        x = windowWidth/2 - width/2;
-        y = windowHeight/2 + gap/2 + gap - height/2;
-        back_btn.setBounds(x, y, width, height);
+        back_btn.setAlignmentX(Component.CENTER_ALIGNMENT);
         back_btn.addActionListener(e -> displayButtons());
         settingsMenu.add(back_btn);
 

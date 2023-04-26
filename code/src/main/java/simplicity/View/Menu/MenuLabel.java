@@ -1,6 +1,9 @@
 package simplicity.View.Menu;
 
+import simplicity.View.Style.CFont;
+
 import javax.swing.*;
+import java.awt.*;
 
 public class MenuLabel extends JLabel {
     /**
@@ -11,6 +14,7 @@ public class MenuLabel extends JLabel {
      */
     public MenuLabel(String label) {
         this.setText(label);
+        this.setFont(CFont.get(Font.BOLD, 24));
         this.setVerticalAlignment(SwingConstants.CENTER);
         this.setHorizontalAlignment(SwingConstants.CENTER);
     }
@@ -19,8 +23,6 @@ public class MenuLabel extends JLabel {
      * Constructor.
      */
     public MenuLabel() {
-        this.setText("");
-        this.setVerticalAlignment(SwingConstants.CENTER);
-        this.setHorizontalAlignment(SwingConstants.CENTER);
+        this("");
     }
 }
