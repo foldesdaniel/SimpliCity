@@ -34,7 +34,9 @@ public class ControlPanel extends JPanel {
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(0, 24, 0, 24);
         this.setLayout(new GridBagLayout());
+        //this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         JPanel btnContainer = new JPanel();
+        //btnContainer.setLayout(new GridLayout(1,2));
         font = CFont.get(Font.PLAIN, 22);
         infoBtn = new ControlPanelTabButton("infobtn");
         buildBtn = new ControlPanelTabButton("buildbtn");
@@ -54,7 +56,6 @@ public class ControlPanel extends JPanel {
         //UIManager.put("ScrollBar.thumb", new ColorUIResource(Color.RED));
         scrollPane.getVerticalScrollBar().setUI(new ScrollBarUI());
         scrollPane.getHorizontalScrollBar().setUI(new ScrollBarUI());
-
         this.add(scrollPane, GamePanel.changeGbc(gbc, 1, 0, 1, 1, 1, 1));
     }
 

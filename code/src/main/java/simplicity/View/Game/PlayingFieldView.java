@@ -362,15 +362,15 @@ public class PlayingFieldView extends JPanel implements MouseListener, MouseMoti
         }
     }
 
-    private static final int minFieldSize = 10;
-    private static final int maxFieldSize = 64;
+    private static final int MIN_FIELD_SIZE = 20;
+    private static final int MAX_FIELD_SIZE = 64;
 
     @Override
     public void mouseWheelMoved(MouseWheelEvent e) {
         int rot = e.getWheelRotation();
         int amount = (rot < 0 ? 1 : (rot > 0 ? -1 : 0)) * 4;
         System.out.println("scroll amount " + amount);
-        if ((amount > 0 && fieldSize < maxFieldSize) || (amount < 0 && fieldSize > minFieldSize)) {
+        if ((amount > 0 && fieldSize < MAX_FIELD_SIZE) || (amount < 0 && fieldSize > MIN_FIELD_SIZE)) {
             fieldSize += amount;
             if (doesGridFitHorizontally()) isGridDraggedX = false;
             if (doesGridFitVertically()) isGridDraggedY = false;
