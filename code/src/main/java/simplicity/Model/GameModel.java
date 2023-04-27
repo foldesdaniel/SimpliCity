@@ -69,8 +69,6 @@ public class GameModel implements InGameTimeTickListener {
     private int cityMood = 60;
     private Placeable grid[][];
     private Finance finance;
-    private int industrialCount = 0;
-    private int serviceCount = 0;
     @Getter
     private ArrayList<Person> people = new ArrayList<>();
     public GameModel() {
@@ -762,65 +760,101 @@ public class GameModel implements InGameTimeTickListener {
         int x = position.x;
         int y = position.y;
 
-        for (int i = 0; i < gridSize; ++i) {
-            for (int j = 0; j < gridSize; ++j) {
-                if (!(x == i && y == j) && grid[i][j] != null) {
-                    Placeable current = grid[i][j];
-                    Placeable temp;
-                    if (current instanceof PlaceableTemp) {
-                        temp = current;
-                        current = ((PlaceableTemp)current).getPlaceable();
-                    } else {
-                        temp = current;
-                    }
-                    //GO TO WORK
-                    if (type.equals("workplace")) {
-                        if (current.getType() == FieldType.ZONE_INDUSTRIAL) {
-                            //INDUSTRIAL
-                            if (((Industrial) current).areSpacesLeft() && isPath(convertToNumMatrix(person.getHome(), temp, null)) && !((Industrial) current).getPeople().contains(person)) {
-//                            if (((Industrial) current).areSpacesLeft() && !((Industrial) current).getPeople().contains(person)) {
-                                System.out.println("In Industrial");
-                                person.goToWork(((Industrial) current));
-//                                ((Industrial) grid[i][j]).addPerson(person);
-                                boostPersonMoodBasedOnDistance(person, type);
-                                return true;
+        if (type.equals("secondary") || type.equals("uni")) {
+            for (int i = 0; i < gridSize; ++i) {
+                for (int j = 0; j < gridSize; ++j) {
+                    if (!(x == i && y == j) && grid[i][j] != null) {
+                        Placeable current = grid[i][j];
+                        Placeable temp;
+                        if (current instanceof PlaceableTemp) {
+                            temp = current;
+                            current = ((PlaceableTemp) current).getPlaceable();
+                        } else {
+                            temp = current;
+                        }
+                        //GO TO SCHOOL
+                        if (type.equals("secondary")) {
+                            if (current.getType() == FieldType.SCHOOL) {
+                                //HIGH SCHOOL
+                                if (((School) current).areSpacesLeft() && isPath(convertToNumMatrix(person.getHome(), temp, null)) && !((School) current).getPeople().contains(person)) {
+                                    System.out.println("In School");
+                                    person.goToSchool(((School) current));
+                                    boostPersonMoodBasedOnDistance(person, type);
+                                    return true;
+                                }
                             }
-                        } else if (current.getType() == FieldType.ZONE_SERVICE) {
-                            //SERVICE
-                            if (((Service) current).areSpacesLeft() && isPath(convertToNumMatrix(person.getHome(), temp, null)) && !((Service) current).getPeople().contains(person)) {
-//                            if (((Service) current).areSpacesLeft() && !((Service) current).getPeople().contains(person)) {
-                                System.out.println("In Service");
-                                person.goToWork(((Service) current));
-//                                ((Service) grid[i][j]).addPerson(person);
-                                boostPersonMoodBasedOnDistance(person, type);
-                                return true;
+                        } else if (type.equals("uni")) {
+                            if (current.getType() == FieldType.UNIVERSITY) {
+                                if (((University) current).areSpacesLeft() && isPath(convertToNumMatrix(person.getHome(), temp, null)) && !((University) current).getPeople().contains(person)) {
+                                    System.out.println("In Uni");
+                                    person.goToSchool(((University) current));
+                                    boostPersonMoodBasedOnDistance(person, type);
+                                    return true;
+                                }
                             }
                         }
                     }
-                    //GO TO SCHOOL
-                    else if (type.equals("secondary")) {
-                        if (current.getType() == FieldType.SCHOOL) {
-                            //HIGH SCHOOL
-                            if (((School) current).areSpacesLeft() && isPath(convertToNumMatrix(person.getHome(), temp, null)) && !((School) current).getPeople().contains(person)) {
-//                            if (((School) current).areSpacesLeft() && !((School) current).getPeople().contains(person)) {
-                                System.out.println("In School");
-                                person.goToSchool(((School) current));
-//                                ((School) grid[i][j]).addPerson(person);
-                                boostPersonMoodBasedOnDistance(person, type);
-                                return true;
+                }
+            }
+        }
+        else if (type.equals("workplace")) {
+            for (int i = 0; i < gridSize; ++i) {
+                for (int j = 0; j < gridSize; ++j) {
+                    if (!(x == i && y == j) && grid[i][j] != null) {
+                        Placeable current = grid[i][j];
+                        Placeable temp;
+                        if (current instanceof PlaceableTemp) {
+                            temp = current;
+                            current = ((PlaceableTemp) current).getPlaceable();
+                        } else {
+                            temp = current;
+                        }
+                        if (workersRatio() == 1) { //we need service workers
+                            if (current.getType() == FieldType.ZONE_SERVICE) {
+                                if (((Service) current).areSpacesLeft() && isPath(convertToNumMatrix(person.getHome(), temp, null)) && !((Service) current).getPeople().contains(person)) {
+                                    person.goToWork(((Service) current));
+                                    boostPersonMoodBasedOnDistance(person, type);
+                                    return true;
+                                }
+                            }
+                        } else { //we need industrial workers
+                            if (current.getType() == FieldType.ZONE_INDUSTRIAL) {
+                                if (((Industrial) current).areSpacesLeft() && isPath(convertToNumMatrix(person.getHome(), temp, null)) && !((Industrial) current).getPeople().contains(person)) {
+                                    person.goToWork(((Industrial) current));
+                                    boostPersonMoodBasedOnDistance(person, type);
+                                    return true;
+                                }
                             }
                         }
                     }
-                    else if (type.equals("uni")) {
-                         if (current.getType() == FieldType.UNIVERSITY) {
-                            //UNIVERSITY
-                            if (((University) current).areSpacesLeft() && isPath(convertToNumMatrix(person.getHome(), temp, null)) && !((University) current).getPeople().contains(person)) {
-//                            if (((University) current).areSpacesLeft() && !((University) current).getPeople().contains(person)) {
-                                System.out.println("In Uni");
-                                person.goToSchool(((University) current));
-//                                ((University) grid[i][j]).addPerson(person);
-                                boostPersonMoodBasedOnDistance(person, type);
-                                return true;
+                }
+            }
+            for (int i = 0; i < gridSize; ++i) {
+                for (int j = 0; j < gridSize; ++j) {
+                    if (!(x == i && y == j) && grid[i][j] != null) {
+                        Placeable current = grid[i][j];
+                        Placeable temp;
+                        if (current instanceof PlaceableTemp) {
+                            temp = current;
+                            current = ((PlaceableTemp) current).getPlaceable();
+                        } else {
+                            temp = current;
+                        }
+                        if (workersRatio() == 1) { //we need NOT service workers
+                            if (current.getType() == FieldType.ZONE_INDUSTRIAL) {
+                                if (((Industrial) current).areSpacesLeft() && isPath(convertToNumMatrix(person.getHome(), temp, null)) && !((Industrial) current).getPeople().contains(person)) {
+                                    person.goToWork(((Industrial) current));
+                                    boostPersonMoodBasedOnDistance(person, type);
+                                    return true;
+                                }
+                            }
+                        } else { //we need NOT industrial workers
+                            if (current.getType() == FieldType.ZONE_SERVICE) {
+                                if (((Service) current).areSpacesLeft() && isPath(convertToNumMatrix(person.getHome(), temp, null)) && !((Service) current).getPeople().contains(person)) {
+                                    person.goToWork(((Service) current));
+                                    boostPersonMoodBasedOnDistance(person, type);
+                                    return true;
+                                }
                             }
                         }
                     }
@@ -829,6 +863,23 @@ public class GameModel implements InGameTimeTickListener {
         }
 
         return false;
+    }
+
+    private int workersRatio() {
+        //return 1 if we need service workers
+        //return 0 if we need industrial workers
+
+        int industrialCount = 0;
+        int serviceCount = 0;
+
+        for (Person p : this.people) {
+            if (p.getWorkplace() != null) {
+                if (p.getWorkplace() instanceof Industrial) industrialCount++;
+                else if (p.getWorkplace() instanceof Service) serviceCount++;
+            }
+        }
+
+        return industrialCount > serviceCount ? 1 : 0;
     }
 
     private void calculateMood(Person person) {
@@ -1068,7 +1119,7 @@ public class GameModel implements InGameTimeTickListener {
     }
 
     private void findOccupation() {
-        printCurrentEmployment();
+        //printCurrentEmployment();
         Random random = new Random();
         for (Person person : this.people) {
             if (person.getEducation() == null && person.getWorkplace() == null) {
@@ -1092,7 +1143,7 @@ public class GameModel implements InGameTimeTickListener {
             }
 
         }
-        printCurrentEmployment();
+        //printCurrentEmployment();
     }
 
     private void printCurrentEmployment() {
