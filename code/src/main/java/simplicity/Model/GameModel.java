@@ -88,17 +88,17 @@ public class GameModel implements InGameTimeTickListener {
         
         //this.printGrid();
 
-        grid[0][0] = new Residential(new Point(0, 0));
-        grid[1][0] = new Residential(new Point(1, 0));
-        grid[0][1] = new Road(new Point(0, 1));
-        grid[1][1] = new Road(new Point(1, 1));
-        grid[1][2] = new Residential(new Point(1, 2));
-        grid[0][2] = new Industrial(new Point(0,2));
-        School s1 = new School(new Point(2,1));
-        grid[2][1] = s1;
-        grid[3][1] = new PlaceableTemp(s1, new Point(3,1));
-        grid[4][1] = new Road(new Point(4,1));
-        grid[5][1] = new Residential(new Point(5,1));
+//        grid[0][0] = new Residential(new Point(0, 0));
+//        grid[1][0] = new Residential(new Point(1, 0));
+//        grid[0][1] = new Road(new Point(0, 1));
+//        grid[1][1] = new Road(new Point(1, 1));
+//        grid[1][2] = new Residential(new Point(1, 2));
+//        grid[0][2] = new Industrial(new Point(0,2));
+//        School s1 = new School(new Point(2,1));
+//        grid[2][1] = s1;
+//        grid[3][1] = new PlaceableTemp(s1, new Point(3,1));
+//        grid[4][1] = new Road(new Point(4,1));
+//        grid[5][1] = new Residential(new Point(5,1));
 
 //        System.out.println(isPath(convertToNumMatrix(grid[5][1],grid[3][1],null)));
 //
@@ -1134,6 +1134,19 @@ public class GameModel implements InGameTimeTickListener {
                     } else searchForJob(person, "workplace");
                 } else {
                     searchForJob(person, "workplace");
+                }
+
+                //if school or workplace not found then search for the other one
+                if (person.getEducation() == null && person.getWorkplace() == null) {
+                    if (occupation == 1) {
+                        if (person.getEducationLevel() == EducationLevel.PRIMARY) {
+                            searchForJob(person, "secondary");
+                        } else if (person.getEducationLevel() == EducationLevel.SECONDARY) {
+                            searchForJob(person, "uni");
+                        } else searchForJob(person, "workplace");
+                    } else {
+                        searchForJob(person, "workplace");
+                    }
                 }
 
                 //reduce person mood if job not found
