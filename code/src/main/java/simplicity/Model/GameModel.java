@@ -319,6 +319,10 @@ public class GameModel implements InGameTimeTickListener {
     }
 
     public void removeStadium(Point position) {
+        int price = ((Stadium) grid[position.x][position.y]).getBuildPrice() / 3;
+        this.finance.addIncome(price,"Stadium törlés");
+        this.finance.addMoney(price);
+
         grid[position.x][position.y] = null;
         int r = new Stadium(GameModel.NO_SELECTION).getRadius();
 
@@ -376,6 +380,10 @@ public class GameModel implements InGameTimeTickListener {
     }
 
     public void removePolice(Point position) {
+        int price = ((Police) grid[position.x][position.y]).getBuildPrice() / 3;
+        this.finance.addIncome(price,"Rendőrség törlés");
+        this.finance.addMoney(price);
+
         grid[position.x][position.y] = null;
         int r = new Stadium(GameModel.NO_SELECTION).getRadius();
 
@@ -431,6 +439,13 @@ public class GameModel implements InGameTimeTickListener {
     }
 
     public void removeIndustrial(Point position) {
+        //check if it can be removed
+        if (((Industrial) grid[position.x][position.y]).getPeople().size() > 0) return;
+
+        int price = ((Industrial) grid[position.x][position.y]).getBuildPrice() / 3;
+        this.finance.addIncome(price,"Ipari zóna törlés");
+        this.finance.addMoney(price);
+
         ((Industrial) grid[position.x][position.y]).deleteData();
         grid[position.x][position.y] = null;
         int r = 5;
@@ -511,6 +526,13 @@ public class GameModel implements InGameTimeTickListener {
     }
 
     public void removeService(Point position) {
+        //check if it can be removed
+        if (((Service) grid[position.x][position.y]).getPeople().size() > 0) return;
+
+        int price = ((Service) grid[position.x][position.y]).getBuildPrice() / 3;
+        this.finance.addIncome(price,"Szolgálatási zóna törlés");
+        this.finance.addMoney(price);
+
         ((Service) grid[position.x][position.y]).deleteData();
         grid[position.x][position.y] = null;
     }
@@ -527,6 +549,12 @@ public class GameModel implements InGameTimeTickListener {
     }
 
     public void removeResidential(Point position) {
+        //check if it can be removed
+        if (((Residential) grid[position.x][position.y]).getPeople().size() > 0) return;
+
+        int price = ((Residential) grid[position.x][position.y]).getBuildPrice() / 3;
+        this.finance.addIncome(price,"Lakóhely zóna törlés");
+        this.finance.addMoney(price);
         grid[position.x][position.y] = null;
     }
 
