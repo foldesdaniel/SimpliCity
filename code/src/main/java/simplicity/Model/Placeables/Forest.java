@@ -1,14 +1,17 @@
 package simplicity.Model.Placeables;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import simplicity.Model.GameModel;
 import simplicity.Model.Game.FieldType;
 import simplicity.Model.GameTime.Date;
 
 import java.awt.*;
+import java.io.Serializable;
 
 @Getter
-public class Forest extends Placeable {
+@NoArgsConstructor(force = true)
+public class Forest extends Placeable implements Serializable {
     private final Date plantTime;
 
     public Forest(Point position, Date plantTime) {

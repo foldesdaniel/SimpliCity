@@ -1,9 +1,13 @@
 package simplicity.Model.Finances;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+import java.io.Serializable;
 
 @Getter
-public class FinanceData {
+@NoArgsConstructor
+public class FinanceData implements Serializable {
     private int price;
     private String text;
 

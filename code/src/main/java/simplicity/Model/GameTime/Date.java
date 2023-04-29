@@ -2,10 +2,14 @@ package simplicity.Model.GameTime;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+import java.io.Serializable;
 
 @AllArgsConstructor
 @Getter
-public class Date {
+@NoArgsConstructor
+public class Date implements Serializable {
     private int year;
     private int day;
     private int hour;

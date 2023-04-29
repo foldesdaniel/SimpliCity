@@ -1,5 +1,6 @@
 package simplicity.Model.Placeables;
 
+import lombok.NoArgsConstructor;
 import simplicity.Model.Education.EducationLevel;
 import simplicity.Model.Game.FieldType;
 import simplicity.Model.Person.Person;
@@ -7,6 +8,7 @@ import simplicity.Model.Placeables.Zones.Zone;
 
 import java.awt.*;
 
+@NoArgsConstructor
 public abstract class Workplace extends Zone {
 
     private int taxPerPerson;

@@ -2,6 +2,7 @@ package simplicity.Model.Person;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import simplicity.Model.Education.Education;
 import simplicity.Model.Education.EducationLevel;
@@ -12,12 +13,12 @@ import simplicity.Model.Listeners.InGameTimeTickListener;
 import simplicity.Model.Placeables.Workplace;
 import simplicity.Model.Placeables.Zones.Residential;
 
-import java.util.ArrayList;
+import java.io.Serializable;
 
 @AllArgsConstructor
 @Getter
 @Setter
-public class Person implements InGameTimeTickListener {
+public class Person implements InGameTimeTickListener, Serializable {
 
     private final InGameTime inGameTime;
     private int mood = (int) (Math.random() * 10 + 65);
@@ -58,7 +59,7 @@ public class Person implements InGameTimeTickListener {
     }
 
     public int getMood() {
-        if(mood + boostMood > 100) return Math.min(mood + boostMood, 100);
+        if (mood + boostMood > 100) return Math.min(mood + boostMood, 100);
         else if (mood + boostMood < 0) return Math.max(mood + boostMood, 0);
         else return mood + boostMood;
     }
@@ -69,7 +70,7 @@ public class Person implements InGameTimeTickListener {
             placeOfEducation.addPerson(this);
             InGameTime igt = InGameTimeManager.getInstance().getInGameTime();
             placeOfEducation.getArrivalDates().add(
-                new Date(igt.getInGameYear(), igt.getInGameDay(), igt.getInGameHour())
+                    new Date(igt.getInGameYear(), igt.getInGameDay(), igt.getInGameHour())
             );
             this.education = placeOfEducation;
         }

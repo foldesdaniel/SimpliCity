@@ -1,14 +1,17 @@
 package simplicity.Model.Placeables;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import simplicity.Model.Game.FieldType;
 import simplicity.Model.Game.RoadType;
 import simplicity.Model.GameModel;
 import simplicity.Model.Resource.ResourceLoader;
 
 import java.awt.*;
+import java.io.Serializable;
 
-public class Road extends Placeable {
+@NoArgsConstructor
+public class Road extends Placeable implements Serializable {
 
     @Getter
     private int maintenanceCost;

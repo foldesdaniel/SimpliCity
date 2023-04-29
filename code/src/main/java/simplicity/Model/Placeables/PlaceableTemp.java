@@ -1,12 +1,15 @@
 package simplicity.Model.Placeables;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import simplicity.Model.Placeables.Placeable;
 
 import java.awt.*;
+import java.io.Serializable;
 import java.util.Objects;
 
-public class PlaceableTemp extends Placeable {
+@NoArgsConstructor(force = true)
+public class PlaceableTemp extends Placeable implements Serializable {
 
     @Getter
     private final Placeable placeable;

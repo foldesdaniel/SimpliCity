@@ -1,5 +1,6 @@
 package simplicity.Model.Education;
 
+import lombok.NoArgsConstructor;
 import simplicity.Model.Game.FieldType;
 import simplicity.Model.GameModel;
 import simplicity.Model.GameTime.InGameTime;
@@ -8,10 +9,12 @@ import simplicity.Model.Listeners.InGameTimeTickListener;
 import simplicity.Model.Placeables.Placeable;
 
 import java.awt.*;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 
-public class School extends Education implements InGameTimeTickListener {
+@NoArgsConstructor(force = true)
+public class School extends Education implements InGameTimeTickListener, Serializable {
 
     private final EducationLevel levelOfEducation = EducationLevel.SECONDARY;
 

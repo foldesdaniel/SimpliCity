@@ -2,12 +2,13 @@ package simplicity;
 
 import com.formdev.flatlaf.FlatDarculaLaf;
 import simplicity.Model.GameModel;
+import simplicity.Model.Persistence.Persistence;
+import simplicity.Model.Placeables.Placeable;
 import simplicity.View.GameWindow;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.Arrays;
-import java.util.stream.IntStream;
+import java.io.IOException;
 
 public class Main {
 
@@ -21,6 +22,27 @@ public class Main {
         }
         GameWindow gameWindow = new GameWindow();
         gameWindow.setVisible(true);
+        GameModel gm;
+        {
+            try {
+                gm = (GameModel) Persistence.load("gm4.txt");
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            } catch (ClassNotFoundException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        System.out.println(gm.getPeople().size());
+        System.out.println(gm.getCityMood());
+        for(Placeable[] p : gm.getGrid()){
+            for(Placeable pl : p) {
+                if(pl != null) {
+                    System.out.println(pl);
+                }
+            }
+        }
     }
+
+
 
 }

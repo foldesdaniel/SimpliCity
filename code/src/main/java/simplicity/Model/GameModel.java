@@ -15,6 +15,7 @@ import simplicity.Model.Listeners.InGameTimeTickListener;
 import simplicity.Model.Listeners.MoralChangeListener;
 import simplicity.Model.Listeners.PeopleChangeListener;
 import simplicity.Model.Listeners.WealthChangeListener;
+import simplicity.Model.Persistence.Persistence;
 import simplicity.Model.Person.Person;
 import simplicity.Model.Placeables.*;
 import simplicity.Model.Placeables.Zones.Industrial;
@@ -23,10 +24,12 @@ import simplicity.Model.Placeables.Zones.Service;
 import simplicity.Model.Resource.ResourceLoader;
 
 import java.awt.*;
+import java.io.IOException;
+import java.io.Serializable;
 import java.util.Queue;
 import java.util.*;
 
-public class GameModel implements InGameTimeTickListener {
+public class GameModel implements InGameTimeTickListener, Serializable {
 
     public static final String GAME_TITLE = "SimpliCity";
     public static final Image BACKGROUND_IMG = ResourceLoader.loadImage("bg_temp.jpg");
@@ -55,7 +58,7 @@ public class GameModel implements InGameTimeTickListener {
     public static final int DRAG_THRESHOLD = 5;
     private static GameModel instance;
     private final InGameTime inGameTime = InGameTimeManager.getInstance().getInGameTime();
-    //just for testing purposes
+
     @Getter
     private final int gridSize = 20;
     private final ArrayList<MoralChangeListener> moralListeners = new ArrayList<>();
@@ -67,12 +70,15 @@ public class GameModel implements InGameTimeTickListener {
     private int uniPercentage;
     @Getter
     private int cityMood = 60;
+    @Getter
     private Placeable grid[][];
     private Finance finance;
     private int industrialCount = 0;
     private int serviceCount = 0;
     @Getter
     private ArrayList<Person> people = new ArrayList<>();
+
+    private static int saveCount;
 
     public GameModel() {
         inGameTime.addInGameTimeTickListener(this);
@@ -133,8 +139,17 @@ public class GameModel implements InGameTimeTickListener {
     }
 
     public static GameModel getInstance() {
-        if (instance == null) {
-            instance = new GameModel();
+//        if (instance == null) {
+//            instance = new GameModel();
+//        }
+        if(instance == null) {
+            try {
+                instance = (GameModel) Persistence.load("gm4.txt");
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            } catch (ClassNotFoundException e) {
+                throw new RuntimeException(e);
+            }
         }
         return instance;
     }
@@ -781,7 +796,7 @@ public class GameModel implements InGameTimeTickListener {
                             //INDUSTRIAL
                             if (((Industrial) current).areSpacesLeft() && isPath(convertToNumMatrix(person.getHome(), temp, null)) && !((Industrial) current).getPeople().contains(person)) {
 //                            if (((Industrial) current).areSpacesLeft() && !((Industrial) current).getPeople().contains(person)) {
-                                System.out.println("In Industrial");
+//                                System.out.println("In Industrial");
                                 person.goToWork(((Industrial) current));
 //                                ((Industrial) grid[i][j]).addPerson(person);
                                 boostPersonMoodBasedOnDistance(person, type);
@@ -791,7 +806,7 @@ public class GameModel implements InGameTimeTickListener {
                             //SERVICE
                             if (((Service) current).areSpacesLeft() && isPath(convertToNumMatrix(person.getHome(), temp, null)) && !((Service) current).getPeople().contains(person)) {
 //                            if (((Service) current).areSpacesLeft() && !((Service) current).getPeople().contains(person)) {
-                                System.out.println("In Service");
+//                                System.out.println("In Service");
                                 person.goToWork(((Service) current));
 //                                ((Service) grid[i][j]).addPerson(person);
                                 boostPersonMoodBasedOnDistance(person, type);
@@ -805,7 +820,7 @@ public class GameModel implements InGameTimeTickListener {
                             //HIGH SCHOOL
                             if (((School) current).areSpacesLeft() && isPath(convertToNumMatrix(person.getHome(), temp, null)) && !((School) current).getPeople().contains(person)) {
 //                            if (((School) current).areSpacesLeft() && !((School) current).getPeople().contains(person)) {
-                                System.out.println("In School");
+//                                System.out.println("In School");
                                 person.goToSchool(((School) current));
 //                                ((School) grid[i][j]).addPerson(person);
                                 boostPersonMoodBasedOnDistance(person, type);
@@ -817,7 +832,7 @@ public class GameModel implements InGameTimeTickListener {
                             //UNIVERSITY
                             if (((University) current).areSpacesLeft() && isPath(convertToNumMatrix(person.getHome(), temp, null)) && !((University) current).getPeople().contains(person)) {
 //                            if (((University) current).areSpacesLeft() && !((University) current).getPeople().contains(person)) {
-                                System.out.println("In Uni");
+//                                System.out.println("In Uni");
                                 person.goToSchool(((University) current));
 //                                ((University) grid[i][j]).addPerson(person);
                                 boostPersonMoodBasedOnDistance(person, type);
@@ -1176,6 +1191,11 @@ public class GameModel implements InGameTimeTickListener {
             } else {
                 departInhabitants();
 //                System.out.println("REMOVE");
+            }
+            try {
+                Persistence.save(this, "gm" + saveCount++ + ".txt");
+            } catch (IOException e) {
+                throw new RuntimeException(e);
             }
         }
         if (this.inGameTime.getInGameYear() > 0 && this.inGameTime.getInGameDay() == 0 && this.inGameTime.getInGameHour() == 0) {

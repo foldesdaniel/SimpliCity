@@ -1,15 +1,18 @@
 package simplicity.Model.Placeables.Zones;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import simplicity.Model.Game.FieldType;
 import simplicity.Model.GameModel;
 import simplicity.Model.Person.Person;
 import simplicity.Model.Placeables.Placeable;
 
 import java.awt.*;
+import java.io.Serializable;
 
 @Getter
-public class Residential extends Zone {
+@NoArgsConstructor(force = true)
+public class Residential extends Zone implements Serializable {
 
     private final int taxPerInhabitant;
 

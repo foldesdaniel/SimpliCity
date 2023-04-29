@@ -1,14 +1,17 @@
 package simplicity.Model.GameTime;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import simplicity.Model.Listeners.InGameTimeListener;
 import simplicity.Model.Listeners.InGameTimeTickListener;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class InGameTime {
+@NoArgsConstructor
+public class InGameTime implements Serializable {
 
     @Getter
     private int inGameYear = 0;
@@ -17,13 +20,11 @@ public class InGameTime {
     @Getter
     private int inGameHour = 0;
 
-    private Timer inGameElapsedTime;
+    private transient Timer inGameElapsedTime;
 
     private InGameTimeListener inGameTimeListener;
     private final ArrayList<InGameTimeTickListener> inGameTimeTickListeners = new ArrayList<>();
 
-    public InGameTime() {
-    }
 
     public InGameTime(int inGameYear, int inGameDay, int inGameHour) {
         this.inGameYear = inGameYear;
@@ -59,7 +60,6 @@ public class InGameTime {
 
                     }
                 }
-//                inGameTimeTickListener.timeTick();
             }
         };
         inGameElapsedTime.scheduleAtFixedRate(inGameElapsedTimeAction, 0, speed.getSpeed());

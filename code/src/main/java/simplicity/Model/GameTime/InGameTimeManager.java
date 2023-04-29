@@ -1,6 +1,10 @@
 package simplicity.Model.GameTime;
 
-public class InGameTimeManager {
+import lombok.NoArgsConstructor;
+
+import java.io.Serializable;
+
+public class InGameTimeManager implements Serializable {
 
     private static InGameTimeManager instance = null;
     private final InGameTime inGameTime;
