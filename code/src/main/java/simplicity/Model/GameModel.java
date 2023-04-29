@@ -22,6 +22,7 @@ import simplicity.Model.Placeables.Zones.Residential;
 import simplicity.Model.Placeables.Zones.Service;
 import simplicity.Model.Resource.ResourceLoader;
 
+import javax.swing.*;
 import java.awt.*;
 import java.util.Queue;
 import java.util.*;
@@ -137,6 +138,19 @@ public class GameModel implements InGameTimeTickListener {
             instance = new GameModel();
         }
         return instance;
+    }
+
+    public static GameModel reset(){
+        instance = null;
+        return getInstance();
+    }
+
+    public static int showDialog(String title, String message){
+        return JOptionPane.showConfirmDialog(null, message, title + " | SimpliCity", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
+    }
+
+    public static void showMessage(String title, String message){
+        JOptionPane.showMessageDialog(null, message, title + " | SimpliCity", JOptionPane.WARNING_MESSAGE);
     }
 
     public static boolean isSafe(int i, int j, int[][] matrix) {

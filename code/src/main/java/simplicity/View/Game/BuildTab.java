@@ -48,11 +48,26 @@ public class BuildTab extends JPanel {
         this.buildings.add(new BuildTile(School.class));
         this.buildings.add(new BuildTile(University.class));
 
-        JButton exitBtn = new JButton();
-        exitBtn.addActionListener((e) -> GamePanel.stopPlacing());
-        exitBtn.setText("Exit building mode");
-        exitBtn.setFont(CFont.get());
-        this.other.add(exitBtn);
+        JButton exitBuildBtn = new JButton();
+        exitBuildBtn.addActionListener((e) -> GamePanel.stopPlacing());
+        exitBuildBtn.setText("Exit building mode");
+        exitBuildBtn.setFont(CFont.get());
+        JButton deleteBtn = new JButton();
+        final String startDeleteText = "Enter delete mode";
+        final String stopDeleteText = "Exit delete mode";
+        deleteBtn.setText(startDeleteText);
+        deleteBtn.addActionListener((e) -> {
+            if(GamePanel.isDeleteMode()){
+                GamePanel.stopDeleteMode();
+                deleteBtn.setText(startDeleteText);
+            }else{
+                GamePanel.startDeleteMode();
+                deleteBtn.setText(stopDeleteText);
+            }
+        });
+        deleteBtn.setFont(CFont.get());
+        this.other.add(exitBuildBtn);
+        this.other.add(deleteBtn);
 
         this.add(zonesTitle);
         this.add(Box.createRigidArea(new Dimension(0, 16)));

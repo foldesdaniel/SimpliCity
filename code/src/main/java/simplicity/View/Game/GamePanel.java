@@ -1,6 +1,8 @@
 package simplicity.View.Game;
 
+import lombok.Getter;
 import simplicity.Model.Listeners.FieldClickListener;
+import simplicity.Model.Listeners.StartStopGameListener;
 import simplicity.Model.Placeables.Placeable;
 import simplicity.View.GameWindow;
 
@@ -20,6 +22,7 @@ public class GamePanel extends JPanel implements FieldClickListener {
 
     private static boolean isPlacing = false;
     private static Placeable placee;
+    @Getter private static boolean deleteMode = false;
 
     public GamePanel() {
         Dimension windowSize = new Dimension(GameWindow.getWindowWidth(), GameWindow.getWindowHeight());
@@ -94,7 +97,12 @@ public class GamePanel extends JPanel implements FieldClickListener {
         this.repaint();
     }
 
+    public void addStopGameListener(StartStopGameListener stopGameListener){
+        this.topLeftBar.addStopGameListener(stopGameListener);
+    }
+
     public static void setPlacing(Placeable p){
+        if(deleteMode) stopDeleteMode();
         isPlacing = true;
         placee = p;
     }
@@ -116,6 +124,15 @@ public class GamePanel extends JPanel implements FieldClickListener {
 
     public static Placeable getPlacee(){
         return placee;
+    }
+
+    public static void startDeleteMode(){
+        if(isPlacing) stopPlacing();
+        deleteMode = true;
+    }
+
+    public static void stopDeleteMode(){
+        deleteMode = false;
     }
 
     private GridBagConstraints changeGbc(int row, int col, int rowSpan, int colSpan, double weightX, double weightY) {

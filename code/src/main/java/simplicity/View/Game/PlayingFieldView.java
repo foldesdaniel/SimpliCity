@@ -176,6 +176,8 @@ public class PlayingFieldView extends JPanel implements MouseListener, MouseMoti
                 }else{
                     g.drawImage(GameModel.SELECTION_INVALID_IMG, offsetX + (fieldSize * hoverField.x) - selOffsetX - placeHolderOffsetX, offsetY + (fieldSize * hoverField.y) - selOffsetY + placeHolderOffsetY, multSizeX, multSizeY, null);
                 }
+            }else if(GamePanel.isDeleteMode()){
+                g.drawImage(GameModel.SELECTION_INVALID_IMG, offsetX + (fieldSize * hoverField.x) - selOffsetX - placeHolderOffsetX, offsetY + (fieldSize * hoverField.y) - selOffsetY + placeHolderOffsetY, multSizeX, multSizeY, null);
             }else{
                 g.drawImage(GameModel.SELECTION_IMG, offsetX + (fieldSize * hoverField.x) - selOffsetX - placeHolderOffsetX, offsetY + (fieldSize * hoverField.y) - selOffsetY + placeHolderOffsetY, multSizeX, multSizeY, null);
             }
@@ -222,7 +224,33 @@ public class PlayingFieldView extends JPanel implements MouseListener, MouseMoti
         }else if(placee instanceof Forest){
             model.placeForest(hoverField);
         }
-        //model.gridPlace(placee, hoverField.x, hoverField.y);
+        this.repaint();
+    }
+
+    private void isDeleteClick(){
+        Placeable h = model.grid(hoverField.x,hoverField.y);
+        if(h == null) return;
+        Placeable placee = h instanceof PlaceableTemp hh ? hh.getPlaceable() : h;
+        Point position = h instanceof PlaceableTemp hh ? hh.getDisplayPosition() : h.getPosition();
+        if(placee instanceof Residential){
+            model.removeResidential(position);
+        }else if(placee instanceof Service){
+            model.removeService(position);
+        }else if(placee instanceof Industrial){
+            model.removeIndustrial(position);
+        }else if(placee instanceof Road){
+            model.removeRoad(position);
+        }else if(placee instanceof Police){
+            model.removePolice(position);
+        }else if(placee instanceof Stadium){
+            model.removeStadium(position);
+        }else if(placee instanceof School){
+            model.removeSchool(position);
+        }else if(placee instanceof University){
+            model.removeUniversity(position);
+        }else if(placee instanceof Forest){
+            model.removeForest(position);
+        }
         this.repaint();
     }
 
@@ -230,6 +258,8 @@ public class PlayingFieldView extends JPanel implements MouseListener, MouseMoti
         boolean fieldHit = hoverField != GameModel.NO_SELECTION;
         if(GamePanel.isPlacing()){
             this.placingClick();
+        }else if(GamePanel.isDeleteMode()){
+            this.isDeleteClick();
         }else{
             fieldClickListener.fieldClicked(fieldHit ? model.grid(hoverField.x,hoverField.y) : null);
         }
@@ -356,6 +386,8 @@ public class PlayingFieldView extends JPanel implements MouseListener, MouseMoti
         if(isLeftDragging) {
             if(GamePanel.isPlacing()){
                 this.placingClick();
+            }else if(GamePanel.isDeleteMode()){
+                this.isDeleteClick();
             }else{
                 fieldClickListener.fieldClicked(fieldHit ? model.grid(hoverField.x, hoverField.y) : null);
             }

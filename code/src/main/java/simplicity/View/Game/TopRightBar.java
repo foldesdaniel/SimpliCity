@@ -77,6 +77,7 @@ public class TopRightBar extends JPanel implements InGameTimeListener {
         btn3.setFont(font);
         btn4.setFont(font);
         btn5.setFont(font);
+        btn6.setFont(font);
         Dimension btnSize = new Dimension(56,28);
         btn1.setPreferredSize(btnSize);
         btn2.setPreferredSize(btnSize);
