@@ -2,6 +2,7 @@ package simplicity.View.Game;
 
 import simplicity.Model.Education.School;
 import simplicity.Model.Education.University;
+import simplicity.Model.Listeners.ModeChangeListener;
 import simplicity.Model.Placeables.*;
 import simplicity.Model.Placeables.Zones.Industrial;
 import simplicity.Model.Placeables.Zones.Residential;
@@ -12,11 +13,16 @@ import simplicity.View.Style.WrapLayout;
 import javax.swing.*;
 import java.awt.*;
 
-public class BuildTab extends JPanel {
+public class BuildTab extends JPanel implements ModeChangeListener {
 
     private final JPanel zones;
     private final JPanel buildings;
     private final JPanel other;
+    private JButton exitBuildBtn;
+    private JButton deleteBtn;
+
+    private static final String startDeleteText = "Enter delete mode";
+    private static final String stopDeleteText = "Exit delete mode";
 
     public BuildTab(){
         this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
@@ -48,21 +54,20 @@ public class BuildTab extends JPanel {
         this.buildings.add(new BuildTile(School.class));
         this.buildings.add(new BuildTile(University.class));
 
-        JButton exitBuildBtn = new JButton();
+        exitBuildBtn = new JButton();
         exitBuildBtn.addActionListener((e) -> GamePanel.stopPlacing());
         exitBuildBtn.setText("Exit building mode");
         exitBuildBtn.setFont(CFont.get());
-        JButton deleteBtn = new JButton();
-        final String startDeleteText = "Enter delete mode";
-        final String stopDeleteText = "Exit delete mode";
+        exitBuildBtn.setEnabled(false);
+        deleteBtn = new JButton();
         deleteBtn.setText(startDeleteText);
         deleteBtn.addActionListener((e) -> {
             if(GamePanel.isDeleteMode()){
                 GamePanel.stopDeleteMode();
-                deleteBtn.setText(startDeleteText);
+                //deleteBtn.setText(startDeleteText);
             }else{
                 GamePanel.startDeleteMode();
-                deleteBtn.setText(stopDeleteText);
+                //deleteBtn.setText(stopDeleteText);
             }
         });
         deleteBtn.setFont(CFont.get());
@@ -80,10 +85,32 @@ public class BuildTab extends JPanel {
         this.add(this.other);
     }
 
+    /*public void refreshDeleteBtnText(){
+        if(GamePanel.isDeleteMode()){
+            deleteBtn.setText(startDeleteText);
+        }else{
+            deleteBtn.setText(stopDeleteText);
+        }
+    }*/
+
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         this.zones.setMaximumSize(this.zones.getLayout().preferredLayoutSize(this.zones));
         this.buildings.setMaximumSize(this.buildings.getLayout().preferredLayoutSize(this.buildings));
+    }
+
+    @Override
+    public void onBuildModeChanged(boolean on) {
+        exitBuildBtn.setEnabled(on);
+    }
+
+    @Override
+    public void onDeleteModeChanged(boolean on) {
+        if(on){
+            deleteBtn.setText(stopDeleteText);
+        }else{
+            deleteBtn.setText(startDeleteText);
+        }
     }
 }

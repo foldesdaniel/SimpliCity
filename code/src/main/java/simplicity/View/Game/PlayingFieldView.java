@@ -4,6 +4,7 @@ import simplicity.Model.Education.School;
 import simplicity.Model.Education.University;
 import simplicity.Model.Listeners.FieldClickListener;
 import simplicity.Model.GameModel;
+import simplicity.Model.Listeners.ModeChangeListener;
 import simplicity.Model.Placeables.*;
 import simplicity.Model.Placeables.Zones.*;
 import simplicity.View.Listeners.MouseAdapter;
@@ -12,6 +13,7 @@ import simplicity.View.Style.InsetShadowBorder;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.util.ArrayList;
 
 public class PlayingFieldView extends JPanel implements MouseListener, MouseMotionListener, MouseWheelListener {
 
@@ -24,8 +26,10 @@ public class PlayingFieldView extends JPanel implements MouseListener, MouseMoti
     private int offsetX;
     private int offsetY;
     private GameModel model;
+    private final ArrayList<ModeChangeListener> modeListeners;
 
     public PlayingFieldView() {
+        this.modeListeners = new ArrayList<>();
         this.model = GameModel.getInstance();
         this.gridSize = model.getGridSize();
         this.fieldSize = defaultFieldSize;
@@ -44,6 +48,10 @@ public class PlayingFieldView extends JPanel implements MouseListener, MouseMoti
         this.addMouseMotionListener(this);
         this.addMouseWheelListener(this);
         this.setBorder(new InsetShadowBorder(16));
+    }
+
+    public void addModeListener(ModeChangeListener l){
+        this.modeListeners.add(l);
     }
 
     /*private void resetPlayingField() {
@@ -269,6 +277,8 @@ public class PlayingFieldView extends JPanel implements MouseListener, MouseMoti
     private void mouseRightClicked(MouseEvent e) {
         if(GamePanel.isPlacing()){
             GamePanel.stopPlacing();
+        }else if(GamePanel.isDeleteMode()){
+            GamePanel.stopDeleteMode();
         }else{
             boolean fieldHit = hoverField != GameModel.NO_SELECTION;
             // ...

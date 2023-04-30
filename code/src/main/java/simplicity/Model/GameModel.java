@@ -74,6 +74,7 @@ public class GameModel implements InGameTimeTickListener {
     private int serviceCount = 0;
     @Getter
     private ArrayList<Person> people = new ArrayList<>();
+    private int r;
 
     public GameModel() {
         inGameTime.addInGameTimeTickListener(this);
@@ -140,16 +141,16 @@ public class GameModel implements InGameTimeTickListener {
         return instance;
     }
 
-    public static GameModel reset(){
+    public static GameModel reset() {
         instance = null;
         return getInstance();
     }
 
-    public static int showDialog(String title, String message){
+    public static int showDialog(String title, String message) {
         return JOptionPane.showConfirmDialog(null, message, title + " | SimpliCity", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
     }
 
-    public static void showMessage(String title, String message){
+    public static void showMessage(String title, String message) {
         JOptionPane.showMessageDialog(null, message, title + " | SimpliCity", JOptionPane.WARNING_MESSAGE);
     }
 
@@ -357,6 +358,8 @@ public class GameModel implements InGameTimeTickListener {
                                 //calculateMood(p);
                                 boostMood(p, -7);
                             }
+                        } else if (grid[i][j] instanceof PlaceableTemp) {
+                            grid[i][j] = null;
                         }
                     }
                 }
@@ -414,6 +417,8 @@ public class GameModel implements InGameTimeTickListener {
                                 //calculateMood(p);
                                 boostMood(p, -6);
                             }
+                        } else if (grid[i][j] instanceof PlaceableTemp) {
+                            grid[i][j] = null;
                         }
                     }
                 }
@@ -461,6 +466,8 @@ public class GameModel implements InGameTimeTickListener {
                             //calculateMood(p);
                             boostMood(p, 7);
                         }
+                    } else if (grid[i][j] instanceof PlaceableTemp) {
+                        grid[i][j] = null;
                     }
                 }
             }
@@ -564,7 +571,7 @@ public class GameModel implements InGameTimeTickListener {
     public void removeSchool(Point position) {
         ((School) grid[position.x][position.y]).deleteData();
         grid[position.x][position.y] = null;
-
+        grid[position.x + 1][position.y] = null; // temp solution for now
         int maintenanceCost = new School(GameModel.NO_SELECTION).getMaintenanceCost();
         finance.removeYearlySpend(maintenanceCost, "Iskola fenntartási díj");
     }
@@ -594,6 +601,9 @@ public class GameModel implements InGameTimeTickListener {
     public void removeUniversity(Point position) {
         ((University) grid[position.x][position.y]).deleteData();
         grid[position.x][position.y] = null;
+        grid[position.x + 1][position.y] = null;
+        grid[position.x][position.y + 1] = null;
+        grid[position.x + 1][position.y + 1] = null; // temp solution for now
     }
 
     private Boolean searchForStadium(Person person) {
