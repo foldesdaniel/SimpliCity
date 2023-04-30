@@ -56,9 +56,7 @@ public class GameModel implements InGameTimeTickListener {
     public static final int DRAG_THRESHOLD = 5;
     private static GameModel instance;
     private final InGameTime inGameTime = InGameTimeManager.getInstance().getInGameTime();
-    //just for testing purposes
-    @Getter
-    private final int gridSize = 20;
+    public static final int GRID_SIZE = 20;
     private final ArrayList<MoralChangeListener> moralListeners = new ArrayList<>();
     private final ArrayList<PeopleChangeListener> peopleChangeListeners = new ArrayList<>();
     private final ArrayList<WealthChangeListener> wealthListeners = new ArrayList<>();
@@ -186,7 +184,7 @@ public class GameModel implements InGameTimeTickListener {
 
         for (int i = position.x - r; i <= position.x + r; ++i) {
             for (int j = position.y - r; j <= position.y + r; ++j) {
-                if (i >= 0 && j >= 0 && i < gridSize && j < gridSize) {
+                if (i >= 0 && j >= 0 && i < GRID_SIZE && j < GRID_SIZE) {
                     if (grid[i][j] != null && grid[i][j].getType() == FieldType.STADIUM) count++;
                 }
             }
@@ -201,7 +199,7 @@ public class GameModel implements InGameTimeTickListener {
 
         for (int i = position.x - r; i <= position.x + r; ++i) {
             for (int j = position.y - r; j <= position.y + r; ++j) {
-                if (i >= 0 && j >= 0 && i < gridSize && j < gridSize) {
+                if (i >= 0 && j >= 0 && i < GRID_SIZE && j < GRID_SIZE) {
                     if (grid[i][j] != null && grid[i][j].getType() == FieldType.POLICE) count++;
                 }
             }
@@ -216,7 +214,7 @@ public class GameModel implements InGameTimeTickListener {
 
         for (int i = position.x - r; i <= position.x + r; ++i) {
             for (int j = position.y - r; j <= position.y + r; ++j) {
-                if (i >= 0 && j >= 0 && i < gridSize && j < gridSize) {
+                if (i >= 0 && j >= 0 && i < GRID_SIZE && j < GRID_SIZE) {
                     if (grid[i][j] != null && grid[i][j].getType() == FieldType.ZONE_INDUSTRIAL) count++;
                 }
             }
@@ -231,8 +229,8 @@ public class GameModel implements InGameTimeTickListener {
 
     public void printGrid() {
         System.out.println("******************");
-        for (int i = 0; i < gridSize; ++i) {
-            for (int j = 0; j < gridSize; ++j) {
+        for (int i = 0; i < GRID_SIZE; ++i) {
+            for (int j = 0; j < GRID_SIZE; ++j) {
                 System.out.print(grid[j][i] + " ");
             }
             System.out.println();
@@ -241,23 +239,23 @@ public class GameModel implements InGameTimeTickListener {
     }
 
     public void initGrid() {
-        this.grid = new Placeable[this.gridSize][this.gridSize];
-        for (int i = 0; i < this.gridSize; ++i) {
-            for (int j = 0; j < this.gridSize; ++j) {
+        this.grid = new Placeable[GRID_SIZE][GRID_SIZE];
+        for (int i = 0; i < GRID_SIZE; ++i) {
+            for (int j = 0; j < GRID_SIZE; ++j) {
                 this.grid[i][j] = null; //null == not initialized block
             }
         }
     }
 
     private boolean[][] freeSpaces() {
-        boolean[][] spaces = new boolean[this.gridSize][this.gridSize];
-        for (int i = 0; i < gridSize; i++) {
-            for (int j = 0; j < gridSize; j++) {
+        boolean[][] spaces = new boolean[GRID_SIZE][GRID_SIZE];
+        for (int i = 0; i < GRID_SIZE; i++) {
+            for (int j = 0; j < GRID_SIZE; j++) {
                 spaces[i][j] = true;
             }
         }
-        for (int i = 0; i < gridSize; i++) {
-            for (int j = 0; j < gridSize; j++) {
+        for (int i = 0; i < GRID_SIZE; i++) {
+            for (int j = 0; j < GRID_SIZE; j++) {
                 Placeable p = this.grid[j][i];
                 if (p != null) {
                     int width = p.getSize().width;
@@ -278,7 +276,7 @@ public class GameModel implements InGameTimeTickListener {
         int y = position.y;
         int width = p.getSize().width;
         int height = p.getSize().height;
-        if (x + width > gridSize || y - (height - 1) < 0) return false;
+        if (x + width > GRID_SIZE || y - (height - 1) < 0) return false;
         boolean[][] freeSpaces = this.freeSpaces();
         for (int i = 0; i < p.getSize().height; i++) {
             for (int j = 0; j < p.getSize().width; j++) {
@@ -317,7 +315,7 @@ public class GameModel implements InGameTimeTickListener {
 
         for (int i = position.x - r; i <= position.x + r; ++i) {
             for (int j = position.y - r; j <= position.y + r; ++j) {
-                if (i >= 0 && j >= 0 && i < gridSize && j < gridSize) {
+                if (i >= 0 && j >= 0 && i < GRID_SIZE && j < GRID_SIZE) {
                     if (grid[i][j] != null) {
                         if (grid[i][j].getType() == FieldType.ZONE_RESIDENTIAL) {
                             for (Person p : ((Residential) grid[i][j]).getPeople()) {
@@ -346,7 +344,7 @@ public class GameModel implements InGameTimeTickListener {
 
         for (int i = position.x - r; i <= position.x + r; ++i) {
             for (int j = position.y - r; j <= position.y + r; ++j) {
-                if (i >= 0 && j >= 0 && i < gridSize && j < gridSize) {
+                if (i >= 0 && j >= 0 && i < GRID_SIZE && j < GRID_SIZE) {
                     if (grid[i][j] != null) {
                         if (grid[i][j].getType() == FieldType.ZONE_RESIDENTIAL) {
                             for (Person p : ((Residential) grid[i][j]).getPeople()) {
@@ -365,6 +363,7 @@ public class GameModel implements InGameTimeTickListener {
                 }
             }
         }
+        for (WealthChangeListener l : this.wealthListeners) l.onWealthChange();
     }
 
     public void placePolice(Point position) {
@@ -381,7 +380,7 @@ public class GameModel implements InGameTimeTickListener {
 
         for (int i = position.x - r; i <= position.x + r; ++i) {
             for (int j = position.y - r; j <= position.y + r; ++j) {
-                if (i >= 0 && j >= 0 && i < gridSize && j < gridSize) {
+                if (i >= 0 && j >= 0 && i < GRID_SIZE && j < GRID_SIZE) {
                     if (grid[i][j] != null) {
                         if (grid[i][j].getType() == FieldType.ZONE_RESIDENTIAL) {
                             for (Person p : ((Residential) grid[i][j]).getPeople()) {
@@ -405,7 +404,7 @@ public class GameModel implements InGameTimeTickListener {
 
         for (int i = position.x - r; i <= position.x + r; ++i) {
             for (int j = position.y - r; j <= position.y + r; ++j) {
-                if (i >= 0 && j >= 0 && i < gridSize && j < gridSize) {
+                if (i >= 0 && j >= 0 && i < GRID_SIZE && j < GRID_SIZE) {
                     if (grid[i][j] != null) {
                         if (grid[i][j].getType() == FieldType.ZONE_RESIDENTIAL) {
                             for (Person p : ((Residential) grid[i][j]).getPeople()) {
@@ -424,9 +423,8 @@ public class GameModel implements InGameTimeTickListener {
                 }
             }
         }
+        for (WealthChangeListener l : this.wealthListeners) l.onWealthChange();
     }
-
-    //todo : place/remove road, forest, service, residential, school, university and finish industrial
 
     public void placeIndustrial(Point position) {
         Industrial pl = new Industrial(position);
@@ -440,7 +438,7 @@ public class GameModel implements InGameTimeTickListener {
 
         for (int i = position.x - r; i <= position.x + r; ++i) {
             for (int j = position.y - r; j <= position.y + r; ++j) {
-                if (i >= 0 && j >= 0 && i < gridSize && j < gridSize) {
+                if (i >= 0 && j >= 0 && i < GRID_SIZE && j < GRID_SIZE) {
                     if (grid[i][j] != null && grid[i][j].getType() == FieldType.ZONE_RESIDENTIAL) {
                         for (Person p : ((Residential) grid[i][j]).getPeople()) {
                             //calculateMood(p);
@@ -460,7 +458,7 @@ public class GameModel implements InGameTimeTickListener {
 
         for (int i = position.x - r; i <= position.x + r; ++i) {
             for (int j = position.y - r; j <= position.y + r; ++j) {
-                if (i >= 0 && j >= 0 && i < gridSize && j < gridSize) {
+                if (i >= 0 && j >= 0 && i < GRID_SIZE && j < GRID_SIZE) {
                     if (grid[i][j] != null && grid[i][j].getType() == FieldType.ZONE_RESIDENTIAL) {
                         for (Person p : ((Residential) grid[i][j]).getPeople()) {
                             //calculateMood(p);
@@ -472,6 +470,7 @@ public class GameModel implements InGameTimeTickListener {
                 }
             }
         }
+        for (WealthChangeListener l : this.wealthListeners) l.onWealthChange();
     }
 
     public void placeRoad(Point position) {
@@ -486,8 +485,8 @@ public class GameModel implements InGameTimeTickListener {
         finance.addYearlySpend(maintenanceCost, "Út fenntartási díj");
 
         //recalculating mood for every person
-        for (int i = 0; i < gridSize; ++i) {
-            for (int j = 0; j < gridSize; ++j) {
+        for (int i = 0; i < GRID_SIZE; ++i) {
+            for (int j = 0; j < GRID_SIZE; ++j) {
                 if (grid[i][j] != null && grid[i][j].getType() == FieldType.ZONE_RESIDENTIAL) {
                     for (Person p : ((Residential) grid[i][j]).getPeople()) {
                         //calculateMood(p); TODO
@@ -499,8 +498,8 @@ public class GameModel implements InGameTimeTickListener {
     }
 
     public Boolean removeRoad(Point position) {
-        for (int i = 0; i < gridSize; ++i) {
-            for (int j = 0; j < gridSize; ++j) {
+        for (int i = 0; i < GRID_SIZE; ++i) {
+            for (int j = 0; j < GRID_SIZE; ++j) {
                 if (grid[i][j] != null && grid[i][j].getType() == FieldType.ZONE_RESIDENTIAL) {
                     for (Person p : ((Residential) grid[i][j]).getPeople()) {
                         if (p.getWorkplace() != null) {
@@ -520,7 +519,7 @@ public class GameModel implements InGameTimeTickListener {
         grid[position.x][position.y] = null;
         int maintenanceCost = new Road(GameModel.NO_SELECTION).getMaintenanceCost();
         finance.removeYearlySpend(maintenanceCost, "Út fenntartási díj");
-
+        for (WealthChangeListener l : this.wealthListeners) l.onWealthChange();
         return true;
     }
 
@@ -538,6 +537,7 @@ public class GameModel implements InGameTimeTickListener {
     public void removeService(Point position) {
         ((Service) grid[position.x][position.y]).deleteData();
         grid[position.x][position.y] = null;
+        for (WealthChangeListener l : this.wealthListeners) l.onWealthChange();
     }
 
     public void placeResidential(Point position) {
@@ -553,6 +553,7 @@ public class GameModel implements InGameTimeTickListener {
 
     public void removeResidential(Point position) {
         grid[position.x][position.y] = null;
+        for (WealthChangeListener l : this.wealthListeners) l.onWealthChange();
     }
 
     public void placeSchool(Point position) {
@@ -574,6 +575,7 @@ public class GameModel implements InGameTimeTickListener {
         grid[position.x + 1][position.y] = null; // temp solution for now
         int maintenanceCost = new School(GameModel.NO_SELECTION).getMaintenanceCost();
         finance.removeYearlySpend(maintenanceCost, "Iskola fenntartási díj");
+        for (WealthChangeListener l : this.wealthListeners) l.onWealthChange();
     }
 
     public void placeForest(Point position) {
@@ -587,6 +589,7 @@ public class GameModel implements InGameTimeTickListener {
 
     public void removeForest(Point position) {
         grid[position.x][position.y] = null;
+        for (WealthChangeListener l : this.wealthListeners) l.onWealthChange();
     }
 
     public void placeUniversity(Point position) {
@@ -604,6 +607,7 @@ public class GameModel implements InGameTimeTickListener {
         grid[position.x + 1][position.y] = null;
         grid[position.x][position.y + 1] = null;
         grid[position.x + 1][position.y + 1] = null; // temp solution for now
+        for (WealthChangeListener l : this.wealthListeners) l.onWealthChange();
     }
 
     private Boolean searchForStadium(Person person) {
@@ -614,7 +618,7 @@ public class GameModel implements InGameTimeTickListener {
 
         for (int i = homePosition.x - r; i <= homePosition.x + r; ++i) {
             for (int j = homePosition.y - r; j <= homePosition.y + r; ++j) {
-                if (i >= 0 && j >= 0 && i < gridSize && j < gridSize) {
+                if (i >= 0 && j >= 0 && i < GRID_SIZE && j < GRID_SIZE) {
                     if (grid[i][j] != null && grid[i][j].getType() == FieldType.STADIUM) {
                         return true;
                     }
@@ -629,7 +633,7 @@ public class GameModel implements InGameTimeTickListener {
 
         for (int i = workplacePosition.x - r; i <= workplacePosition.x + r; ++i) {
             for (int j = workplacePosition.y - r; j <= workplacePosition.y + r; ++j) {
-                if (i >= 0 && j >= 0 && i < gridSize && j < gridSize) {
+                if (i >= 0 && j >= 0 && i < GRID_SIZE && j < GRID_SIZE) {
                     if (grid[i][j] != null && grid[i][j].getType() == FieldType.STADIUM) {
                         return true;
                     }
@@ -647,7 +651,7 @@ public class GameModel implements InGameTimeTickListener {
 
         for (int i = homePosition.x - r; i <= homePosition.x + r; ++i) {
             for (int j = homePosition.y - r; j <= homePosition.y + r; ++j) {
-                if (i >= 0 && j >= 0 && i < gridSize && j < gridSize) {
+                if (i >= 0 && j >= 0 && i < GRID_SIZE && j < GRID_SIZE) {
                     if (grid[i][j] != null && grid[i][j].getType() == FieldType.POLICE) {
                         return true;
                     }
@@ -672,7 +676,7 @@ public class GameModel implements InGameTimeTickListener {
         Queue<NodeCount> queue = new LinkedList<>();
         Set<Point> visited = new HashSet<>();
 
-        if (position.x + 1 < gridSize && grid[position.x + 1][position.y] != null) {
+        if (position.x + 1 < GRID_SIZE && grid[position.x + 1][position.y] != null) {
             if (grid[position.x + 1][position.y].getType() == FieldType.ROAD) {
                 queue.add(new NodeCount(new Point(position.x + 1, position.y), 1));
                 visited.add(new Point(position.x + 1, position.y));
@@ -681,7 +685,7 @@ public class GameModel implements InGameTimeTickListener {
                 return 1;
             }
         }
-        if (position.y + 1 < gridSize && grid[position.x][position.y + 1] != null) {
+        if (position.y + 1 < GRID_SIZE && grid[position.x][position.y + 1] != null) {
             if (grid[position.x][position.y + 1].getType() == FieldType.ROAD) {
                 queue.add(new NodeCount(new Point(position.x, position.y + 1), 1));
                 visited.add(new Point(position.x, position.y + 1));
@@ -714,7 +718,7 @@ public class GameModel implements InGameTimeTickListener {
             position = nc.position;
             //System.out.println("Position : " + position.x + " " + position.y);
 
-            if (!visited.contains(new Point(position.x + 1, position.y)) && position.x + 1 < gridSize && grid[position.x + 1][position.y] != null) {
+            if (!visited.contains(new Point(position.x + 1, position.y)) && position.x + 1 < GRID_SIZE && grid[position.x + 1][position.y] != null) {
                 if (grid[position.x + 1][position.y].getType() == FieldType.ROAD) {
                     queue.add(new NodeCount(new Point(position.x + 1, position.y), nc.count + 1));
                     visited.add(new Point(position.x + 1, position.y));
@@ -722,7 +726,7 @@ public class GameModel implements InGameTimeTickListener {
                     return nc.count + 1;
                 }
             }
-            if (!visited.contains(new Point(position.x, position.y + 1)) && position.y + 1 < gridSize && grid[position.x][position.y + 1] != null) {
+            if (!visited.contains(new Point(position.x, position.y + 1)) && position.y + 1 < GRID_SIZE && grid[position.x][position.y + 1] != null) {
                 if (grid[position.x][position.y + 1].getType() == FieldType.ROAD) {
                     queue.add(new NodeCount(new Point(position.x, position.y + 1), nc.count + 1));
                     visited.add(new Point(position.x, position.y + 1));
@@ -758,7 +762,7 @@ public class GameModel implements InGameTimeTickListener {
 
         for (int i = homePosition.x - r; i <= homePosition.x + r; ++i) {
             for (int j = homePosition.y - r; j <= homePosition.y + r; ++j) {
-                if (i >= 0 && j >= 0 && i < gridSize && j < gridSize) {
+                if (i >= 0 && j >= 0 && i < GRID_SIZE && j < GRID_SIZE) {
                     if (grid[i][j] != null && grid[i][j].getType() == FieldType.ZONE_INDUSTRIAL) {
                         return true;
                     }
@@ -788,8 +792,8 @@ public class GameModel implements InGameTimeTickListener {
         int x = position.x;
         int y = position.y;
 
-        for (int i = 0; i < gridSize; ++i) {
-            for (int j = 0; j < gridSize; ++j) {
+        for (int i = 0; i < GRID_SIZE; ++i) {
+            for (int j = 0; j < GRID_SIZE; ++j) {
                 if (!(x == i && y == j) && grid[i][j] != null) {
                     Placeable current = grid[i][j];
                     Placeable temp;
@@ -874,9 +878,9 @@ public class GameModel implements InGameTimeTickListener {
     }
 
     private int[][] convertToNumMatrix(Placeable startPoint, Placeable endPoint, Placeable toBeDestroyed) {
-        int[][] matrix = new int[this.gridSize][this.gridSize];
-        for (int i = 0; i < gridSize; i++) {
-            for (int j = 0; j < gridSize; j++) {
+        int[][] matrix = new int[GRID_SIZE][GRID_SIZE];
+        for (int i = 0; i < GRID_SIZE; i++) {
+            for (int j = 0; j < GRID_SIZE; j++) {
                 if (grid[i][j] instanceof Road) matrix[i][j] = 3;
                 else matrix[i][j] = 0;
             }
@@ -888,7 +892,7 @@ public class GameModel implements InGameTimeTickListener {
     }
 
     private boolean isPath(int[][] matrix) {
-        int n = gridSize;
+        int n = GRID_SIZE;
         boolean[][] visited = new boolean[n][n];
         boolean flag = false;
 
@@ -907,8 +911,8 @@ public class GameModel implements InGameTimeTickListener {
 
     private void newYearTaxCollection() {
         int sum = 0;
-        for (int i = 0; i < gridSize; ++i) {
-            for (int j = 0; j < gridSize; ++j) {
+        for (int i = 0; i < GRID_SIZE; ++i) {
+            for (int j = 0; j < GRID_SIZE; ++j) {
                 if ((grid[i][j] != null)) {
                     sum += grid[i][j].calculateTax();
 
@@ -923,8 +927,8 @@ public class GameModel implements InGameTimeTickListener {
         if (this.people.size() == 0) return;
         int cityMood = 0;
         int numOfZones = 0;
-        for (int i = 0; i < this.gridSize; i++) {
-            for (int j = 0; j < this.gridSize; j++) {
+        for (int i = 0; i < GRID_SIZE; i++) {
+            for (int j = 0; j < GRID_SIZE; j++) {
                 if (this.grid[i][j] instanceof Residential) {
 //                    System.out.println("MOOD OF ZONE: " + ((Residential) this.grid[i][j]).calculateZoneMood());
 //                    System.out.println("NUM OF ZONE: " + (numOfZones + 1));
@@ -973,8 +977,8 @@ public class GameModel implements InGameTimeTickListener {
         } else {
             multiplier = (10 + this.finance.getProfitableYearsInARow()) / 10.0;
         }
-        for (int i = 0; i < this.gridSize; i++) {
-            for (int j = 0; j < this.gridSize; j++) {
+        for (int i = 0; i < GRID_SIZE; i++) {
+            for (int j = 0; j < GRID_SIZE; j++) {
                 if (this.grid[i][j] instanceof Residential) {
                     for (int k = 0; k < ((Residential) this.grid[i][j]).getPeople().size(); k++) {
                         if (multiplier >= 1) {
@@ -1036,8 +1040,8 @@ public class GameModel implements InGameTimeTickListener {
 
     private void welcomeNewInhabitants() {
         int freeSpace = 0;
-        for (int i = 0; i < this.gridSize; i++) {
-            for (int j = 0; j < this.gridSize; j++) {
+        for (int i = 0; i < GRID_SIZE; i++) {
+            for (int j = 0; j < GRID_SIZE; j++) {
                 if (this.grid[i][j] instanceof Residential && isNextToARoad(new Point(i, j))) {
                     freeSpace += ((Residential) this.grid[i][j]).numOfSpacesLeft();
                 }
@@ -1084,8 +1088,8 @@ public class GameModel implements InGameTimeTickListener {
     }
 
     private Residential findHome() {
-        for (int i = 0; i < this.gridSize; i++) {
-            for (int j = 0; j < this.gridSize; j++) {
+        for (int i = 0; i < GRID_SIZE; i++) {
+            for (int j = 0; j < GRID_SIZE; j++) {
                 if (this.grid[i][j] instanceof Residential && ((Residential) this.grid[i][j]).areSpacesLeft() && isNextToARoad(new Point(i, j))) {
                     return ((Residential) this.grid[i][j]);
                 }
@@ -1135,16 +1139,16 @@ public class GameModel implements InGameTimeTickListener {
         int y = point.y;
 
         if (x - 1 >= 0 && this.grid[x - 1][y] instanceof Road) return true;
-        if (x + 1 < this.gridSize && this.grid[x + 1][y] instanceof Road) return true;
+        if (x + 1 < GRID_SIZE && this.grid[x + 1][y] instanceof Road) return true;
         if (y - 1 >= 0 && this.grid[x][y - 1] instanceof Road) return true;
-        if (y + 1 < this.gridSize && this.grid[x][y + 1] instanceof Road) return true;
+        if (y + 1 < GRID_SIZE && this.grid[x][y + 1] instanceof Road) return true;
         return false;
     }
 
     private void newYearMaintenanceCost() {
         int sum = 0;
-        for (int i = 0; i < gridSize; ++i) {
-            for (int j = 0; j < gridSize; ++j) {
+        for (int i = 0; i < GRID_SIZE; ++i) {
+            for (int j = 0; j < GRID_SIZE; ++j) {
                 if ((grid[i][j] != null)) {
                     sum += grid[i][j].calculateMaintenance();
 

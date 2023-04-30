@@ -48,14 +48,20 @@ public class GamePanel extends JPanel implements FieldClickListener {
             @Override
             public boolean dispatchKeyEvent(KeyEvent e) {
                 if(e.getID() == KeyEvent.KEY_PRESSED){
-                    if(e.getKeyCode() == KeyEvent.VK_ESCAPE){
+                    if(e.getKeyCode() == KeyEvent.VK_ESCAPE || e.getKeyCode() == KeyEvent.VK_E){
                         if(isPlacing){
                             stopPlacing();
                         }else if(deleteMode){
                             stopDeleteMode();
                         }
-                        repaint();
+                    }else if(e.getKeyCode() == KeyEvent.VK_Q){
+                        if(deleteMode){
+                            stopDeleteMode();
+                        }else{
+                            startDeleteMode();
+                        }
                     }
+                    repaint();
                     for(GameKeyListener l : keyListeners) l.onKeyPressed(e);
                 }
                 return false;

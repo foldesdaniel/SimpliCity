@@ -31,7 +31,7 @@ public class PlayingFieldView extends JPanel implements MouseListener, MouseMoti
     public PlayingFieldView() {
         this.modeListeners = new ArrayList<>();
         this.model = GameModel.getInstance();
-        this.gridSize = model.getGridSize();
+        this.gridSize = GameModel.GRID_SIZE;
         this.fieldSize = defaultFieldSize;
         this.hoverField = GameModel.NO_SELECTION;
         this.offsetX = 0;
@@ -404,16 +404,18 @@ public class PlayingFieldView extends JPanel implements MouseListener, MouseMoti
         }
     }
 
-    private static final int MIN_FIELD_SIZE = 20;
-    private static final int MAX_FIELD_SIZE = 64;
+    private static final int SCROLL_STEP = 4;
+
+
 
     @Override
     public void mouseWheelMoved(MouseWheelEvent e) {
+        final int MIN_FIELD_SIZE = Math.max(SCROLL_STEP, (int) Math.round(this.getHeight()*0.793 / GameModel.GRID_SIZE));
+        final int MAX_FIELD_SIZE = Math.max(64, MIN_FIELD_SIZE);
         int rot = e.getWheelRotation();
-        int amount = (rot < 0 ? 1 : (rot > 0 ? -1 : 0)) * 4;
-        System.out.println("scroll amount " + amount);
+        int amount = (rot < 0 ? 1 : (rot > 0 ? -1 : 0)) * SCROLL_STEP;
         if ((amount > 0 && fieldSize < MAX_FIELD_SIZE) || (amount < 0 && fieldSize > MIN_FIELD_SIZE)) {
-            fieldSize += amount;
+            fieldSize = Math.min(Math.max(fieldSize + amount, MIN_FIELD_SIZE), MAX_FIELD_SIZE);
             if (doesGridFitHorizontally()) isGridDraggedX = false;
             if (doesGridFitVertically()) isGridDraggedY = false;
             this.updateHover(e.getX(), e.getY(), false, false);
