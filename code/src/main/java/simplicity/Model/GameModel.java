@@ -2,6 +2,7 @@ package simplicity.Model;
 
 import lombok.Getter;
 import simplicity.Model.Algorithm.NodeCount;
+import simplicity.Model.Education.Education;
 import simplicity.Model.Education.EducationLevel;
 import simplicity.Model.Education.School;
 import simplicity.Model.Education.University;
@@ -58,6 +59,7 @@ public class GameModel implements InGameTimeTickListener, Serializable {
     public static final Point NO_SELECTION = new Point(-1, -1);
     public static final int DRAG_THRESHOLD = 5;
     private static GameModel instance;
+    private static int saveCount;
     @Getter
     private final InGameTime inGameTime = InGameTimeManager.getInstance().getInGameTime();
     @Getter
@@ -73,8 +75,6 @@ public class GameModel implements InGameTimeTickListener, Serializable {
     private Finance finance;
     @Getter
     private ArrayList<Person> people = new ArrayList<>();
-
-    private static int saveCount;
 
     public GameModel() {
         inGameTime.addInGameTimeTickListener(this);
@@ -105,7 +105,7 @@ public class GameModel implements InGameTimeTickListener, Serializable {
     }
 
     public static GameModel getInstance() {
-        if(instance == null) {
+        if (instance == null) {
             try {
                 instance = (GameModel) Persistence.load("gm0.txt");
                 instance.getInGameTime().startInGameTime(InGameSpeeds.NORMAL);
@@ -1136,7 +1136,7 @@ public class GameModel implements InGameTimeTickListener, Serializable {
 
     @Override
     public void timeTick() {
-        System.out.println("Time: Y: " + inGameTime.getInGameYear() + " D: " + inGameTime.getInGameDay() + " H: " + inGameTime.getInGameHour());
+//        System.out.println("Time: Y: " + inGameTime.getInGameYear() + " D: " + inGameTime.getInGameDay() + " H: " + inGameTime.getInGameHour());
         if (this.inGameTime.getInGameHour() > 0) {
             calculateCityMood();
             removeDepressedPeople();
@@ -1148,12 +1148,16 @@ public class GameModel implements InGameTimeTickListener, Serializable {
             } else {
                 departInhabitants();
             }
-            try {
-                Persistence.save(this, "gm" + saveCount++ + ".txt");
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+
         }
+        if (this.inGameTime.getInGameDay() > 0 && this.inGameTime.getInGameDay() % 21 == 0 && this.inGameTime.getInGameHour() == 0) {
+//            try {
+//                Persistence.save(this, "gm" + saveCount++ + ".txt");
+//            } catch (IOException e) {
+//                throw new RuntimeException(e);
+//            }
+        }
+
         if (this.inGameTime.getInGameYear() > 0 && this.inGameTime.getInGameDay() == 0 && this.inGameTime.getInGameHour() == 0) {
             changeMoodOfPeople();
             newYearTaxCollection();
@@ -1166,6 +1170,23 @@ public class GameModel implements InGameTimeTickListener, Serializable {
     @Serial
     private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException {
         in.defaultReadObject();
+        for (int i = 0; i < gridSize; i++) {
+            for (int j = 0; j < gridSize; j++) {
+                if (grid[i][j] instanceof Workplace) {
+                    System.out.println(((Workplace) grid[i][j]).getPeople().size());
+                }
+                if (grid[i][j] instanceof Education) {
+                    System.out.println(((Education) grid[i][j]).getPeople().size());
+                }
+            }
+        }
+        for (Person p : this.people) {
+            System.out.println(p.getMood());
+        }
+        calculateCityMood();
+        for (MoralChangeListener l : this.moralListeners) l.onMoralChanged();
+        for (PeopleChangeListener l : this.peopleChangeListeners) l.onPeopleCountChange();
+
         InGameTimeManager.getInstance().setInGameTime(this.inGameTime);
         InGameTimeManager.getInstance().getInGameTime().inGameElapsedTime = new Timer();
     }

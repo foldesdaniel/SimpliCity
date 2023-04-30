@@ -20,7 +20,7 @@ public class School extends Education implements InGameTimeTickListener, Seriali
 
     private final InGameTime inGameTime;
 
-    public School( Point position) {
+    public School(Point position) {
         super(FieldType.SCHOOL, position, 7000, 20, 1500);
         inGameTime = InGameTimeManager.getInstance().getInGameTime();
         inGameTime.addInGameTimeTickListener(this);
@@ -70,7 +70,7 @@ public class School extends Education implements InGameTimeTickListener, Seriali
     }
 
     @Override
-    public Dimension getSize(){
+    public Dimension getSize() {
         return new Dimension(2, 1);
     }
 

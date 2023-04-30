@@ -23,8 +23,4 @@ public class InGameTimeManager implements Serializable {
         return instance;
     }
 
-//    @Serial
-//    private Object readResolve() {
-//        return (InGameTimeManager) getInstance();
-//    }
 }
