@@ -78,6 +78,7 @@ public class GameModel implements InGameTimeTickListener {
         this.secondaryPercentage = 70;
         this.uniPercentage = 22;
         this.mood = 0;
+        generateNextDisasterDate();
 
         //Initialize grid
         this.initGrid();
@@ -126,6 +127,14 @@ public class GameModel implements InGameTimeTickListener {
 //        System.out.println(removeRoad(new Point(1, 2)));
 
 
+    }
+
+    private void generateNextDisasterDate() {
+        Random rand = new Random();
+        int year = this.inGameTime.getInGameYear() + 1;
+        int day = rand.nextInt(11) + 1;
+
+        this.nextDisaster = new Date(year, day, 0);
     }
 
     public static GameModel getInstance() {
@@ -1469,6 +1478,10 @@ public class GameModel implements InGameTimeTickListener {
             newYearTaxCollection();
             newYearMaintenanceCost();
             newYearForest();
+        }
+        if (this.inGameTime.getInGameYear() == nextDisaster.getYear() && this.inGameTime.getInGameDay() == nextDisaster.getDay()) {
+            generateNextDisasterDate();
+            //TODO: disaster logic
         }
         for (WealthChangeListener l : this.wealthListeners) l.onWealthChange();
         for (MoralChangeListener l : this.moralListeners) l.onMoralChanged();
