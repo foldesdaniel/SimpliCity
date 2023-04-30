@@ -2,9 +2,12 @@ package simplicity.Model.GameTime;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import simplicity.Model.Listeners.InGameTimeListener;
 import simplicity.Model.Listeners.InGameTimeTickListener;
 
+import java.io.IOException;
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Timer;
@@ -20,8 +23,8 @@ public class InGameTime implements Serializable {
     @Getter
     private int inGameHour = 0;
 
-    private transient Timer inGameElapsedTime;
-
+    @Setter
+    public transient Timer inGameElapsedTime;
     private InGameTimeListener inGameTimeListener;
     private final ArrayList<InGameTimeTickListener> inGameTimeTickListeners = new ArrayList<>();
 
@@ -76,5 +79,12 @@ public class InGameTime implements Serializable {
     public void stopInGameTime() {
         inGameElapsedTime.cancel();
     }
+//
+//    @Serial
+//    private Object readResolve() {
+//        inGameElapsedTime = new Timer();
+//        return (InGameTime) this;
+//    }
+//
 
 }

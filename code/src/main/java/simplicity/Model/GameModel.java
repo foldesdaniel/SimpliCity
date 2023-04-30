@@ -25,6 +25,7 @@ import simplicity.Model.Resource.ResourceLoader;
 
 import java.awt.*;
 import java.io.IOException;
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Queue;
 import java.util.*;
@@ -57,24 +58,19 @@ public class GameModel implements InGameTimeTickListener, Serializable {
     public static final Point NO_SELECTION = new Point(-1, -1);
     public static final int DRAG_THRESHOLD = 5;
     private static GameModel instance;
+    @Getter
     private final InGameTime inGameTime = InGameTimeManager.getInstance().getInGameTime();
-
     @Getter
     private final int gridSize = 20;
     private final ArrayList<MoralChangeListener> moralListeners = new ArrayList<>();
     private final ArrayList<PeopleChangeListener> peopleChangeListeners = new ArrayList<>();
     private final ArrayList<WealthChangeListener> wealthListeners = new ArrayList<>();
-    private int mood;
     private Date nextDisaster;
-    private int secondaryPercentage;
-    private int uniPercentage;
     @Getter
     private int cityMood = 60;
     @Getter
     private Placeable grid[][];
     private Finance finance;
-    private int industrialCount = 0;
-    private int serviceCount = 0;
     @Getter
     private ArrayList<Person> people = new ArrayList<>();
 
@@ -84,9 +80,6 @@ public class GameModel implements InGameTimeTickListener, Serializable {
         inGameTime.addInGameTimeTickListener(this);
         inGameTime.startInGameTime(InGameSpeeds.ULTRASONIC_DEV_ONLY);
         this.finance = new Finance(35000); //starting wealth
-        this.secondaryPercentage = 70;
-        this.uniPercentage = 22;
-        this.mood = 0;
 
         //Initialize grid
         this.initGrid();
@@ -109,47 +102,21 @@ public class GameModel implements InGameTimeTickListener, Serializable {
         grid[4][1] = new Road(new Point(4, 1));
         grid[5][1] = new Residential(new Point(5, 1));
 
-
-//        System.out.println(isPath(convertToNumMatrix(grid[5][1],grid[3][1],null)));
-//
-//        placeUniversity(new Point(6,6));
-//        placeRoad(new Point(7,4));
-//        placeResidential(new Point(7,3));
-//        System.out.println((grid[7][5] instanceof PlaceableTemp) + " " + grid[7][5].getPosition());
-//        System.out.println((grid[3][1] instanceof PlaceableTemp) + " " + grid[3][1].getPosition());
-
-//        grid[0][3] = new Road(new Point(0,3));
-//        grid[0][4] = new Road(new Point(0,4));
-//        grid[0][5] = new Road(new Point(0,5));
-//        grid[1][2] = new Road(new Point(1,2));
-//        grid[2][2] = new Road(new Point(2,2));
-//        grid[3][2] = new Road(new Point(3,2));
-//        grid[3][3] = new Road(new Point(3,3));
-//        grid[3][4] = new Road(new Point(3,4));
-//        grid[3][5] = new Road(new Point(3,5));
-//        grid[1][5] = new Road(new Point(1,5));
-//
-//
-//        grid[2][5] = new Service(new Point(2, 5));
-//
-//        ((Residential)grid[0][1]).getPeople().get(0).goToWork((Workplace)grid[2][5]);
-//        System.out.println(removeRoad(new Point(1, 2)));
-
-
     }
 
     public static GameModel getInstance() {
-//        if (instance == null) {
-//            instance = new GameModel();
-//        }
         if(instance == null) {
             try {
-                instance = (GameModel) Persistence.load("gm4.txt");
+                instance = (GameModel) Persistence.load("gm0.txt");
+                instance.getInGameTime().startInGameTime(InGameSpeeds.NORMAL);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             } catch (ClassNotFoundException e) {
                 throw new RuntimeException(e);
             }
+        }
+        if (instance == null) {
+            instance = new GameModel();
         }
         return instance;
     }
@@ -1169,28 +1136,17 @@ public class GameModel implements InGameTimeTickListener, Serializable {
 
     @Override
     public void timeTick() {
+        System.out.println("Time: Y: " + inGameTime.getInGameYear() + " D: " + inGameTime.getInGameDay() + " H: " + inGameTime.getInGameHour());
         if (this.inGameTime.getInGameHour() > 0) {
-            //System.out.println("City mood: " + this.cityMood);
             calculateCityMood();
             removeDepressedPeople();
         }
-//        System.out.println("******************");
-//        for (int i = 0; i < gridSize; ++i) {
-//            for (int j = 0; j < gridSize; ++j) {
-//                System.out.print(grid[i][j] + " ");
-//            }
-//            System.out.println();
-//        }
-//        System.out.println("Current money : " + finance.getCurrentWealth());
-        // System.out.println("******************");
         if (this.inGameTime.getInGameDay() > 0 && this.inGameTime.getInGameDay() % 20 == 0 && this.inGameTime.getInGameHour() == 0) {
             if (isMoodGoodEnough()) {
                 welcomeNewInhabitants();
                 findOccupation();
-//                System.out.println("ADD");
             } else {
                 departInhabitants();
-//                System.out.println("REMOVE");
             }
             try {
                 Persistence.save(this, "gm" + saveCount++ + ".txt");
@@ -1199,8 +1155,6 @@ public class GameModel implements InGameTimeTickListener, Serializable {
             }
         }
         if (this.inGameTime.getInGameYear() > 0 && this.inGameTime.getInGameDay() == 0 && this.inGameTime.getInGameHour() == 0) {
-            //triggers new year tax collection
-            //and city mood change
             changeMoodOfPeople();
             newYearTaxCollection();
             newYearMaintenanceCost();
@@ -1208,4 +1162,12 @@ public class GameModel implements InGameTimeTickListener, Serializable {
         for (WealthChangeListener l : this.wealthListeners) l.onWealthChange();
         for (MoralChangeListener l : this.moralListeners) l.onMoralChanged();
     }
+
+    @Serial
+    private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException {
+        in.defaultReadObject();
+        InGameTimeManager.getInstance().setInGameTime(this.inGameTime);
+        InGameTimeManager.getInstance().getInGameTime().inGameElapsedTime = new Timer();
+    }
+
 }

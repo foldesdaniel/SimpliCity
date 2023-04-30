@@ -90,6 +90,7 @@ public class GameWindow extends JFrame implements MenuEventListener, StartGameLi
         gameModel = GameModel.getInstance();
         if (gamePanel == null) gamePanel = new GamePanel();
         this.add(gamePanel);
+        gamePanel.revalidate();
     }
 
 }

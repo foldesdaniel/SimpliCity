@@ -82,7 +82,6 @@ public class PlayingFieldView extends JPanel implements MouseListener, MouseMoti
 
     @Override
     protected void paintComponent(Graphics graphics) {
-        System.out.println("PAinting");
         Graphics2D g = (Graphics2D) graphics;
         int panelWidth = this.getWidth();
         int panelHeight = this.getHeight();
@@ -155,7 +154,6 @@ public class PlayingFieldView extends JPanel implements MouseListener, MouseMoti
                     Image img = model.grid(j,i).getImage(leftNeighbor, rightNeighbor, upNeighbor, downNeighbor);
                     Dimension size = model.grid(j,i).getSize();
                     g.drawImage(img, offsetX + coord.y, offsetY + coord.x - (fieldSize * (size.height - 1)), fieldSize * size.width, fieldSize * size.height, null);
-                    System.out.println("hdjksahdklas");
                 }
             }
         }
