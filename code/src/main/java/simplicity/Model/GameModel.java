@@ -131,8 +131,8 @@ public class GameModel implements InGameTimeTickListener {
 
     private void generateNextDisasterDate() {
         Random rand = new Random();
-        int year = this.inGameTime.getInGameYear() + 1;
-        int day = rand.nextInt(11) + 1;
+        int year = this.inGameTime.getInGameYear() + rand.nextInt(5) + 1;
+        int day = rand.nextInt(364) + 1;
 
         this.nextDisaster = new Date(year, day, 0);
     }
@@ -494,9 +494,9 @@ public class GameModel implements InGameTimeTickListener {
         return false;
     }
 
-    public void removeIndustrial(Point position) {
+    public void removeIndustrial(Point position, boolean forceRemove) {
         //check if it can be removed
-        if (((Industrial) grid[position.x][position.y]).getPeople().size() > 0) return;
+        if (((Industrial) grid[position.x][position.y]).getPeople().size() > 0 && !forceRemove) return;
 
         int price = ((Industrial) grid[position.x][position.y]).getBuildPrice() / 3;
         this.finance.addIncome(price,"Ipari zóna törlés");
@@ -1449,20 +1449,37 @@ public class GameModel implements InGameTimeTickListener {
         }
     }
 
+    private boolean isIndustrialBuiltAlready() {
+        for (int i = 0; i < gridSize; ++i) {
+            for (int j = 0; j < gridSize; ++j) {
+                if (grid[i][j] != null && grid[i][j] instanceof Industrial) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private Point searchRandomIndustrial() {
+        while (true) {
+            Random rand = new Random();
+            int i = rand.nextInt(gridSize);
+            int j = rand.nextInt(gridSize);
+            if (grid[i][j] != null && grid[i][j] instanceof Industrial) return grid[i][j].getPosition();
+        }
+    }
+
+    private void doIndustrialDisaster(Point position) {
+        //animation for 3-5 sec
+
+        removeIndustrial(position, true);
+    }
+
     @Override
     public void timeTick() {
         if (this.inGameTime.getInGameHour() > 0) {
             calculateCityMood();
         }
-//        System.out.println("******************");
-//        for (int i = 0; i < gridSize; ++i) {
-//            for (int j = 0; j < gridSize; ++j) {
-//                System.out.print(grid[i][j] + " ");
-//            }
-//            System.out.println();
-//        }
-//        System.out.println("Current money : " + finance.getCurrentWealth());
-        // System.out.println("******************");
         if (this.inGameTime.getInGameDay() > 0 && this.inGameTime.getInGameDay() % 20 == 0 && this.inGameTime.getInGameHour() == 0) {
             if (isMoodGoodEnough()) {
                 welcomeNewInhabitants();
@@ -1480,8 +1497,12 @@ public class GameModel implements InGameTimeTickListener {
             newYearForest();
         }
         if (this.inGameTime.getInGameYear() == nextDisaster.getYear() && this.inGameTime.getInGameDay() == nextDisaster.getDay()) {
+            //disaster logic
             generateNextDisasterDate();
-            //TODO: disaster logic
+            if (isIndustrialBuiltAlready()) {
+                Point position = searchRandomIndustrial();
+                doIndustrialDisaster(position);
+            }
         }
         for (WealthChangeListener l : this.wealthListeners) l.onWealthChange();
         for (MoralChangeListener l : this.moralListeners) l.onMoralChanged();
