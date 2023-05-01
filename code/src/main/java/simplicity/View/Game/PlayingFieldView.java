@@ -245,7 +245,7 @@ public class PlayingFieldView extends JPanel implements MouseListener, MouseMoti
         }else if(placee instanceof Service){
             model.removeService(position);
         }else if(placee instanceof Industrial){
-            model.removeIndustrial(position);
+            model.removeIndustrial(position, false);
         }else if(placee instanceof Road){
             model.removeRoad(position);
         }else if(placee instanceof Police){

@@ -73,8 +73,6 @@ public class GameModel implements InGameTimeTickListener {
     private int r;
 
     public GameModel() {
-        inGameTime.addInGameTimeTickListener(this);
-        inGameTime.startInGameTime(InGameSpeeds.ULTRASONIC_DEV_ONLY);
         this.finance = new Finance(35000); //starting wealth
         this.secondaryPercentage = 70;
         this.uniPercentage = 22;
@@ -129,13 +127,14 @@ public class GameModel implements InGameTimeTickListener {
 //        System.out.println(removeRoad(new Point(1, 2)));
 
 
+        inGameTime.addInGameTimeTickListener(this);
+        inGameTime.startInGameTime(InGameSpeeds.ULTRASONIC_DEV_ONLY);
     }
 
     private void generateNextDisasterDate() {
         Random rand = new Random();
         int year = this.inGameTime.getInGameYear() + rand.nextInt(5) + 1;
         int day = rand.nextInt(364) + 1;
-
         this.nextDisaster = new Date(year, day, 0);
     }
 
