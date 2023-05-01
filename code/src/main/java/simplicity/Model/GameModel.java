@@ -301,6 +301,18 @@ public class GameModel implements InGameTimeTickListener {
         }
     }
 
+    private void deleteTemps(Placeable p, Point position) {
+        Dimension size = p.getSize();
+        if (size.width == 1 && size.height == 1) return;
+        for (int i = 0; i < size.height; i++) {
+            for (int j = 0; j < size.width; j++) {
+                if (i == 0 && j == 0) continue;
+                Point newPos = new Point(position.x + j, position.y - i);
+                this.grid[newPos.x][newPos.y] = null;
+            }
+        }
+    }
+
     public void placeStadium(Point position) {
         Stadium pl = new Stadium(position);
         if (!canPlace(pl, position)) return;
@@ -336,6 +348,7 @@ public class GameModel implements InGameTimeTickListener {
     }
 
     public void removeStadium(Point position) {
+        deleteTemps(grid[position.x][position.y], position);
         grid[position.x][position.y] = null;
         int r = new Stadium(GameModel.NO_SELECTION).getRadius();
 
@@ -356,8 +369,6 @@ public class GameModel implements InGameTimeTickListener {
                                 //calculateMood(p);
                                 boostMood(p, -7);
                             }
-                        } else if (grid[i][j] instanceof PlaceableTemp) {
-                            grid[i][j] = null;
                         }
                     }
                 }
@@ -416,8 +427,6 @@ public class GameModel implements InGameTimeTickListener {
                                 //calculateMood(p);
                                 boostMood(p, -6);
                             }
-                        } else if (grid[i][j] instanceof PlaceableTemp) {
-                            grid[i][j] = null;
                         }
                     }
                 }
@@ -464,8 +473,6 @@ public class GameModel implements InGameTimeTickListener {
                             //calculateMood(p);
                             boostMood(p, 7);
                         }
-                    } else if (grid[i][j] instanceof PlaceableTemp) {
-                        grid[i][j] = null;
                     }
                 }
             }
@@ -570,9 +577,9 @@ public class GameModel implements InGameTimeTickListener {
     }
 
     public void removeSchool(Point position) {
+        deleteTemps(grid[position.x][position.y], position);
         ((School) grid[position.x][position.y]).deleteData();
         grid[position.x][position.y] = null;
-        grid[position.x + 1][position.y] = null; // temp solution for now
         int maintenanceCost = new School(GameModel.NO_SELECTION).getMaintenanceCost();
         finance.removeYearlySpend(maintenanceCost, "Iskola fenntartási díj");
         for (WealthChangeListener l : this.wealthListeners) l.onWealthChange();
@@ -602,11 +609,9 @@ public class GameModel implements InGameTimeTickListener {
     }
 
     public void removeUniversity(Point position) {
+        deleteTemps(grid[position.x][position.y], position);
         ((University) grid[position.x][position.y]).deleteData();
         grid[position.x][position.y] = null;
-        grid[position.x + 1][position.y] = null;
-        grid[position.x][position.y + 1] = null;
-        grid[position.x + 1][position.y + 1] = null; // temp solution for now
         for (WealthChangeListener l : this.wealthListeners) l.onWealthChange();
     }
 
