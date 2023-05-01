@@ -41,7 +41,7 @@ public class GamePanel extends JPanel implements FieldClickListener {
                 if(e.getID() == KeyEvent.KEY_PRESSED){
                     if(e.getKeyCode() == KeyEvent.VK_ESCAPE){
                         GamePanel.stopPlacing();
-                        playingField.repaint();
+                        repaint();
                     }
                 }
                 return false;

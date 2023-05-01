@@ -71,6 +71,7 @@ public class GameModel implements InGameTimeTickListener {
     private Finance finance;
     @Getter
     private ArrayList<Person> people = new ArrayList<>();
+
     public GameModel() {
         inGameTime.addInGameTimeTickListener(this);
         inGameTime.startInGameTime(InGameSpeeds.ULTRASONIC_DEV_ONLY);
@@ -86,7 +87,7 @@ public class GameModel implements InGameTimeTickListener {
         /*for (int i = 0; i < 10; i++) {
             this.people.add(new Person());
         }*/
-        
+
         //this.printGrid();
 
 //        grid[0][0] = new Residential(new Point(0, 0));
@@ -100,6 +101,7 @@ public class GameModel implements InGameTimeTickListener {
 //        grid[3][1] = new PlaceableTemp(s1, new Point(3,1));
 //        grid[4][1] = new Road(new Point(4,1));
 //        grid[5][1] = new Residential(new Point(5,1));
+
 
 //        System.out.println(isPath(convertToNumMatrix(grid[5][1],grid[3][1],null)));
 //
@@ -861,7 +863,7 @@ public class GameModel implements InGameTimeTickListener {
     }
 
     private int getWorkplaceDistance(Person person, String type) {
-        if(type.equals("uni") || type.equals("secondary")) type = "school";
+        if (type.equals("uni") || type.equals("secondary")) type = "school";
         Residential home = person.getHome();
         Point position = home.getPosition();
 
@@ -1275,8 +1277,7 @@ public class GameModel implements InGameTimeTickListener {
                         else if (size > max / 3) boostMood(p, 2);
                         else boostMood(p, 7);
                     }
-                }
-                else if (this.grid[i][j] instanceof Service) {
+                } else if (this.grid[i][j] instanceof Service) {
                     int size = ((Service) this.grid[i][j]).getPeople().size();
                     int max = ((Service) this.grid[i][j]).getMaxPeople();
 
@@ -1287,8 +1288,7 @@ public class GameModel implements InGameTimeTickListener {
                         else if (size > max / 3) boostMood(p, 2);
                         else boostMood(p, 7);
                     }
-                }
-                else if (this.grid[i][j] instanceof Industrial) {
+                } else if (this.grid[i][j] instanceof Industrial) {
                     int size = ((Industrial) this.grid[i][j]).getPeople().size();
                     int max = ((Industrial) this.grid[i][j]).getMaxPeople();
 
@@ -1343,7 +1343,11 @@ public class GameModel implements InGameTimeTickListener {
             //TODO lp could be null
             if (lp.getWorkplace() != null) lp.getWorkplace().removePerson(lp);
             if (lp.getHome() != null) lp.getHome().removePerson(lp);
-            if (lp.getEducation() != null) lp.getEducation().removePerson(lp);
+            if (lp.getEducation() != null) {
+                int indexOfPerson = lp.getEducation().getPeople().indexOf(lp);
+                lp.getEducation().getArrivalDates().remove(indexOfPerson);
+                lp.getEducation().removePerson(lp);
+            }
             this.people.remove(lp);
         }
     }
@@ -1360,7 +1364,9 @@ public class GameModel implements InGameTimeTickListener {
     }
 
     private void findOccupation() {
-        //printCurrentEmployment();
+
+//        printCurrentEmployment();
+
         Random random = new Random();
         for (Person person : this.people) {
             if (person.getEducation() == null && person.getWorkplace() == null) {
@@ -1397,11 +1403,12 @@ public class GameModel implements InGameTimeTickListener {
             }
 
         }
-        //printCurrentEmployment();
+
+//        printCurrentEmployment();
     }
 
     private void printCurrentEmployment() {
-        for(Person p : this.people) {
+        for (Person p : this.people) {
             System.out.println("M: " + p.getMood() + " | E: " + p.getEducation() + " | W: " + p.getWorkplace());
         }
         System.out.println("-------------------------");
@@ -1475,10 +1482,32 @@ public class GameModel implements InGameTimeTickListener {
         removeIndustrial(position, true);
     }
 
+    private void removeDepressedPeople() {
+        for (int i = 0; i < this.people.size(); i++) {
+            Person p = this.people.get(i);
+            if (p.getMood() == 0) {
+                System.out.println("Here");
+                if (p.getEducation() != null) {
+                    int indexOfPerson = p.getEducation().getPeople().indexOf(p);
+                    p.getEducation().getArrivalDates().remove(indexOfPerson);
+                    p.getEducation().removePerson(p);
+                }
+                if (p.getWorkplace() != null) {
+                    p.getWorkplace().removePerson(p);
+                    System.out.println("removed");
+                }
+                p.getHome().removePerson(p);
+                this.people.remove(p);
+                System.out.println("Removed a person!");
+            }
+        }
+    }
+
     @Override
     public void timeTick() {
         if (this.inGameTime.getInGameHour() > 0) {
             calculateCityMood();
+            removeDepressedPeople();
         }
         if (this.inGameTime.getInGameDay() > 0 && this.inGameTime.getInGameDay() % 20 == 0 && this.inGameTime.getInGameHour() == 0) {
             if (isMoodGoodEnough()) {
