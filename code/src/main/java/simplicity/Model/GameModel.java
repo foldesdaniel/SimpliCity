@@ -100,7 +100,6 @@ public class GameModel implements InGameTimeTickListener {
         grid[4][1] = new Road(new Point(4, 1));
         grid[5][1] = new Residential(new Point(5, 1));
 
-
 //        System.out.println(isPath(convertToNumMatrix(grid[5][1],grid[3][1],null)));
 //
 //        placeUniversity(new Point(6,6));
@@ -573,20 +572,49 @@ public class GameModel implements InGameTimeTickListener {
     }
 
     public Boolean removeRoad(Point position) {
+        Placeable toBeDestroyed = grid[position.x][position.y];
+        boolean canBeDestroyed = true;
+        OUTER:
         for (int i = 0; i < GRID_SIZE; ++i) {
             for (int j = 0; j < GRID_SIZE; ++j) {
                 if (grid[i][j] != null && grid[i][j].getType() == FieldType.ZONE_RESIDENTIAL) {
                     for (Person p : ((Residential) grid[i][j]).getPeople()) {
                         if (p.getWorkplace() != null) {
-                            if (!canRoadBeDestroyed(grid[i][j], grid[p.getWorkplace().getPosition().x][p.getWorkplace().getPosition().y], grid[position.x][position.y])) {
-                                return false;
+                            if (!canRoadBeDestroyed(grid[i][j], grid[p.getWorkplace().getPosition().x][p.getWorkplace().getPosition().y], toBeDestroyed)) {
+                                canBeDestroyed = false;
+                                break OUTER;
                             }
                         } else if (p.getEducation() != null) {
-                            if (!canRoadBeDestroyed(grid[i][j], grid[p.getEducation().getPosition().x][p.getEducation().getPosition().y], grid[position.x][position.y])) {
-                                return false;
+                            if (!canRoadBeDestroyed(grid[i][j], grid[p.getEducation().getPosition().x][p.getEducation().getPosition().y], toBeDestroyed)) {
+                                canBeDestroyed = false;
+                                break OUTER;
                             }
                         }
                     }
+                }
+            }
+        }
+
+        if (!canBeDestroyed) {
+            int choice = JOptionPane.showOptionDialog(null, "Do you want to demolish this road?\nCost: " + toBeDestroyed.getBuildPrice(), "Demolition confirmation", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, null);
+            if (choice == JOptionPane.NO_OPTION) return false;
+            else {
+                this.finance.removeMoney(toBeDestroyed.getBuildPrice());
+                for (WealthChangeListener l : this.wealthListeners) l.onWealthChange();
+                //TODO one-time mood change
+                //find new job or find new home
+                ArrayList<Person> affectedPeople = new ArrayList<>();
+                System.out.println(toBeDestroyed.getPosition());
+                for (Person person : this.people) {
+                    if (person.getEducation() != null && !canRoadBeDestroyed(person.getHome(), person.getEducation(), toBeDestroyed)) {
+                        affectedPeople.add(person);
+                        System.out.println(person.getHome());
+                    }
+                    if (person.getWorkplace() != null && !canRoadBeDestroyed(person.getHome(), person.getWorkplace(), toBeDestroyed)) {
+                        affectedPeople.add(person);
+                        System.out.println(person.getHome());
+                    }
+
                 }
             }
         }
@@ -637,9 +665,8 @@ public class GameModel implements InGameTimeTickListener {
         //check if it can be removed
         Residential r = ((Residential) grid[position.x][position.y]);
         if (r.getPeople().size() > 0) {
-            System.out.println("HERE");
             int buildPrice = r.getBuildPrice();
-            int choice = JOptionPane.showOptionDialog(null, "Do you want to demolish this Residential Zone?\nCost " + buildPrice, "Demolition confirmation", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, null);
+            int choice = JOptionPane.showOptionDialog(null, "Do you want to demolish this Residential Zone?\nCost: " + buildPrice, "Demolition confirmation", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, null);
             if (choice == JOptionPane.NO_OPTION) return;
             else {
                 this.finance.removeMoney(buildPrice);
@@ -648,17 +675,26 @@ public class GameModel implements InGameTimeTickListener {
                     Person p = r.getPeople().get(i);
                     if (p.getWorkplace() != null) {
                         p.getWorkplace().removePerson(p);
+                        p.setWorkplace(null);
                     }
                     if (p.getEducation() != null) {
                         int indexOfPerson = p.getEducation().getPeople().indexOf(p);
                         p.getEducation().getArrivalDates().remove(indexOfPerson);
                         p.getEducation().removePerson(p);
+                        p.setEducation(null);
                     }
-                    this.people.remove(p);
+                    Residential home = findHome();
+                    if (home != null) {
+                        p.moveIn(home);
+                    } else {
+                        this.people.remove(p);
+                    }
                 }
                 grid[position.x][position.y] = null;
                 for (PeopleChangeListener l : this.peopleChangeListeners) l.onPeopleCountChange();
                 for (MoralChangeListener l : this.moralListeners) l.onMoralChanged();
+                findOccupation();
+                //TODO add yearly spend?
             }
             return;
         }
@@ -1205,6 +1241,14 @@ public class GameModel implements InGameTimeTickListener {
         }
         matrix[startPoint.getPosition().x][startPoint.getPosition().y] = 1;
         matrix[endPoint.getPosition().x][endPoint.getPosition().y] = 2;
+        if (endPoint instanceof School) {
+            matrix[endPoint.getPosition().x + 1][endPoint.getPosition().y] = 3;
+        }
+        if (endPoint instanceof University) {
+            matrix[endPoint.getPosition().x + 1][endPoint.getPosition().y] = 3;
+            matrix[endPoint.getPosition().x + 1][endPoint.getPosition().y - 1] = 3;
+            matrix[endPoint.getPosition().x][endPoint.getPosition().y - 1] = 3;
+        }
         if (toBeDestroyed != null) matrix[toBeDestroyed.getPosition().x][toBeDestroyed.getPosition().y] = 0;
         return matrix;
     }
