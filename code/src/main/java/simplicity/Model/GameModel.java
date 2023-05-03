@@ -523,7 +523,7 @@ public class GameModel implements InGameTimeTickListener {
         if (((Industrial) grid[position.x][position.y]).getPeople().size() > 0 && !forceRemove) {
             int buildPrice = industrial.getBuildPrice();
             int choice = JOptionPane.showOptionDialog(null, "Do you want to demolish this Industrial Zone?\nCost " + buildPrice, "Demolition confirmation", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, null);
-            if (choice == JOptionPane.NO_OPTION) return;
+            if (choice == JOptionPane.NO_OPTION || choice == JOptionPane.CLOSED_OPTION) return;
         }
 
         int price = ((Industrial) grid[position.x][position.y]).getBuildPrice() / 3;
@@ -604,7 +604,7 @@ public class GameModel implements InGameTimeTickListener {
 
         if (!canBeDestroyed) {
             int choice = JOptionPane.showOptionDialog(null, "Do you want to demolish this road?\nCost: " + toBeDestroyed.getBuildPrice(), "Demolition confirmation", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, null);
-            if (choice == JOptionPane.NO_OPTION) return false;
+            if (choice == JOptionPane.NO_OPTION  || choice == JOptionPane.CLOSED_OPTION) return false;
             else {
                 this.finance.removeMoney(toBeDestroyed.getBuildPrice());
                 for (WealthChangeListener l : this.wealthListeners) l.onWealthChange();
@@ -646,7 +646,13 @@ public class GameModel implements InGameTimeTickListener {
 
     public void removeService(Point position) {
         //check if it can be removed
-        if (((Service) grid[position.x][position.y]).getPeople().size() > 0) return;
+        Service service = ((Service) grid[position.x][position.y]);
+
+        if (((Service) grid[position.x][position.y]).getPeople().size() > 0) {
+            int buildPrice = service.getBuildPrice();
+            int choice = JOptionPane.showOptionDialog(null, "Do you want to demolish this Service Zone?\nCost " + buildPrice, "Demolition confirmation", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, null);
+            if (choice == JOptionPane.NO_OPTION || choice == JOptionPane.CLOSED_OPTION) return;
+        }
 
         int price = ((Service) grid[position.x][position.y]).getBuildPrice() / 3;
         this.finance.addIncome(price, "Szolgálatási zóna törlés");
@@ -674,7 +680,7 @@ public class GameModel implements InGameTimeTickListener {
         if (r.getPeople().size() > 0) {
             int buildPrice = r.getBuildPrice();
             int choice = JOptionPane.showOptionDialog(null, "Do you want to demolish this Residential Zone?\nCost: " + buildPrice, "Demolition confirmation", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, null);
-            if (choice == JOptionPane.NO_OPTION) return;
+            if (choice == JOptionPane.NO_OPTION || choice == JOptionPane.CLOSED_OPTION) return;
             else {
                 this.finance.removeMoney(buildPrice);
                 for (WealthChangeListener l : this.wealthListeners) l.onWealthChange();
