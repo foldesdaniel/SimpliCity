@@ -611,25 +611,73 @@ public class GameModel implements InGameTimeTickListener {
                 //TODO one-time mood change
                 //find new job or find new home
                 ArrayList<Person> affectedPeople = new ArrayList<>();
-                //System.out.println(toBeDestroyed.getPosition());
-                for (Person person : this.people) {
+                for(Person person : this.people){
                     if (person.getEducation() != null && !canRoadBeDestroyed(person.getHome(), person.getEducation(), toBeDestroyed)) {
                         affectedPeople.add(person);
-                        //System.out.println(person.getHome());
                     }
                     if (person.getWorkplace() != null && !canRoadBeDestroyed(person.getHome(), person.getWorkplace(), toBeDestroyed)) {
                         affectedPeople.add(person);
-                        //System.out.println(person.getHome());
+                    }
+                }
+                grid[position.x][position.y] = null;
+                //System.out.println(toBeDestroyed.getPosition());
+                for (int i = 0; i < affectedPeople.size(); i++) {
+                    Person person = affectedPeople.get(i);
+                    Point homePoint = person.getHome().getPosition();
+
+                    int x = homePoint.x;
+                    int y = homePoint.y;
+                    boolean emptyAround = true;
+                    if( x - 1 > 0) {
+                        if((grid[x-1][y] instanceof Road)) {
+                            emptyAround = false;
+                        }
+                    }
+                    if( y - 1 > 0) {
+                        if((grid[x][y-1] instanceof Road)) {
+                            emptyAround = false;
+                        }
+                    }
+                    if( x + 1 < GRID_SIZE) {
+                        if((grid[x+1][y] instanceof Road)) {
+                            emptyAround = false;
+                        }
+                    }
+                    if( y + 1 < GRID_SIZE) {
+                        if((grid[x][y+1] instanceof Road)) {
+                            emptyAround = false;
+                        }
+                    }
+                    if (emptyAround)
+                    {
+                        if(person.getEducation() != null) {
+                            int indexOfPerson = person.getEducation().getPeople().indexOf(person);
+                            person.getEducation().getArrivalDates().remove(indexOfPerson);
+                            person.getEducation().removePerson(person);
+                            person.setEducation(null);
+                        }
+                        if(person.getWorkplace() != null) {
+                            person.getWorkplace().removePerson(person);
+                            person.setWorkplace(null);
+                        }
+                        person.getHome().removePerson(person);
+                        this.people.remove(person);
+                    } else {
+                        //TODO move to another place
                     }
 
                 }
+                for (Person p : affectedPeople) {
+                    boostMood(p, -6);
+                }
+                findOccupation();
             }
         }
 
-        grid[position.x][position.y] = null;
         int maintenanceCost = new Road(GameModel.NO_SELECTION).getMaintenanceCost();
         finance.removeYearlySpend(maintenanceCost, "Út fenntartási díj");
         for (WealthChangeListener l : this.wealthListeners) l.onWealthChange();
+        for (PeopleChangeListener l : this.peopleChangeListeners) l.onPeopleCountChange();
         return true;
     }
 
@@ -683,6 +731,7 @@ public class GameModel implements InGameTimeTickListener {
             if (choice == JOptionPane.NO_OPTION || choice == JOptionPane.CLOSED_OPTION) return;
             else {
                 this.finance.removeMoney(buildPrice);
+                this.finance.addBuilt(buildPrice, "Konfliktusos útbontás");
                 for (WealthChangeListener l : this.wealthListeners) l.onWealthChange();
                 for (int i = 0; i < r.getPeople().size(); i++) {
                     Person p = r.getPeople().get(i);
@@ -707,7 +756,6 @@ public class GameModel implements InGameTimeTickListener {
                 for (PeopleChangeListener l : this.peopleChangeListeners) l.onPeopleCountChange();
                 for (MoralChangeListener l : this.moralListeners) l.onMoralChanged();
                 findOccupation();
-                //TODO add yearly spend?
             }
             return;
         }
