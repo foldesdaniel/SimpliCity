@@ -517,7 +517,14 @@ public class GameModel implements InGameTimeTickListener {
 
     public void removeIndustrial(Point position, boolean forceRemove) {
         //check if it can be removed
-        if (((Industrial) grid[position.x][position.y]).getPeople().size() > 0 && !forceRemove) return;
+        //if (!forceRemove) return;
+
+        Industrial industrial = ((Industrial) grid[position.x][position.y]);
+        if (((Industrial) grid[position.x][position.y]).getPeople().size() > 0 && !forceRemove) {
+            int buildPrice = industrial.getBuildPrice();
+            int choice = JOptionPane.showOptionDialog(null, "Do you want to demolish this Industrial Zone?\nCost " + buildPrice, "Demolition confirmation", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, null);
+            if (choice == JOptionPane.NO_OPTION) return;
+        }
 
         int price = ((Industrial) grid[position.x][position.y]).getBuildPrice() / 3;
         this.finance.addIncome(price, "Ipari zóna törlés");
@@ -604,15 +611,15 @@ public class GameModel implements InGameTimeTickListener {
                 //TODO one-time mood change
                 //find new job or find new home
                 ArrayList<Person> affectedPeople = new ArrayList<>();
-                System.out.println(toBeDestroyed.getPosition());
+                //System.out.println(toBeDestroyed.getPosition());
                 for (Person person : this.people) {
                     if (person.getEducation() != null && !canRoadBeDestroyed(person.getHome(), person.getEducation(), toBeDestroyed)) {
                         affectedPeople.add(person);
-                        System.out.println(person.getHome());
+                        //System.out.println(person.getHome());
                     }
                     if (person.getWorkplace() != null && !canRoadBeDestroyed(person.getHome(), person.getWorkplace(), toBeDestroyed)) {
                         affectedPeople.add(person);
-                        System.out.println(person.getHome());
+                        //System.out.println(person.getHome());
                     }
 
                 }
