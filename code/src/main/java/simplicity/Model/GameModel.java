@@ -601,8 +601,16 @@ public class GameModel implements InGameTimeTickListener {
                 }
             }
         }
+        if(canBeDestroyed) {
+            grid[position.x][position.y] = null;
+            int maintenanceCost = new Road(GameModel.NO_SELECTION).getMaintenanceCost();
+            finance.removeYearlySpend(maintenanceCost, "Út fenntartási díj");
+            for (WealthChangeListener l : this.wealthListeners) l.onWealthChange();
+            for (PeopleChangeListener l : this.peopleChangeListeners) l.onPeopleCountChange();
+            return true;
+        }
         //konfliktusos bontas
-        if (!canBeDestroyed) {
+        else {
             int choice = JOptionPane.showOptionDialog(null, "Do you want to demolish this road?\nCost: " + toBeDestroyed.getBuildPrice(), "Demolition confirmation", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, null);
             if (choice == JOptionPane.NO_OPTION || choice == JOptionPane.CLOSED_OPTION) return false;
             else {
@@ -620,7 +628,6 @@ public class GameModel implements InGameTimeTickListener {
                     }
                 }
                 grid[position.x][position.y] = null;
-                //System.out.println(toBeDestroyed.getPosition());
                 for (int i = 0; i < affectedPeople.size(); i++) {
                     Person person = affectedPeople.get(i);
                     Point homePoint = person.getHome().getPosition();
