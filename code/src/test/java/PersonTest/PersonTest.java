@@ -1,14 +1,11 @@
 package PersonTest;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import simplicity.Model.Person.Person;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class PersonTest {
-
-    public PersonTest() {
-    }
 
     @Test
     public void testPersonConstructor() {
