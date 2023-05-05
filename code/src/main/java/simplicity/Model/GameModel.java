@@ -1552,7 +1552,6 @@ public class GameModel implements InGameTimeTickListener {
             this.people.remove(lp);
         }
         for (PeopleChangeListener l : peopleChangeListeners) l.onPeopleCountChange();
-
     }
 
     private Residential findHome() {
