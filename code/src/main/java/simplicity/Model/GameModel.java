@@ -30,6 +30,7 @@ import java.io.IOException;
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.Queue;
+import java.util.Timer;
 import java.util.*;
 
 public class GameModel implements InGameTimeTickListener, Serializable {
@@ -79,9 +80,6 @@ public class GameModel implements InGameTimeTickListener, Serializable {
 
     public GameModel() {
         this.finance = new Finance(35000); //starting wealth
-        this.secondaryPercentage = 70;
-        this.uniPercentage = 22;
-        this.mood = 0;
         generateNextDisasterDate();
 
         //Initialize grid
@@ -137,7 +135,7 @@ public class GameModel implements InGameTimeTickListener, Serializable {
     }
 
     public static GameModel getInstance() {
-//        GameModel.loadGame("gm0.txt");
+        GameModel.loadGame("gm0.txt");
         if (instance == null) {
             instance = new GameModel();
         }
@@ -621,7 +619,7 @@ public class GameModel implements InGameTimeTickListener, Serializable {
                 }
             }
         }
-        if(canBeDestroyed) {
+        if (canBeDestroyed) {
             grid[position.x][position.y] = null;
             int maintenanceCost = new Road(GameModel.NO_SELECTION).getMaintenanceCost();
             finance.removeYearlySpend(maintenanceCost, "Út fenntartási díj");
@@ -1780,8 +1778,8 @@ public class GameModel implements InGameTimeTickListener, Serializable {
     @Serial
     private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException {
         in.defaultReadObject();
-        for (int i = 0; i < gridSize; i++) {
-            for (int j = 0; j < gridSize; j++) {
+        for (int i = 0; i < GRID_SIZE; i++) {
+            for (int j = 0; j < GRID_SIZE; j++) {
                 if (grid[i][j] instanceof Workplace) {
                     System.out.println(((Workplace) grid[i][j]).getPeople().size());
                 }

@@ -2,9 +2,7 @@ package simplicity.View;
 
 import lombok.Getter;
 import simplicity.Model.GameModel;
-import simplicity.Model.Listeners.MenuEventListener
-import simplicity.Model.Listeners.StartGameListener;
-import simplicity.Model.Persistence.Persistence;
+import simplicity.Model.Listeners.MenuEventListener;
 import simplicity.Model.Listeners.StartStopGameListener;
 import simplicity.View.Game.GamePanel;
 import simplicity.View.Menu.MainMenu;
@@ -12,7 +10,6 @@ import simplicity.View.Menu.MainMenu;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.geom.RoundRectangle2D;
-import java.io.IOException;
 
 public class GameWindow extends JFrame implements MenuEventListener, StartStopGameListener {
 
