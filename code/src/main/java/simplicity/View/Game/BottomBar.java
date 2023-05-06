@@ -19,9 +19,9 @@ public class BottomBar extends JPanel implements MoralChangeListener, PeopleChan
 
     public BottomBar() {
         this.model = GameModel.getInstance();
-        this.personCountLabel = new JLabel("Person count: 0");
-        this.moralLabel = new JLabel("Overall moral: 10");
-        this.wealthLabel = new JLabel("Wealth: 0");
+        this.personCountLabel = new JLabel("Person count: " + model.getPeople().size());
+        this.moralLabel = new JLabel("Overall moral: " + model.getCityMood());
+        this.wealthLabel = new JLabel("Wealth: " + model.getCurrentWealth());
 
         Font font = CFont.get();
         this.personCountLabel.setFont(font);

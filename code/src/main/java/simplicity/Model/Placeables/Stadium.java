@@ -1,11 +1,14 @@
 package simplicity.Model.Placeables;
 
+import lombok.NoArgsConstructor;
 import simplicity.Model.Game.FieldType;
 import simplicity.Model.GameModel;
 
 import java.awt.*;
+import java.io.Serializable;
 
-public class Stadium extends Building {
+@NoArgsConstructor
+public class Stadium extends Building implements Serializable {
 
     public Stadium(Point position) {
         super(FieldType.STADIUM, position, 3000, 1.2f, 5, 500);

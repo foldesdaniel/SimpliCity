@@ -2,6 +2,7 @@ package simplicity.Model;
 
 import lombok.Getter;
 import simplicity.Model.Algorithm.NodeCount;
+import simplicity.Model.Education.Education;
 import simplicity.Model.Education.EducationLevel;
 import simplicity.Model.Education.School;
 import simplicity.Model.Education.University;
@@ -15,6 +16,7 @@ import simplicity.Model.Listeners.InGameTimeTickListener;
 import simplicity.Model.Listeners.MoralChangeListener;
 import simplicity.Model.Listeners.PeopleChangeListener;
 import simplicity.Model.Listeners.WealthChangeListener;
+import simplicity.Model.Persistence.Persistence;
 import simplicity.Model.Person.Person;
 import simplicity.Model.Placeables.*;
 import simplicity.Model.Placeables.Zones.Industrial;
@@ -24,10 +26,14 @@ import simplicity.Model.Resource.ResourceLoader;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.IOException;
+import java.io.Serial;
+import java.io.Serializable;
 import java.util.Queue;
+import java.util.Timer;
 import java.util.*;
 
-public class GameModel implements InGameTimeTickListener {
+public class GameModel implements InGameTimeTickListener, Serializable {
 
     public static final String GAME_TITLE = "SimpliCity";
     public static final Image BACKGROUND_IMG = ResourceLoader.loadImage("bg_temp.jpg");
@@ -56,16 +62,16 @@ public class GameModel implements InGameTimeTickListener {
     public static final int DRAG_THRESHOLD = 5;
     public static final int GRID_SIZE = 20;
     private static GameModel instance;
+    private static int saveCount;
+    @Getter
     private final InGameTime inGameTime = InGameTimeManager.getInstance().getInGameTime();
     private final ArrayList<MoralChangeListener> moralListeners = new ArrayList<>();
     private final ArrayList<PeopleChangeListener> peopleChangeListeners = new ArrayList<>();
     private final ArrayList<WealthChangeListener> wealthListeners = new ArrayList<>();
-    private int mood;
     private Date nextDisaster;
-    private int secondaryPercentage;
-    private int uniPercentage;
     @Getter
     private int cityMood = 60;
+    @Getter
     private Placeable grid[][];
     private Finance finance;
     @Getter
@@ -74,9 +80,6 @@ public class GameModel implements InGameTimeTickListener {
 
     public GameModel() {
         this.finance = new Finance(35000); //starting wealth
-        this.secondaryPercentage = 70;
-        this.uniPercentage = 22;
-        this.mood = 0;
         generateNextDisasterDate();
 
         //Initialize grid
@@ -87,6 +90,7 @@ public class GameModel implements InGameTimeTickListener {
         }*/
 
         //this.printGrid();
+
 
 //        grid[0][0] = new Residential(new Point(0, 0));
 //        grid[1][0] = new Residential(new Point(1, 0));
@@ -131,6 +135,7 @@ public class GameModel implements InGameTimeTickListener {
     }
 
     public static GameModel getInstance() {
+        GameModel.loadGame("gm0.txt");
         if (instance == null) {
             instance = new GameModel();
         }
@@ -174,6 +179,17 @@ public class GameModel implements InGameTimeTickListener {
             if (right) return true;
         }
         return false;
+    }
+
+    public static void loadGame(String filename) {
+        if (instance == null) {
+            try {
+                instance = (GameModel) Persistence.load("gm0.txt");
+                instance.getInGameTime().startInGameTime(InGameSpeeds.NORMAL);
+            } catch (IOException | ClassNotFoundException e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 
     private void generateNextDisasterDate() {
@@ -409,6 +425,8 @@ public class GameModel implements InGameTimeTickListener {
         for (WealthChangeListener l : this.wealthListeners) l.onWealthChange();
     }
 
+    //todo : place/remove road, forest, service, residential, school, university and finish industrial
+
     public void removePolice(Point position) {
         int price = ((Police) grid[position.x][position.y]).getBuildPrice() / 3;
         this.finance.addIncome(price, "Rendőrség törlés");
@@ -601,7 +619,7 @@ public class GameModel implements InGameTimeTickListener {
                 }
             }
         }
-        if(canBeDestroyed) {
+        if (canBeDestroyed) {
             grid[position.x][position.y] = null;
             int maintenanceCost = new Road(GameModel.NO_SELECTION).getMaintenanceCost();
             finance.removeYearlySpend(maintenanceCost, "Út fenntartási díj");
@@ -1193,6 +1211,7 @@ public class GameModel implements InGameTimeTickListener {
         int x = position.x;
         int y = position.y;
 
+
         if (type.equals("secondary") || type.equals("uni")) {
             for (int i = 0; i < GRID_SIZE; ++i) {
                 for (int j = 0; j < GRID_SIZE; ++j) {
@@ -1270,6 +1289,7 @@ public class GameModel implements InGameTimeTickListener {
                         } else {
                             temp = current;
                         }
+
                         if (workersRatio() == 1) { //we need NOT service workers
                             if (current.getType() == FieldType.ZONE_INDUSTRIAL) {
                                 if (((Industrial) current).areSpacesLeft() && isPath(convertToNumMatrix(person.getHome(), temp, null)) && !((Industrial) current).getPeople().contains(person)) {
@@ -1623,7 +1643,6 @@ public class GameModel implements InGameTimeTickListener {
         System.out.println("-------------------------");
     }
 
-
     private boolean isNextToARoad(Point point) {
         int x = point.x;
         int y = point.y;
@@ -1710,8 +1729,17 @@ public class GameModel implements InGameTimeTickListener {
 
     }
 
+    public void saveGame() {
+        try {
+            Persistence.save(this, "gm" + +saveCount++ + ".txt");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     @Override
     public void timeTick() {
+//        System.out.println("Time: Y: " + inGameTime.getInGameYear() + " D: " + inGameTime.getInGameDay() + " H: " + inGameTime.getInGameHour());
         if (this.inGameTime.getInGameHour() > 0) {
             calculateCityMood();
             removeDepressedPeople();
@@ -1723,10 +1751,13 @@ public class GameModel implements InGameTimeTickListener {
             } else {
                 departInhabitants();
             }
+
         }
+        if (this.inGameTime.getInGameDay() > 0 && this.inGameTime.getInGameDay() % 21 == 0 && this.inGameTime.getInGameHour() == 0) {
+//            saveGame();
+        }
+
         if (this.inGameTime.getInGameYear() > 0 && this.inGameTime.getInGameDay() == 0 && this.inGameTime.getInGameHour() == 0) {
-            //triggers new year tax collection
-            //and city mood change
             changeMoodOfPeople();
             newYearTaxCollection();
             newYearMaintenanceCost();
@@ -1743,4 +1774,26 @@ public class GameModel implements InGameTimeTickListener {
         for (WealthChangeListener l : this.wealthListeners) l.onWealthChange();
         for (MoralChangeListener l : this.moralListeners) l.onMoralChanged();
     }
+
+    @Serial
+    private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException {
+        in.defaultReadObject();
+        for (int i = 0; i < GRID_SIZE; i++) {
+            for (int j = 0; j < GRID_SIZE; j++) {
+                if (grid[i][j] instanceof Workplace) {
+                    System.out.println(((Workplace) grid[i][j]).getPeople().size());
+                }
+                if (grid[i][j] instanceof Education) {
+                    System.out.println(((Education) grid[i][j]).getPeople().size());
+                }
+            }
+        }
+        calculateCityMood();
+        for (MoralChangeListener l : this.moralListeners) l.onMoralChanged();
+        for (PeopleChangeListener l : this.peopleChangeListeners) l.onPeopleCountChange();
+
+        InGameTimeManager.getInstance().setInGameTime(this.inGameTime);
+        InGameTimeManager.getInstance().getInGameTime().inGameElapsedTime = new Timer();
+    }
+
 }

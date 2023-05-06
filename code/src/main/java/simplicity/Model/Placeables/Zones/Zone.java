@@ -1,6 +1,7 @@
 package simplicity.Model.Placeables.Zones;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import simplicity.Model.Game.FieldType;
 import simplicity.Model.GameModel;
 import simplicity.Model.Listeners.PeopleChangeListener;
@@ -11,6 +12,7 @@ import java.awt.*;
 import java.util.ArrayList;
 
 @Getter
+@NoArgsConstructor
 public abstract class Zone extends Placeable {
 
     private int maxPeople = 15;
