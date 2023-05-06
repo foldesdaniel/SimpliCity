@@ -1,11 +1,7 @@
-package Finances;
+package FinancesTest;
 
 import org.junit.jupiter.api.Test;
 import simplicity.Model.Finances.Finance;
-import simplicity.Model.Person.Person;
-import simplicity.Model.Placeables.Zones.Residential;
-
-import java.awt.*;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 

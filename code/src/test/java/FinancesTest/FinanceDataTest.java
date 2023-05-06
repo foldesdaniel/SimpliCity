@@ -1,4 +1,4 @@
-package Finances;
+package FinancesTest;
 
 import org.junit.jupiter.api.Test;
 import simplicity.Model.Finances.FinanceData;
