@@ -181,6 +181,11 @@ public class GameModel implements InGameTimeTickListener, Serializable {
         return false;
     }
 
+    /**
+     * used to load a previous save
+     *
+     * @param filename name of the file to be loaded
+     */
     public static void loadGame(String filename) {
         if (instance == null) {
             try {
@@ -703,6 +708,12 @@ public class GameModel implements InGameTimeTickListener, Serializable {
         return true;
     }
 
+    /**
+     * used to find a new home or new workplace/education for people
+     * or make them leave if they have no other choice
+     *
+     * @param people list of people who have been affected by a demolition
+     */
     public void moveAffectedPeople(ArrayList<Person> people) {
         ArrayList<Person> movedPeople = new ArrayList<>();
         OUTER:
@@ -736,10 +747,6 @@ public class GameModel implements InGameTimeTickListener, Serializable {
         }
 
         people.removeAll(movedPeople);
-        for (Person p : people) {
-            System.out.println(p.getHome().getPosition());
-        }
-        System.out.println(people.size());
         for (int i = 0; i < people.size(); i++) {
             Person person = people.get(i);
             if (person.getEducation() != null) {
@@ -1205,7 +1212,13 @@ public class GameModel implements InGameTimeTickListener, Serializable {
         else boostMood(person, -7);
     }
 
-    private boolean searchForJob(Person person, String type) {
+    /**
+     * used to find an occupation for a person
+     *
+     * @param person person that we want to find an occupation for
+     * @param type   the type of occupation we want to find - work/education
+     */
+    private void searchForJob(Person person, String type) {
         Residential home = person.getHome();
         Point position = home.getPosition();
         int x = position.x;
@@ -1231,7 +1244,7 @@ public class GameModel implements InGameTimeTickListener, Serializable {
                                 if (((School) current).areSpacesLeft() && isPath(convertToNumMatrix(person.getHome(), temp, null)) && !((School) current).getPeople().contains(person)) {
                                     person.goToSchool(((School) current));
                                     boostPersonMoodBasedOnDistance(person, type);
-                                    return true;
+                                    return;
                                 }
                             }
                         } else if (type.equals("uni")) {
@@ -1239,7 +1252,7 @@ public class GameModel implements InGameTimeTickListener, Serializable {
                                 if (((University) current).areSpacesLeft() && isPath(convertToNumMatrix(person.getHome(), temp, null)) && !((University) current).getPeople().contains(person)) {
                                     person.goToSchool(((University) current));
                                     boostPersonMoodBasedOnDistance(person, type);
-                                    return true;
+                                    return;
                                 }
                             }
                         }
@@ -1263,7 +1276,7 @@ public class GameModel implements InGameTimeTickListener, Serializable {
                                 if (((Service) current).areSpacesLeft() && isPath(convertToNumMatrix(person.getHome(), temp, null)) && !((Service) current).getPeople().contains(person)) {
                                     person.goToWork(((Service) current));
                                     boostPersonMoodBasedOnDistance(person, type);
-                                    return true;
+                                    return;
                                 }
                             }
                         } else { //we need industrial workers
@@ -1271,7 +1284,7 @@ public class GameModel implements InGameTimeTickListener, Serializable {
                                 if (((Industrial) current).areSpacesLeft() && isPath(convertToNumMatrix(person.getHome(), temp, null)) && !((Industrial) current).getPeople().contains(person)) {
                                     person.goToWork(((Industrial) current));
                                     boostPersonMoodBasedOnDistance(person, type);
-                                    return true;
+                                    return;
                                 }
                             }
                         }
@@ -1295,7 +1308,7 @@ public class GameModel implements InGameTimeTickListener, Serializable {
                                 if (((Industrial) current).areSpacesLeft() && isPath(convertToNumMatrix(person.getHome(), temp, null)) && !((Industrial) current).getPeople().contains(person)) {
                                     person.goToWork(((Industrial) current));
                                     boostPersonMoodBasedOnDistance(person, type);
-                                    return true;
+                                    return;
                                 }
                             }
                         } else { //we need NOT industrial workers
@@ -1303,7 +1316,7 @@ public class GameModel implements InGameTimeTickListener, Serializable {
                                 if (((Service) current).areSpacesLeft() && isPath(convertToNumMatrix(person.getHome(), temp, null)) && !((Service) current).getPeople().contains(person)) {
                                     person.goToWork(((Service) current));
                                     boostPersonMoodBasedOnDistance(person, type);
-                                    return true;
+                                    return;
                                 }
                             }
                         }
@@ -1312,7 +1325,6 @@ public class GameModel implements InGameTimeTickListener, Serializable {
             }
         }
 
-        return false;
     }
 
     private int workersRatio() {
@@ -1364,12 +1376,32 @@ public class GameModel implements InGameTimeTickListener, Serializable {
         return sum;
     }
 
+    /**
+     * used to calculate if start point and end point are still connected after destroying a road
+     *
+     * @param startPoint    start of the path
+     * @param endPoint      end of the path
+     * @param toBeDestroyed the road we wish to destroy
+     * @return true if the road can be destroyed, false if it can't
+     */
     private boolean canRoadBeDestroyed(Placeable startPoint, Placeable endPoint, Placeable toBeDestroyed) {
         boolean directPath = isPath(convertToNumMatrix(startPoint, endPoint, null));
         boolean moreThanOnePath = isPath(convertToNumMatrix(startPoint, endPoint, toBeDestroyed));
         return directPath && (moreThanOnePath);
     }
 
+    /**
+     * used to prepare date for isPath method
+     *
+     * @param startPoint    start of the path
+     * @param endPoint      end of the path
+     * @param toBeDestroyed the road we wish to destroy
+     * @return a number matrix representing the grid with numbers
+     * 1 - start point
+     * 2 - end point
+     * 3 - road
+     * 0 - everything else
+     */
     private int[][] convertToNumMatrix(Placeable startPoint, Placeable endPoint, Placeable toBeDestroyed) {
         int[][] matrix = new int[GRID_SIZE][GRID_SIZE];
         for (int i = 0; i < GRID_SIZE; i++) {
@@ -1392,6 +1424,10 @@ public class GameModel implements InGameTimeTickListener, Serializable {
         return matrix;
     }
 
+    /**
+     * @param matrix number matrix provided by convertToNumMatrix
+     * @return true if start point and end point are connected, otherwise false
+     */
     private boolean isPath(int[][] matrix) {
         int n = GRID_SIZE;
         boolean[][] visited = new boolean[n][n];
@@ -1424,6 +1460,10 @@ public class GameModel implements InGameTimeTickListener, Serializable {
         finance.addMoney(sum);
     }
 
+    /**
+     * used to calculate the overall mood of the city
+     * takes an average of the zone moods
+     */
     private void calculateCityMood() {
         if (this.people.size() == 0) return;
         int cityMood = 0;
@@ -1460,6 +1500,13 @@ public class GameModel implements InGameTimeTickListener, Serializable {
         return this.finance.getCurrentWealth();
     }
 
+    /**
+     * used to change the mood of all inhabitants yearly
+     * mood change depends on the current finances
+     * good finances - increasingly bigger mood boost
+     * bad finances - increasingly bigger mood decline
+     * after 3 years in a row of bad finances the game is over
+     */
     private void changeMoodOfPeople() {
         if (this.finance.getCurrentWealth() < -8000) {
             this.finance.setProfitableYearsInARow(this.finance.getProfitableYearsInARow() - 0.5);
@@ -1533,10 +1580,17 @@ public class GameModel implements InGameTimeTickListener, Serializable {
         for (MoralChangeListener l : this.moralListeners) l.onMoralChanged();
     }
 
+    /**
+     * @return if the city mood if over a certain threshold
+     */
     private boolean isMoodGoodEnough() {
         return this.cityMood >= 30;
     }
 
+    /**
+     * used to add new people to the city
+     * the rate of arrival depends on the amount of free spaces and the city mood
+     */
     private void welcomeNewInhabitants() {
         int freeSpace = 0;
         for (int i = 0; i < GRID_SIZE; i++) {
@@ -1556,6 +1610,10 @@ public class GameModel implements InGameTimeTickListener, Serializable {
         }
     }
 
+    /**
+     * used to make people leave the city
+     * number of people departing based on the city mood and the people who have the lowest mood
+     */
     private void departInhabitants() {
         double outgoingPeople = Math.ceil(this.people.size() * ((100 - cityMood - 30) / 100.0));
         //remove outgoingPeople amount of people from this.people who have the lowest mood
@@ -1581,6 +1639,11 @@ public class GameModel implements InGameTimeTickListener, Serializable {
         for (PeopleChangeListener l : peopleChangeListeners) l.onPeopleCountChange();
     }
 
+    /**
+     * used to find a home for a person
+     *
+     * @return a Residential if there is a free place, null if there isn't
+     */
     private Residential findHome() {
         for (int i = 0; i < GRID_SIZE; i++) {
             for (int j = 0; j < GRID_SIZE; j++) {
@@ -1592,9 +1655,10 @@ public class GameModel implements InGameTimeTickListener, Serializable {
         return null;
     }
 
+    /**
+     * used to find an occupation for people who don't have one currently
+     */
     private void findOccupation() {
-
-//        printCurrentEmployment();
 
         Random random = new Random();
         for (Person person : this.people) {
@@ -1633,16 +1697,14 @@ public class GameModel implements InGameTimeTickListener, Serializable {
 
         }
 
-//        printCurrentEmployment();
     }
 
-    private void printCurrentEmployment() {
-        for (Person p : this.people) {
-            System.out.println("M: " + p.getMood() + " | E: " + p.getEducation() + " | W: " + p.getWorkplace());
-        }
-        System.out.println("-------------------------");
-    }
-
+    /**
+     * used to see if there are any roads around a point
+     *
+     * @param point the point in the grid we are investigating
+     * @return false if there are no roads, true if there is a road near
+     */
     private boolean isNextToARoad(Point point) {
         int x = point.x;
         int y = point.y;
@@ -1709,6 +1771,9 @@ public class GameModel implements InGameTimeTickListener, Serializable {
         removeIndustrial(position, true);
     }
 
+    /**
+     * used to remove people from the city whose mood has reached zero
+     */
     private void removeDepressedPeople() {
         for (int i = 0; i < this.people.size(); i++) {
             Person p = this.people.get(i);
@@ -1729,6 +1794,9 @@ public class GameModel implements InGameTimeTickListener, Serializable {
 
     }
 
+    /**
+     * used the save the current GameModel object to a file
+     */
     public void saveGame() {
         try {
             Persistence.save(this, "gm" + +saveCount++ + ".txt");
@@ -1737,6 +1805,9 @@ public class GameModel implements InGameTimeTickListener, Serializable {
         }
     }
 
+    /**
+     * used to drive the logic (functions) based on the passing of in-game time
+     */
     @Override
     public void timeTick() {
 //        System.out.println("Time: Y: " + inGameTime.getInGameYear() + " D: " + inGameTime.getInGameDay() + " H: " + inGameTime.getInGameHour());
@@ -1775,6 +1846,12 @@ public class GameModel implements InGameTimeTickListener, Serializable {
         for (MoralChangeListener l : this.moralListeners) l.onMoralChanged();
     }
 
+    /**
+     * function that is automatically run when a GameModel object is deserialized
+     * used to set certain properties to ensure a game load is functional and accurate
+     *
+     * @param in GameModel object
+     */
     @Serial
     private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException {
         in.defaultReadObject();

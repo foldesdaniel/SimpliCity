@@ -18,6 +18,12 @@ public abstract class Workplace extends Zone {
         this.taxPerPerson = taxPerPerson;
     }
 
+    /**
+     * used to calculate the amount of tax a workplace has to pay
+     * tax based on the number of people working and their education level
+     *
+     * @return tax amount
+     */
     @Override
     public int calculateTax() {
         int sum = 0;
@@ -29,6 +35,9 @@ public abstract class Workplace extends Zone {
         return sum;
     }
 
+    /**
+     * @return 0, since a workplace has no maintenance fee
+     */
     @Override
     public int calculateMaintenance() {
         return 0;
