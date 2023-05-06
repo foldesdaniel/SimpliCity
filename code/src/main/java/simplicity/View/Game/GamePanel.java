@@ -1,12 +1,17 @@
 package simplicity.View.Game;
 
+import lombok.Getter;
 import simplicity.Model.Listeners.FieldClickListener;
+import simplicity.Model.Listeners.GameKeyListener;
+import simplicity.Model.Listeners.ModeChangeListener;
+import simplicity.Model.Listeners.StartStopGameListener;
 import simplicity.Model.Placeables.Placeable;
 import simplicity.View.GameWindow;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
+import java.util.ArrayList;
 
 public class GamePanel extends JPanel implements FieldClickListener {
 
@@ -17,11 +22,15 @@ public class GamePanel extends JPanel implements FieldClickListener {
     private final PlayingFieldView playingField;
     private final BottomBar bottomBar;
     private final GridBagConstraints gbc;
+    private final ArrayList<GameKeyListener> keyListeners;
+    private static final ArrayList<ModeChangeListener> modeListeners = new ArrayList<>();
 
     private static boolean isPlacing = false;
     private static Placeable placee;
+    @Getter private static boolean deleteMode = false;
 
     public GamePanel() {
+        this.keyListeners = new ArrayList<>();
         Dimension windowSize = new Dimension(GameWindow.getWindowWidth(), GameWindow.getWindowHeight());
         this.setSize(windowSize);
         this.setPreferredSize(windowSize);
@@ -39,10 +48,21 @@ public class GamePanel extends JPanel implements FieldClickListener {
             @Override
             public boolean dispatchKeyEvent(KeyEvent e) {
                 if(e.getID() == KeyEvent.KEY_PRESSED){
-                    if(e.getKeyCode() == KeyEvent.VK_ESCAPE){
-                        GamePanel.stopPlacing();
-                        repaint();
+                    if(e.getKeyCode() == KeyEvent.VK_ESCAPE || e.getKeyCode() == KeyEvent.VK_E){
+                        if(isPlacing){
+                            stopPlacing();
+                        }else if(deleteMode){
+                            stopDeleteMode();
+                        }
+                    }else if(e.getKeyCode() == KeyEvent.VK_Q){
+                        if(deleteMode){
+                            stopDeleteMode();
+                        }else{
+                            startDeleteMode();
+                        }
                     }
+                    repaint();
+                    for(GameKeyListener l : keyListeners) l.onKeyPressed(e);
                 }
                 return false;
             }
@@ -89,20 +109,37 @@ public class GamePanel extends JPanel implements FieldClickListener {
         /* playingField.setPreferredSize(new Dimension(playingField.getWidth(), playingField.getHeight()));
         bottomBar.setPreferredSize(new Dimension(bottomBar.getWidth(), bottomBar.getHeight())); */
 
+        addModeListener(this.controlPanel.getModeListener());
+        //this.playingField.addModeListener(this.controlPanel.getModeListener());
         this.add(mainPanel);
         this.setBackground(new Color(0, 255, 0));
         this.repaint();
     }
 
+    public void addKeyListener(GameKeyListener l){
+        this.keyListeners.add(l);
+    }
+
+    public static void addModeListener(ModeChangeListener l){
+        modeListeners.add(l);
+    }
+
+    public void addStopGameListener(StartStopGameListener stopGameListener){
+        this.topLeftBar.addStopGameListener(stopGameListener);
+    }
+
     public static void setPlacing(Placeable p){
+        if(deleteMode) stopDeleteMode();
         isPlacing = true;
         placee = p;
+        for(ModeChangeListener l : modeListeners) l.onBuildModeChanged(isPlacing);
     }
 
     public static Placeable stopPlacing(boolean restart){
         Placeable p = placee;
         isPlacing = restart;
         placee = restart ? BuildTile.newInstance(placee.getClass()) : null;
+        for(ModeChangeListener l : modeListeners) l.onBuildModeChanged(isPlacing);
         return p;
     }
 
@@ -116,6 +153,17 @@ public class GamePanel extends JPanel implements FieldClickListener {
 
     public static Placeable getPlacee(){
         return placee;
+    }
+
+    public static void startDeleteMode(){
+        if(isPlacing) stopPlacing();
+        deleteMode = true;
+        for(ModeChangeListener l : modeListeners) l.onDeleteModeChanged(deleteMode);
+    }
+
+    public static void stopDeleteMode(){
+        deleteMode = false;
+        for(ModeChangeListener l : modeListeners) l.onDeleteModeChanged(deleteMode);
     }
 
     private GridBagConstraints changeGbc(int row, int col, int rowSpan, int colSpan, double weightX, double weightY) {

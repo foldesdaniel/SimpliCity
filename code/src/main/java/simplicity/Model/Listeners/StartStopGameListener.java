@@ -1,7 +1,9 @@
 package simplicity.Model.Listeners;
 
-public interface StartGameListener {
+public interface StartStopGameListener {
 
     void onGameStart();
+
+    void onGameStop();
 
 }

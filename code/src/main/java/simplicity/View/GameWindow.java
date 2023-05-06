@@ -2,9 +2,10 @@ package simplicity.View;
 
 import lombok.Getter;
 import simplicity.Model.GameModel;
-import simplicity.Model.Listeners.MenuEventListener;
+import simplicity.Model.Listeners.MenuEventListener
 import simplicity.Model.Listeners.StartGameListener;
 import simplicity.Model.Persistence.Persistence;
+import simplicity.Model.Listeners.StartStopGameListener;
 import simplicity.View.Game.GamePanel;
 import simplicity.View.Menu.MainMenu;
 
@@ -13,7 +14,7 @@ import java.awt.*;
 import java.awt.geom.RoundRectangle2D;
 import java.io.IOException;
 
-public class GameWindow extends JFrame implements MenuEventListener, StartGameListener {
+public class GameWindow extends JFrame implements MenuEventListener, StartStopGameListener {
 
     @Getter
     private static int windowWidth;
@@ -87,10 +88,25 @@ public class GameWindow extends JFrame implements MenuEventListener, StartGameLi
         this.revalidate();
         this.repaint();
         this.updateSize(); // needs to be called here as well
-        gameModel = GameModel.getInstance();
-        if (gamePanel == null) gamePanel = new GamePanel();
+        if (gamePanel == null) {
+            gameModel = GameModel.reset();
+            gamePanel = new GamePanel();
+            gamePanel.addStopGameListener(this);
+            //mainMenu.displayButtons();
+        }
+        // gameModel = GameModel.getInstance();
         this.add(gamePanel);
         gamePanel.revalidate();
+    }
+
+    @Override
+    public void onGameStop() {
+        this.getContentPane().removeAll();
+        this.revalidate();
+        this.repaint();
+        gamePanel = null;
+        this.add(mainMenu);
+        mainMenu.displayButtons();
     }
 
 }

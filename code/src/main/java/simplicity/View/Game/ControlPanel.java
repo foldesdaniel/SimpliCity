@@ -2,6 +2,7 @@ package simplicity.View.Game;
 
 import com.formdev.flatlaf.ui.FlatScrollBarUI;
 import simplicity.Model.GameModel;
+import simplicity.Model.Listeners.ModeChangeListener;
 import simplicity.Model.Placeables.Placeable;
 import simplicity.View.Components.ControlPanelTabButton;
 import simplicity.View.Style.CFont;
@@ -83,6 +84,10 @@ public class ControlPanel extends JPanel {
         container.repaint();
         container.add(buildTab);
         //}
+    }
+
+    public ModeChangeListener getModeListener(){
+        return buildTab;
     }
 
 }
