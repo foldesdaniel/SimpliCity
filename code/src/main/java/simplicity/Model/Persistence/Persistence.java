@@ -4,7 +4,10 @@ import java.io.*;
 
 public class Persistence {
     public static void save(Object obj, String filename) throws IOException {
-        FileOutputStream fileOutputStream = new FileOutputStream(filename);
+        String pathToSavedGamesDir = "code/SavedGames/";
+        String fullPathToFile = pathToSavedGamesDir + filename;
+
+        FileOutputStream fileOutputStream = new FileOutputStream(fullPathToFile);
         ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
         objectOutputStream.writeObject(obj);
         objectOutputStream.close();
@@ -14,7 +17,10 @@ public class Persistence {
     }
 
     public static Object load(String filename) throws IOException, ClassNotFoundException {
-        FileInputStream fileInputStream = new FileInputStream(filename);
+        String pathToSavedGamesDir = "code/SavedGames/";
+        String fullPathToFile = pathToSavedGamesDir + filename;
+
+        FileInputStream fileInputStream = new FileInputStream(fullPathToFile);
         ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
         Object obj = objectInputStream.readObject();
         objectInputStream.close();

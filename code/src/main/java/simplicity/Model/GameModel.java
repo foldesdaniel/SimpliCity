@@ -105,16 +105,7 @@ public class GameModel implements InGameTimeTickListener, Serializable {
     }
 
     public static GameModel getInstance() {
-        if (instance == null) {
-            try {
-                instance = (GameModel) Persistence.load("gm0.txt");
-                instance.getInGameTime().startInGameTime(InGameSpeeds.NORMAL);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            } catch (ClassNotFoundException e) {
-                throw new RuntimeException(e);
-            }
-        }
+//        GameModel.loadGame("gm0.txt");
         if (instance == null) {
             instance = new GameModel();
         }
@@ -145,6 +136,17 @@ public class GameModel implements InGameTimeTickListener, Serializable {
             if (right) return true;
         }
         return false;
+    }
+
+    public static void loadGame(String filename) {
+        if (instance == null) {
+            try {
+                instance = (GameModel) Persistence.load("gm0.txt");
+                instance.getInGameTime().startInGameTime(InGameSpeeds.NORMAL);
+            } catch (IOException | ClassNotFoundException e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 
     private int countStadium(Point position) {
@@ -361,6 +363,8 @@ public class GameModel implements InGameTimeTickListener, Serializable {
         for (WealthChangeListener l : this.wealthListeners) l.onWealthChange();
     }
 
+    //todo : place/remove road, forest, service, residential, school, university and finish industrial
+
     public void removePolice(Point position) {
         grid[position.x][position.y] = null;
         int r = new Stadium(GameModel.NO_SELECTION).getRadius();
@@ -388,8 +392,6 @@ public class GameModel implements InGameTimeTickListener, Serializable {
             }
         }
     }
-
-    //todo : place/remove road, forest, service, residential, school, university and finish industrial
 
     public void placeIndustrial(Point position) {
         Industrial pl = new Industrial(position);
@@ -1087,7 +1089,6 @@ public class GameModel implements InGameTimeTickListener, Serializable {
         System.out.println("-------------------------");
     }
 
-
     private boolean isNextToARoad(Point point) {
         int x = point.x;
         int y = point.y;
@@ -1134,6 +1135,14 @@ public class GameModel implements InGameTimeTickListener, Serializable {
         }
     }
 
+    public void saveGame() {
+        try {
+            Persistence.save(this, "gm" + +saveCount++ + ".txt");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     @Override
     public void timeTick() {
 //        System.out.println("Time: Y: " + inGameTime.getInGameYear() + " D: " + inGameTime.getInGameDay() + " H: " + inGameTime.getInGameHour());
@@ -1151,11 +1160,7 @@ public class GameModel implements InGameTimeTickListener, Serializable {
 
         }
         if (this.inGameTime.getInGameDay() > 0 && this.inGameTime.getInGameDay() % 21 == 0 && this.inGameTime.getInGameHour() == 0) {
-//            try {
-//                Persistence.save(this, "gm" + saveCount++ + ".txt");
-//            } catch (IOException e) {
-//                throw new RuntimeException(e);
-//            }
+//            saveGame();
         }
 
         if (this.inGameTime.getInGameYear() > 0 && this.inGameTime.getInGameDay() == 0 && this.inGameTime.getInGameHour() == 0) {
@@ -1179,9 +1184,6 @@ public class GameModel implements InGameTimeTickListener, Serializable {
                     System.out.println(((Education) grid[i][j]).getPeople().size());
                 }
             }
-        }
-        for (Person p : this.people) {
-            System.out.println(p.getMood());
         }
         calculateCityMood();
         for (MoralChangeListener l : this.moralListeners) l.onMoralChanged();
