@@ -135,7 +135,7 @@ public class GameModel implements InGameTimeTickListener, Serializable {
     }
 
     public static GameModel getInstance() {
-        GameModel.loadGame("gm0.txt");
+//        GameModel.loadGame("gm0.txt");
         if (instance == null) {
             instance = new GameModel();
         }
