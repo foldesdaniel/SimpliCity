@@ -8,7 +8,7 @@ import simplicity.Model.Placeables.Zones.Residential;
 
 import java.awt.*;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class PersonTest {
 
@@ -19,11 +19,11 @@ public class PersonTest {
 
         Residential res = new Residential(new Point(0, 0));
         Person person2 = new Person(res);
-        assertTrue(person2.getHome().equals(res));
+        assertEquals(person2.getHome(), res);
 
         Person person3 = new Person(res, 50);
         assertTrue(person3.getMood() >= 45 && person3.getMood() <= 55);
-        assertTrue(person3.getHome().equals(res));
+        assertEquals(person3.getHome(), res);
     }
 
     @Test
@@ -31,7 +31,7 @@ public class PersonTest {
         Person person = new Person();
         School school = new School(new Point(0, 0));
         person.goToSchool(school);
-        assertTrue(person.getEducation() == school);
+        assertSame(person.getEducation(), school);
         assertTrue(school.getPeople().contains(person));
     }
 
@@ -40,7 +40,7 @@ public class PersonTest {
         Person person = new Person();
         Industrial workplace = new Industrial(new Point(0, 0));
         person.goToWork(workplace);
-        assertTrue(person.getWorkplace() == workplace);
+        assertSame(person.getWorkplace(), workplace);
         assertTrue(workplace.getPeople().contains(person));
     }
 
@@ -49,6 +49,6 @@ public class PersonTest {
         Person person = new Person();
         Residential res = new Residential(new Point(0, 0));
         person.moveIn(res);
-        assertTrue(person.getHome() == res);
+        assertSame(person.getHome(), res);
     }
 }

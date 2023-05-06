@@ -40,6 +40,9 @@ public class Person implements InGameTimeTickListener, Serializable {
         inGameTime.addInGameTimeTickListener(this);
     }
 
+    /**
+     * @param home Residential where Person is going to live
+     */
     public Person(Residential home) {
         inGameTime = InGameTimeManager.getInstance().getInGameTime();
         inGameTime.addInGameTimeTickListener(this);
@@ -47,6 +50,10 @@ public class Person implements InGameTimeTickListener, Serializable {
         moveIn(home);
     }
 
+    /**
+     * @param home     Residential where Person is going to live
+     * @param cityMood a base value to calculate a new Persons mood
+     */
     public Person(Residential home, int cityMood) {
         this.mood = cityMood;
         this.mood = (int) (Math.random() * 5 + (cityMood - 5));
@@ -57,12 +64,20 @@ public class Person implements InGameTimeTickListener, Serializable {
         moveIn(home);
     }
 
+    /**
+     * @return base mood plus boostedMood
+     */
     public int getMood() {
         if (mood + boostMood > 100) return Math.min(mood + boostMood, 100);
         else if (mood + boostMood < 0) return Math.max(mood + boostMood, 0);
         else return mood + boostMood;
     }
 
+    /**
+     * used to make a Person attend a place of Education
+     *
+     * @param placeOfEducation School or University which a Person could attend
+     */
     public void goToSchool(Education placeOfEducation) {
 
         if (placeOfEducation.areSpacesLeft() && !placeOfEducation.getPeople().contains(this)) {
@@ -75,6 +90,11 @@ public class Person implements InGameTimeTickListener, Serializable {
         }
     }
 
+    /**
+     * used to make a Person get a job at a Workplace
+     *
+     * @param placeOfWork Industrial or Service Zone where a Person could work
+     */
     public void goToWork(Workplace placeOfWork) {
         if (placeOfWork.areSpacesLeft() && !placeOfWork.getPeople().contains(this)) {
             placeOfWork.addPerson(this);
@@ -82,6 +102,11 @@ public class Person implements InGameTimeTickListener, Serializable {
         }
     }
 
+    /**
+     * used to make a Person move into a Residential
+     *
+     * @param home a Residential where a Person could move into
+     */
     public void moveIn(Residential home) {
         if (home.areSpacesLeft() && !home.getPeople().contains(this)) {
             home.addPerson(this);
@@ -89,11 +114,14 @@ public class Person implements InGameTimeTickListener, Serializable {
         }
     }
 
+    /**
+     * used to do calculations based on InGameTime
+     * managing InGameTime every in-game day
+     */
     @Override
     public void timeTick() {
         if (this.inGameTime.getInGameDay() == 0 && this.inGameTime.getInGameHour() == 0 && this.inGameTime.getInGameYear() > 0) {
             //aging process
-//            this.age.setDate( this.age.getYear() + 1, 0, 0);
             this.age.addToYear(1);
             //if dead
             if (this.age.getYear() == this.lifeExpectancy) {
