@@ -6,8 +6,6 @@ import lombok.Setter;
 import simplicity.Model.Listeners.InGameTimeListener;
 import simplicity.Model.Listeners.InGameTimeTickListener;
 
-import java.io.IOException;
-import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Timer;
@@ -16,17 +14,16 @@ import java.util.TimerTask;
 @NoArgsConstructor
 public class InGameTime implements Serializable {
 
+    private final ArrayList<InGameTimeTickListener> inGameTimeTickListeners = new ArrayList<>();
+    @Setter
+    public transient Timer inGameElapsedTime;
     @Getter
     private int inGameYear = 0;
     @Getter
     private int inGameDay = 0;
     @Getter
     private int inGameHour = 0;
-
-    @Setter
-    public transient Timer inGameElapsedTime;
     private InGameTimeListener inGameTimeListener;
-    private final ArrayList<InGameTimeTickListener> inGameTimeTickListeners = new ArrayList<>();
 
 
     public InGameTime(int inGameYear, int inGameDay, int inGameHour) {
@@ -41,16 +38,18 @@ public class InGameTime implements Serializable {
         this.inGameHour = inGameHour;
     }
 
+    /**
+     * use to start the time in-game with a specific speed
+     *
+     * @param speed the speed we want to start the game with
+     */
     public void startInGameTime(InGameSpeeds speed) {
         inGameElapsedTime = new Timer();
         TimerTask inGameElapsedTimeAction = new TimerTask() {
             @Override
             public void run() {
-                if(inGameTimeListener != null) inGameTimeListener.timeChanged(inGameYear, inGameDay, inGameHour);
-//                for (InGameTimeTickListener inGameTimeTickListener : inGameTimeTickListeners) {
-//                    inGameTimeTickListener.timeTick();
-//                }
-                for(int i = 0; i < inGameTimeTickListeners.size(); i++) {
+                if (inGameTimeListener != null) inGameTimeListener.timeChanged(inGameYear, inGameDay, inGameHour);
+                for (int i = 0; i < inGameTimeTickListeners.size(); i++) {
                     inGameTimeTickListeners.get(i).timeTick();
                 }
                 if (inGameHour < 23) inGameHour++;
@@ -68,6 +67,13 @@ public class InGameTime implements Serializable {
         inGameElapsedTime.scheduleAtFixedRate(inGameElapsedTimeAction, 0, speed.getSpeed());
     }
 
+    /**
+     * used to stop the time in-game
+     */
+    public void stopInGameTime() {
+        inGameElapsedTime.cancel();
+    }
+
     public void setInGameTimeListener(InGameTimeListener inGameTimeListener) {
         this.inGameTimeListener = inGameTimeListener;
     }
@@ -75,16 +81,5 @@ public class InGameTime implements Serializable {
     public void addInGameTimeTickListener(InGameTimeTickListener inGameTimeTickListener) {
         this.inGameTimeTickListeners.add(inGameTimeTickListener);
     }
-
-    public void stopInGameTime() {
-        inGameElapsedTime.cancel();
-    }
-//
-//    @Serial
-//    private Object readResolve() {
-//        inGameElapsedTime = new Timer();
-//        return (InGameTime) this;
-//    }
-//
 
 }

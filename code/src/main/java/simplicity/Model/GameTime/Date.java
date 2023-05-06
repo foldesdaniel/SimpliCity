@@ -6,6 +6,11 @@ import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 
+/**
+ * custom Date implementation for the project
+ * holds Year, Day, Hour
+ * specifically made to avoid different month lengths
+ */
 @AllArgsConstructor
 @Getter
 @NoArgsConstructor
@@ -20,6 +25,11 @@ public class Date implements Serializable {
         this.hour = hour;
     }
 
+    /**
+     * increase year by a specific amount
+     *
+     * @param year amount of years to increase by
+     */
     public void addToYear(int year) {
         this.year += year;
     }
