@@ -1,6 +1,7 @@
 package simplicity.Model;
 
 import lombok.Getter;
+import lombok.Setter;
 import simplicity.Model.Algorithm.NodeCount;
 import simplicity.Model.Education.Education;
 import simplicity.Model.Education.EducationLevel;
@@ -37,6 +38,8 @@ import java.util.*;
 public class GameModel implements InGameTimeTickListener, Serializable {
 
     public static final String GAME_TITLE = "SimpliCity";
+    @Getter @Setter
+    public static String cityName = "";
     public static final Image BACKGROUND_IMG = ResourceLoader.loadImage("bg_temp.jpg");
     public static final Image MISSING_IMG = ResourceLoader.loadImage("missing.png");
     public static final Image GRASS_IMG = ResourceLoader.loadImage("grass.png");
@@ -163,6 +166,10 @@ public class GameModel implements InGameTimeTickListener, Serializable {
 
     public static void showMessage(String title, String message) {
         JOptionPane.showMessageDialog(null, message, title + " | SimpliCity", JOptionPane.WARNING_MESSAGE);
+    }
+
+    public static void showError(String title, String message) {
+        JOptionPane.showMessageDialog(null, message, title + " | SimpliCity", JOptionPane.ERROR_MESSAGE);
     }
 
     public static boolean isSafe(int i, int j, int[][] matrix) {
@@ -1718,8 +1725,12 @@ public class GameModel implements InGameTimeTickListener, Serializable {
         removeIndustrial(position, true);
     }
 
-    public void playAnim(Animation anim, int duration){
+    public void playAnim(Animation anim){
         addAnimation(anim);
+    }
+
+    public void playAnim(Animation anim, int duration){
+        playAnim(anim);
         Timer animTimer = new Timer();
         TimerTask animTask = new TimerTask() {
             @Override
@@ -1735,8 +1746,10 @@ public class GameModel implements InGameTimeTickListener, Serializable {
         anim.start();
     }
 
-    private void stopAnimation(Animation anim){
-        animations.remove(anim);
+    public void stopAnimation(Animation anim){
+        if(animations.contains(anim)){
+            animations.remove(anim);
+        }
         anim.stop();
     }
 

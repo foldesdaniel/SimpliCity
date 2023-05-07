@@ -40,20 +40,11 @@ public class PlayingFieldView extends JPanel implements MouseListener, MouseMoti
         this.hoverField = GameModel.NO_SELECTION;
         this.offsetX = 0;
         this.offsetY = 0;
-        // resetPlayingField();
-        MouseAdapter mouseAdapter = new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                // System.out.println("clicked");
-            }
-        };
         this.addMouseListener(this);
-        this.addMouseListener(mouseAdapter);
         this.addMouseMotionListener(this);
         this.addMouseWheelListener(this);
         Animation.addAnimationTickListener(this);
         this.setBorder(new InsetShadowBorder(16));
-        model.playAnim(Animation.createFireAnim(new Point(0,0)), 3200);
     }
 
     public void addModeListener(ModeChangeListener l){

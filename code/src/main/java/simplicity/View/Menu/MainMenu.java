@@ -4,11 +4,13 @@ import simplicity.Model.GameModel;
 import simplicity.Model.Listeners.MenuEventListener;
 import simplicity.Model.Listeners.StartStopGameListener;
 import simplicity.View.GameWindow;
+import simplicity.View.Style.CFont;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.io.File;
 import java.util.ArrayList;
 
 import static java.lang.Integer.parseInt;
@@ -57,18 +59,18 @@ public class MainMenu extends JPanel {
         mainMenuPanel.setLayout(new BoxLayout(mainMenuPanel, BoxLayout.Y_AXIS));
         mainMenuPanel.setOpaque(false);
 
-        //Load game
-        MenuButton loadGame_btn = new MenuButton("LOAD GAME");
-        loadGame_btn.setAlignmentX(Component.CENTER_ALIGNMENT);
-        //TODO -> implement actionlistener to display loading list
-        //mainMenuPanel.add(loadGame_btn);
-        //mainMenuPanel.add(Box.createRigidArea(new Dimension(0, gap)));
-
         //New game
         MenuButton newGame_btn = new MenuButton("NEW GAME");
         newGame_btn.setAlignmentX(Component.CENTER_ALIGNMENT);
         newGame_btn.addActionListener(e -> displayInputCityName());
         mainMenuPanel.add(newGame_btn);
+        mainMenuPanel.add(Box.createRigidArea(new Dimension(0, gap)));
+
+        //Load game
+        MenuButton loadGame_btn = new MenuButton("LOAD GAME");
+        loadGame_btn.setAlignmentX(Component.CENTER_ALIGNMENT);
+        loadGame_btn.addActionListener(e -> displayLoad());
+        mainMenuPanel.add(loadGame_btn);
         mainMenuPanel.add(Box.createRigidArea(new Dimension(0, gap)));
 
         //Settings
@@ -119,7 +121,7 @@ public class MainMenu extends JPanel {
         //Start
         MenuButton start_btn = new MenuButton("START");
         start_btn.setAlignmentX(Component.CENTER_ALIGNMENT);
-        start_btn.addActionListener((ActionEvent) -> startGame());
+        start_btn.addActionListener((ActionEvent) -> startGame(input.getText()));
         newGamePanel.add(start_btn);
         newGamePanel.add(Box.createRigidArea(new Dimension(0, gap)));
 
@@ -135,10 +137,88 @@ public class MainMenu extends JPanel {
     }
 
     /**
+     * Displays the load menu.
+     */
+    public void displayLoad() {
+        this.removeAll();
+        this.revalidate();
+        this.repaint();
+
+        int windowHeight = this.getHeight();
+        int gap = windowHeight/32;
+
+        JPanel loadMenuPanel = new JPanel();
+        loadMenuPanel.setLayout(new BoxLayout(loadMenuPanel, BoxLayout.Y_AXIS));
+        loadMenuPanel.setOpaque(false);
+
+        //Label
+        MenuLabel load_lbl = new MenuLabel("Load a saved game");
+        load_lbl.setAlignmentX(Component.CENTER_ALIGNMENT);
+        loadMenuPanel.add(load_lbl);
+        loadMenuPanel.add(Box.createRigidArea(new Dimension(0, gap)));
+
+        //List
+        File saveFolder = new File("code/SavedGames/");
+        for(File f : saveFolder.listFiles()){
+            JPanel saveBox = new JPanel(){
+                @Override
+                protected void paintComponent(Graphics _g) {
+                    super.paintComponent(_g);
+                    Graphics2D g = (Graphics2D) _g;
+                    g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                    g.setColor(new Color(0,0,0,128));
+                    g.fillRoundRect(0, 0, getWidth(), getHeight(), 20, 20);
+                }
+            };
+            saveBox.setOpaque(false);
+            saveBox.setLayout(new BoxLayout(saveBox, BoxLayout.Y_AXIS));
+            Dimension saveBoxSize = new Dimension((int)Math.round(GameWindow.getWindowWidth()*0.7), 50);
+            //saveBox.setPreferredSize(saveBoxSize);
+            saveBox.setSize(saveBoxSize);
+            saveBox.setMinimumSize(saveBoxSize);
+            saveBox.setMaximumSize(new Dimension(saveBoxSize.width, 200));
+            JLabel saveLabel = new JLabel("===== " + f.getName() + " =====");
+            saveLabel.setFont(CFont.get(Font.BOLD, 18));
+            saveLabel.setVerticalAlignment(SwingConstants.CENTER);
+            saveLabel.setHorizontalAlignment(SwingConstants.CENTER);
+            saveLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+            JButton loadButton = new JButton("Load");
+            loadButton.setFont(CFont.get(Font.BOLD, 20));
+            loadButton.addActionListener(e -> {
+                System.out.println("loading code/SavedGames/" + f.getName() + "...");
+            });
+            loadButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+            saveBox.add(Box.createRigidArea(new Dimension(0, 16)));
+            saveBox.add(saveLabel);
+            saveBox.add(Box.createRigidArea(new Dimension(0, 8)));
+            saveBox.add(loadButton);
+            saveBox.add(Box.createRigidArea(new Dimension(0, 16)));
+            loadMenuPanel.add(saveBox);
+            loadMenuPanel.add(Box.createRigidArea(new Dimension(0, gap)));
+        }
+
+        //Exit
+        MenuButton back_btn = new MenuButton("BACK");
+        back_btn.setAlignmentX(Component.CENTER_ALIGNMENT);
+        back_btn.addActionListener(e -> displayButtons());
+        loadMenuPanel.add(back_btn);
+
+        this.add(Box.createVerticalGlue());
+        this.add(loadMenuPanel, BorderLayout.CENTER);
+        this.add(Box.createVerticalGlue());
+    }
+
+    /**
      * Displays the actual game panel
      */
-    private void startGame(){
-        for(StartStopGameListener l : startGameListeners) l.onGameStart();
+    private void startGame(String _cityName){
+        String cityName = _cityName.trim();
+        if(cityName.length() > 0){
+            GameModel.setCityName(cityName);
+            for(StartStopGameListener l : startGameListeners) l.onGameStart();
+        }else{
+            GameModel.showError("Input error", "Your world name cannot be empty");
+        }
     }
 
     /**

@@ -14,12 +14,16 @@ import java.awt.event.ActionListener;
 
 public class TopRightBar extends JPanel implements InGameTimeListener {
 
+    private JLabel nameLabel;
     private JLabel timeLabel;
 
     private final InGameTime inGameTime = InGameTimeManager.getInstance().getInGameTime();
 
     public TopRightBar(){
         Font font = CFont.get();
+        nameLabel = new JLabel(GameModel.getCityName() + " |");
+        nameLabel.setFont(CFont.get(Font.BOLD, 18));
+        this.add(nameLabel);
         timeLabel = new JLabel();
         timeLabel.setFont(font);
         this.add(timeLabel);
