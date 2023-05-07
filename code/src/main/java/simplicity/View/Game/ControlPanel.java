@@ -54,9 +54,10 @@ public class ControlPanel extends JPanel {
         this.add(Box.createRigidArea(new Dimension(0, 20)));
         JScrollPane scrollPane = new JScrollPane(container,JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         scrollPane.setBorder(BorderFactory.createEmptyBorder());
-        //UIManager.put("ScrollBar.thumb", new ColorUIResource(Color.RED));
         scrollPane.getVerticalScrollBar().setUI(new ScrollBarUI());
         scrollPane.getHorizontalScrollBar().setUI(new ScrollBarUI());
+        scrollPane.getVerticalScrollBar().setUnitIncrement(8);
+        scrollPane.getHorizontalScrollBar().setUnitIncrement(8);
         this.add(scrollPane, GamePanel.changeGbc(gbc, 1, 0, 1, 1, 1, 1));
     }
 

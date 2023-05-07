@@ -5,6 +5,8 @@ import simplicity.Model.Listeners.MenuEventListener;
 import simplicity.Model.Listeners.StartStopGameListener;
 import simplicity.View.GameWindow;
 import simplicity.View.Style.CFont;
+import simplicity.View.Style.MenuScrollBarUI;
+import simplicity.View.Style.ScrollBarUI;
 
 import javax.swing.*;
 import java.awt.*;
@@ -58,6 +60,7 @@ public class MainMenu extends JPanel {
         JPanel mainMenuPanel = new JPanel();
         mainMenuPanel.setLayout(new BoxLayout(mainMenuPanel, BoxLayout.Y_AXIS));
         mainMenuPanel.setOpaque(false);
+        mainMenuPanel.add(Box.createRigidArea(new Dimension(0, 32)));
 
         //New game
         MenuButton newGame_btn = new MenuButton("NEW GAME");
@@ -85,6 +88,7 @@ public class MainMenu extends JPanel {
         exit_btn.setAlignmentX(Component.CENTER_ALIGNMENT);
         exit_btn.addActionListener(e -> System.exit(0));
         mainMenuPanel.add(exit_btn);
+        mainMenuPanel.add(Box.createRigidArea(new Dimension(0, 32)));
 
         this.add(Box.createVerticalGlue());
         this.add(mainMenuPanel, BorderLayout.CENTER);
@@ -105,6 +109,7 @@ public class MainMenu extends JPanel {
         JPanel newGamePanel = new JPanel();
         newGamePanel.setLayout(new BoxLayout(newGamePanel, BoxLayout.Y_AXIS));
         newGamePanel.setOpaque(false);
+        newGamePanel.add(Box.createRigidArea(new Dimension(0, 32)));
 
         //Label
         MenuLabel cityName_lbl = new MenuLabel("Please enter your city name");
@@ -130,6 +135,7 @@ public class MainMenu extends JPanel {
         back_btn.setAlignmentX(Component.CENTER_ALIGNMENT);
         back_btn.addActionListener(e -> displayButtons());
         newGamePanel.add(back_btn);
+        newGamePanel.add(Box.createRigidArea(new Dimension(0, 32)));
 
         this.add(Box.createVerticalGlue());
         this.add(newGamePanel, BorderLayout.CENTER);
@@ -150,6 +156,7 @@ public class MainMenu extends JPanel {
         JPanel loadMenuPanel = new JPanel();
         loadMenuPanel.setLayout(new BoxLayout(loadMenuPanel, BoxLayout.Y_AXIS));
         loadMenuPanel.setOpaque(false);
+        loadMenuPanel.add(Box.createRigidArea(new Dimension(0, 32)));
 
         //Label
         MenuLabel load_lbl = new MenuLabel("Load a saved game");
@@ -159,6 +166,9 @@ public class MainMenu extends JPanel {
 
         //List
         File saveFolder = new File("code/SavedGames/");
+        JPanel saveBoxes = new JPanel();
+        saveBoxes.setOpaque(false);
+        saveBoxes.setLayout(new BoxLayout(saveBoxes, BoxLayout.Y_AXIS));
         for(File f : saveFolder.listFiles()){
             JPanel saveBox = new JPanel(){
                 @Override
@@ -172,8 +182,7 @@ public class MainMenu extends JPanel {
             };
             saveBox.setOpaque(false);
             saveBox.setLayout(new BoxLayout(saveBox, BoxLayout.Y_AXIS));
-            Dimension saveBoxSize = new Dimension((int)Math.round(GameWindow.getWindowWidth()*0.7), 50);
-            //saveBox.setPreferredSize(saveBoxSize);
+            Dimension saveBoxSize = new Dimension(Math.min((int)Math.round(GameWindow.getWindowWidth()*0.7),672), 50);
             saveBox.setSize(saveBoxSize);
             saveBox.setMinimumSize(saveBoxSize);
             saveBox.setMaximumSize(new Dimension(saveBoxSize.width, 200));
@@ -193,15 +202,25 @@ public class MainMenu extends JPanel {
             saveBox.add(Box.createRigidArea(new Dimension(0, 8)));
             saveBox.add(loadButton);
             saveBox.add(Box.createRigidArea(new Dimension(0, 16)));
-            loadMenuPanel.add(saveBox);
-            loadMenuPanel.add(Box.createRigidArea(new Dimension(0, gap)));
+            saveBox.setAlignmentX(Component.CENTER_ALIGNMENT);
+            saveBoxes.add(saveBox);
+            saveBoxes.add(Box.createRigidArea(new Dimension(0, gap)));
         }
+        JScrollPane scrollPane = new JScrollPane(saveBoxes, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        scrollPane.setOpaque(false);
+        scrollPane.getViewport().setOpaque(false);
+        scrollPane.setBorder(BorderFactory.createEmptyBorder());
+        scrollPane.getVerticalScrollBar().setUI(new MenuScrollBarUI());
+        scrollPane.getVerticalScrollBar().setUnitIncrement(8);
+        loadMenuPanel.add(scrollPane);
 
         //Exit
         MenuButton back_btn = new MenuButton("BACK");
         back_btn.setAlignmentX(Component.CENTER_ALIGNMENT);
         back_btn.addActionListener(e -> displayButtons());
+        loadMenuPanel.add(Box.createRigidArea(new Dimension(0, 16)));
         loadMenuPanel.add(back_btn);
+        loadMenuPanel.add(Box.createRigidArea(new Dimension(0, 32)));
 
         this.add(Box.createVerticalGlue());
         this.add(loadMenuPanel, BorderLayout.CENTER);
@@ -217,7 +236,7 @@ public class MainMenu extends JPanel {
             GameModel.setCityName(cityName);
             for(StartStopGameListener l : startGameListeners) l.onGameStart();
         }else{
-            GameModel.showError("Input error", "Your world name cannot be empty");
+            GameModel.showError("Input error", "Your city name cannot be empty");
         }
     }
 
@@ -247,6 +266,7 @@ public class MainMenu extends JPanel {
         JPanel settingsMenu = new JPanel();
         settingsMenu.setLayout(new BoxLayout(settingsMenu, BoxLayout.Y_AXIS));
         settingsMenu.setOpaque(false);
+        settingsMenu.add(Box.createRigidArea(new Dimension(0, 32)));
 
         //Label
         MenuLabel res_lbl = new MenuLabel("Resolution");
@@ -315,6 +335,7 @@ public class MainMenu extends JPanel {
         back_btn.setAlignmentX(Component.CENTER_ALIGNMENT);
         back_btn.addActionListener(e -> displayButtons());
         settingsMenu.add(back_btn);
+        settingsMenu.add(Box.createRigidArea(new Dimension(0, 32)));
 
         this.add(Box.createVerticalGlue());
         this.add(settingsMenu, BorderLayout.CENTER);

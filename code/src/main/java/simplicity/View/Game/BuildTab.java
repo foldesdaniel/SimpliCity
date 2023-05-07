@@ -73,6 +73,7 @@ public class BuildTab extends JPanel implements ModeChangeListener {
         deleteBtn.setFont(CFont.get());
         this.other.add(exitBuildBtn);
         this.other.add(deleteBtn);
+        this.other.add(Box.createRigidArea(new Dimension(0, 8)));
 
         this.add(zonesTitle);
         this.add(Box.createRigidArea(new Dimension(0, 16)));

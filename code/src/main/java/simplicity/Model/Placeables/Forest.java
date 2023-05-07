@@ -3,6 +3,7 @@ package simplicity.Model.Placeables;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import simplicity.Model.Game.ForestType;
 import simplicity.Model.GameModel;
 import simplicity.Model.Game.FieldType;
 import simplicity.Model.GameTime.Date;
@@ -35,7 +36,32 @@ public class Forest extends Placeable implements Serializable {
 
     @Override
     public Image getImage(Placeable left, Placeable right, Placeable up, Placeable down) {
-        return GameModel.FOREST_IMG;
+        Image forestImg;
+        if(this.getPosition() == GameModel.NO_SELECTION){
+            forestImg = GameModel.FOREST_NONE;
+        }else{
+            ForestType type = ForestType.calc(left, right, up, down);
+            switch (type) {
+                case DOWN_TO_LEFT -> forestImg = GameModel.FOREST_DOWN_TO_LEFT;
+                case DOWN_TO_RIGHT -> forestImg = GameModel.FOREST_DOWN_TO_RIGHT;
+                case UP_TO_RIGHT -> forestImg = GameModel.FOREST_UP_TO_RIGHT;
+                case UP_TO_LEFT -> forestImg = GameModel.FOREST_UP_TO_LEFT;
+                case DOWN_T -> forestImg = GameModel.FOREST_DOWN_T;
+                case RIGHT_T -> forestImg = GameModel.FOREST_RIGHT_T;
+                case UP_T -> forestImg = GameModel.FOREST_UP_T;
+                case LEFT_T -> forestImg = GameModel.FOREST_LEFT_T;
+                case HORIZONTAL -> forestImg = GameModel.FOREST_HORIZONTAL;
+                case VERTICAL -> forestImg = GameModel.FOREST_VERTICAL;
+                case DOWN -> forestImg = GameModel.FOREST_DOWN;
+                case RIGHT -> forestImg = GameModel.FOREST_RIGHT;
+                case UP -> forestImg = GameModel.FOREST_UP;
+                case LEFT -> forestImg = GameModel.FOREST_LEFT;
+                case ALL -> forestImg = GameModel.FOREST_ALL;
+                case NONE -> forestImg = GameModel.FOREST_NONE;
+                default -> forestImg = GameModel.MISSING_IMG;
+            }
+        }
+        return forestImg;
     }
 
     @Override
