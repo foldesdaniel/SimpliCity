@@ -1,30 +1,31 @@
 package simplicity.Model.Placeables;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import simplicity.Model.Game.FieldType;
-import simplicity.Model.GameModel;
 
 import java.awt.*;
+import java.io.Serializable;
 import java.util.Objects;
 
 @Getter
-public abstract class Placeable {
+@NoArgsConstructor(force = true)
+public abstract class Placeable implements Serializable {
 
     private final FieldType type;
-    private Point position;
     private final int buildPrice;
+    private Point position;
 
     public Placeable(FieldType type, Point position, int buildPrice) {
         this.type = type;
         this.position = position;
         this.buildPrice = buildPrice;
     }
-
-    public void setPosition(Point position){
+    public void setPosition(Point position) {
         this.position = position;
     }
 
-    public Point getDisplayPosition(){
+    public Point getDisplayPosition() {
         return this.getPosition();
     }
 
@@ -46,11 +47,11 @@ public abstract class Placeable {
 
     public abstract Image getImage(Placeable left, Placeable right, Placeable up, Placeable down);
 
-    public Image getImage(){
+    public Image getImage() {
         return this.getImage(null, null, null, null);
     }
 
-    public String getDisplayName(){
+    public String getDisplayName() {
         return this.type.getDisplayName();
     }
 
@@ -59,11 +60,11 @@ public abstract class Placeable {
         return this.type.name() + "(" + this.position.x + "," + this.position.y + ")";
     }
 
-    public Dimension getSize(){
+    public Dimension getSize() {
         return new Dimension(1, 1);
     }
 
-    public Dimension getDisplaySize(){
+    public Dimension getDisplaySize() {
         return this.getSize();
     }
 

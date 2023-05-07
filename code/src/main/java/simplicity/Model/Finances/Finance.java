@@ -1,12 +1,15 @@
 package simplicity.Model.Finances;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 @Getter
-public class Finance {
+@NoArgsConstructor(force = true)
+public class Finance implements Serializable {
     private final ArrayList<FinanceData> incomeList; //stores incomes with their information
     private final ArrayList<FinanceData> builtList; //stores built costs with their information
 

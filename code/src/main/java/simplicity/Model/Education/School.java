@@ -1,5 +1,6 @@
 package simplicity.Model.Education;
 
+import lombok.NoArgsConstructor;
 import simplicity.Model.Game.FieldType;
 import simplicity.Model.GameModel;
 import simplicity.Model.GameTime.InGameTime;
@@ -8,16 +9,18 @@ import simplicity.Model.Listeners.InGameTimeTickListener;
 import simplicity.Model.Placeables.Placeable;
 
 import java.awt.*;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 
-public class School extends Education implements InGameTimeTickListener {
+@NoArgsConstructor(force = true)
+public class School extends Education implements InGameTimeTickListener, Serializable {
 
     private final EducationLevel levelOfEducation = EducationLevel.SECONDARY;
 
     private final InGameTime inGameTime;
 
-    public School( Point position) {
+    public School(Point position) {
         super(FieldType.SCHOOL, position, 7000, 20, 1500);
         inGameTime = InGameTimeManager.getInstance().getInGameTime();
         inGameTime.addInGameTimeTickListener(this);
@@ -67,7 +70,7 @@ public class School extends Education implements InGameTimeTickListener {
     }
 
     @Override
-    public Dimension getSize(){
+    public Dimension getSize() {
         return new Dimension(2, 1);
     }
 

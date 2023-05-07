@@ -2,9 +2,8 @@ package simplicity.View.Menu;
 
 import simplicity.Model.GameModel;
 import simplicity.Model.Listeners.MenuEventListener;
-import simplicity.Model.Listeners.StartGameListener;
+import simplicity.Model.Listeners.StartStopGameListener;
 import simplicity.View.GameWindow;
-import simplicity.View.Style.CFont;
 
 import javax.swing.*;
 import java.awt.*;
@@ -17,7 +16,7 @@ import static java.lang.Integer.parseInt;
 public class MainMenu extends JPanel {
 
     private ArrayList<MenuEventListener> menuEventListeners;
-    private ArrayList<StartGameListener> startGameListeners;
+    private ArrayList<StartStopGameListener> startGameListeners;
 
     /**
      * Constructor
@@ -39,14 +38,14 @@ public class MainMenu extends JPanel {
         this.menuEventListeners.add(menuEventListener);
     }
 
-    public void addStartGameListener(StartGameListener startGameListener){
+    public void addStartGameListener(StartStopGameListener startGameListener){
         this.startGameListeners.add(startGameListener);
     }
 
     /**
      * Displays the simplicity.Main Menu buttons.
      */
-    private void displayButtons() {
+    public void displayButtons() {
         this.removeAll();
         this.revalidate();
         this.repaint();
@@ -139,7 +138,7 @@ public class MainMenu extends JPanel {
      * Displays the actual game panel
      */
     private void startGame(){
-        for(StartGameListener l : startGameListeners) l.onGameStart();
+        for(StartStopGameListener l : startGameListeners) l.onGameStart();
     }
 
     /**
