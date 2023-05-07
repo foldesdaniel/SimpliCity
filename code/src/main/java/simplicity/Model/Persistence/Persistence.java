@@ -14,6 +14,7 @@ public class Persistence {
      */
     public static void save(Object obj, String filename) throws IOException {
         String fullPathToFile = pathToSavedGamesDir + filename;
+        if (filename.startsWith("__test")) fullPathToFile = filename;
 
         FileOutputStream fileOutputStream = new FileOutputStream(fullPathToFile);
         ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
@@ -28,6 +29,7 @@ public class Persistence {
      */
     public static Object load(String filename) throws IOException, ClassNotFoundException {
         String fullPathToFile = pathToSavedGamesDir + filename;
+        if (filename.startsWith("__test")) fullPathToFile = filename;
 
         FileInputStream fileInputStream = new FileInputStream(fullPathToFile);
         ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
@@ -43,6 +45,7 @@ public class Persistence {
      */
     public static void delete(String filename) {
         String fullPathToFile = pathToSavedGamesDir + filename;
+        if (filename.startsWith("__test")) fullPathToFile = filename;
 
         File file = new File(fullPathToFile);
         if (!file.delete()) System.err.println("Unable to delete file: " + filename);

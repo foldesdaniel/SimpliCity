@@ -25,7 +25,6 @@ public class InGameTime implements Serializable {
     private int inGameHour = 0;
     private InGameTimeListener inGameTimeListener;
 
-
     public InGameTime(int inGameYear, int inGameDay, int inGameHour) {
         this.inGameYear = inGameYear;
         this.inGameDay = inGameDay;
@@ -59,7 +58,6 @@ public class InGameTime implements Serializable {
                     else {
                         inGameDay = 0;
                         inGameYear++;
-
                     }
                 }
             }
