@@ -16,6 +16,10 @@ public class FinanceData implements Serializable {
         this.text = text;
     }
 
+    /**
+     * @param positive used to calculate if expense of income
+     * @return formatted string of expense / income
+     */
     public String toString(boolean positive) {
         return (positive ? "+$" : "-$") + this.price + " " + this.text;
     }

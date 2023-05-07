@@ -27,19 +27,17 @@ public class Finance implements Serializable {
 
     /**
      * Remove money from the player's current wealth
-     * @param money
-     * The amount to remove
+     *
+     * @param money The amount to remove
      */
-
-
     public void removeMoney(int money) {
         currentWealth -= money;
     }
 
     /**
      * Add money to the player's current wealth
-     * @param money
-     *The amount to add
+     *
+     * @param money The amount to add
      */
     public void addMoney(int money) {
         currentWealth += money;
@@ -47,10 +45,9 @@ public class Finance implements Serializable {
 
     /**
      * Add income to the list
-     * @param price
-     * The profit
-     * @param text
-     * Information about the building
+     *
+     * @param price The profit
+     * @param text  Information about the building
      */
     public void addIncome(int price, String text) {
         this.incomeList.add(new FinanceData(price, text));
@@ -58,10 +55,9 @@ public class Finance implements Serializable {
 
     /**
      * Add built price to the list with text
-     * @param price
-     * The expense
-     * @param text
-     * Information about the building
+     *
+     * @param price The expense
+     * @param text  Information about the building
      */
     public void addBuilt(int price, String text) {
         this.builtList.add(new FinanceData(price, text));
@@ -69,10 +65,9 @@ public class Finance implements Serializable {
 
     /**
      * Add yearly maintenance price with text
-     * @param price
-     * The yearly expense
-     * @param text
-     * Information about the building
+     *
+     * @param price The yearly expense
+     * @param text  Information about the building
      */
     public void addYearlySpend(int price, String text) {
         this.yearlySpendList.add(new FinanceData(price, text));
@@ -80,10 +75,9 @@ public class Finance implements Serializable {
 
     /**
      * Remove yearly maintenance price with text
-     * @param price
-     * The yearly expense
-     * @param text
-     * Information about the building
+     *
+     * @param price The yearly expense
+     * @param text  Information about the building
      */
     public void removeYearlySpend(int price, String text) {
         int ind = -1;
@@ -99,6 +93,7 @@ public class Finance implements Serializable {
 
     /**
      * Making displayable information about the built expenses
+     *
      * @return information about the built expenses
      */
     public String builtToString() {
@@ -111,6 +106,7 @@ public class Finance implements Serializable {
 
     /**
      * Making displayable information about the yearly maintenance expenses
+     *
      * @return information about the yearly maintenance expenses
      */
     public String yearlySpendToString() {
@@ -123,6 +119,7 @@ public class Finance implements Serializable {
 
     /**
      * Making displayable information about the income
+     *
      * @return information about the income
      */
     public String incomeToString() {
