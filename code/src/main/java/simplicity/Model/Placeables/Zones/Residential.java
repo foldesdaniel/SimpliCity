@@ -46,7 +46,7 @@ public class Residential extends Zone implements Serializable {
 
     @Override
     public Image getImage(Placeable left, Placeable right, Placeable up, Placeable down) {
-        return GameModel.ZONE_RESIDENTIAL_IMG;
+        return this.getPeople().size() > 2 ? GameModel.ZONE_RESIDENTIAL_2_IMG : GameModel.ZONE_RESIDENTIAL_IMG;
     }
 
     /**

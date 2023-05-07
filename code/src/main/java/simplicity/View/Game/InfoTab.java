@@ -18,21 +18,22 @@ import java.util.ArrayList;
 
 public class InfoTab extends JPanel implements PeopleChangeListener, MoralChangeListener {
 
+    private final JLabel emptyLabel;
     private Placeable lastInfo = null;
     private final Dimension defaultImageSize = new Dimension(32,32);
 
     public InfoTab(){
         this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-        GameModel.getInstance().addPeopleChangeListener(this);
+        this.emptyLabel = new JLabel("Empty selection");
+        this.emptyLabel.setFont(CFont.get(Font.PLAIN, 20));
         this.init();
+        GameModel.getInstance().addPeopleChangeListener(this);
     }
 
     public void init(){
         this.removeAll();
         this.setAlignmentX(Component.CENTER_ALIGNMENT);
-        JLabel tempLabel = new JLabel("Empty selection");
-        tempLabel.setFont(CFont.get(Font.PLAIN, 20));
-        this.add(tempLabel);
+        this.add(this.emptyLabel);
     }
 
     public void updateInfo(Placeable _f) {

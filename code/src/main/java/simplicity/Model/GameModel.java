@@ -1,6 +1,7 @@
 package simplicity.Model;
 
 import lombok.Getter;
+import lombok.Setter;
 import simplicity.Model.Algorithm.NodeCount;
 import simplicity.Model.Education.Education;
 import simplicity.Model.Education.EducationLevel;
@@ -22,6 +23,7 @@ import simplicity.Model.Placeables.*;
 import simplicity.Model.Placeables.Zones.Industrial;
 import simplicity.Model.Placeables.Zones.Residential;
 import simplicity.Model.Placeables.Zones.Service;
+import simplicity.Model.Resource.Animation;
 import simplicity.Model.Resource.ResourceLoader;
 
 import javax.swing.*;
@@ -36,6 +38,8 @@ import java.util.*;
 public class GameModel implements InGameTimeTickListener, Serializable {
 
     public static final String GAME_TITLE = "SimpliCity";
+    @Getter @Setter
+    public static String cityName = "";
     public static final Image BACKGROUND_IMG = ResourceLoader.loadImage("bg_temp.jpg");
     public static final Image MISSING_IMG = ResourceLoader.loadImage("missing.png");
     public static final Image GRASS_IMG = ResourceLoader.loadImage("grass.png");
@@ -47,7 +51,22 @@ public class GameModel implements InGameTimeTickListener, Serializable {
     public static final Image ROAD_TURN_IMG = ResourceLoader.loadImage("road_turn.png");
     public static final Image ROAD_T = ResourceLoader.loadImage("road_t.png");
     public static final Image ROAD_ALL = ResourceLoader.loadImage("road_all.png");
-    public static final Image FOREST_IMG = ResourceLoader.loadImage("forest.png");
+    public static final Image FOREST_ALL = ResourceLoader.loadImage("forest_all.png");
+    public static final Image FOREST_NONE = ResourceLoader.loadImage("forest_none.png");
+    public static final Image FOREST_HORIZONTAL = ResourceLoader.loadImage("forest_horizontal.png");
+    public static final Image FOREST_VERTICAL = ResourceLoader.loadImage("forest_vertical.png");
+    public static final Image FOREST_LEFT = ResourceLoader.loadImage("forest_left.png");
+    public static final Image FOREST_RIGHT = ResourceLoader.loadImage("forest_right.png");
+    public static final Image FOREST_DOWN = ResourceLoader.loadImage("forest_down.png");
+    public static final Image FOREST_UP = ResourceLoader.loadImage("forest_up.png");
+    public static final Image FOREST_DOWN_TO_LEFT = ResourceLoader.loadImage("forest_dtol.png");
+    public static final Image FOREST_DOWN_TO_RIGHT = ResourceLoader.loadImage("forest_dtor.png");
+    public static final Image FOREST_UP_TO_LEFT = ResourceLoader.loadImage("forest_utol.png");
+    public static final Image FOREST_UP_TO_RIGHT = ResourceLoader.loadImage("forest_utor.png");
+    public static final Image FOREST_LEFT_T = ResourceLoader.loadImage("forest_left_t.png");
+    public static final Image FOREST_RIGHT_T = ResourceLoader.loadImage("forest_right_t.png");
+    public static final Image FOREST_DOWN_T = ResourceLoader.loadImage("forest_down_t.png");
+    public static final Image FOREST_UP_T = ResourceLoader.loadImage("forest_up_t.png");
     public static final Image ZONE_RESIDENTIAL_IMG = ResourceLoader.loadImage("zone_residential.png");
     public static final Image ZONE_RESIDENTIAL_2_IMG = ResourceLoader.loadImage("zone_residential_2.png");
     public static final Image ZONE_WORK_SERVICE_IMG = ResourceLoader.loadImage("zone_work_service.png");
@@ -56,6 +75,14 @@ public class GameModel implements InGameTimeTickListener, Serializable {
     public static final Image POLICE_IMG = ResourceLoader.loadImage("police.png");
     public static final Image EDUCATION_SCHOOL_IMG = ResourceLoader.loadImage("edu_school.png");
     public static final Image EDUCATION_UNIVERSITY_IMG = ResourceLoader.loadImage("edu_uni.png");
+    public static final Image FIRE_ANIM_1 = ResourceLoader.loadImage("fire_anim_1.png");
+    public static final Image FIRE_ANIM_2 = ResourceLoader.loadImage("fire_anim_2.png");
+    public static final Image FIRE_ANIM_3 = ResourceLoader.loadImage("fire_anim_3.png");
+    public static final Image FIRE_ANIM_4 = ResourceLoader.loadImage("fire_anim_4.png");
+    public static final Image FIRE_ANIM_5 = ResourceLoader.loadImage("fire_anim_5.png");
+    public static final Image FIRE_ANIM_6 = ResourceLoader.loadImage("fire_anim_6.png");
+    public static final Image FIRE_ANIM_7 = ResourceLoader.loadImage("fire_anim_7.png");
+    public static final Image FIRE_ANIM_8 = ResourceLoader.loadImage("fire_anim_8.png");
     public static final Font CUSTOM_FONT = ResourceLoader.loadFont("vt323.ttf");
     public static final Color BG_DARK = new Color(61, 63, 65); // default flatlaf dark
     public static final Point NO_SELECTION = new Point(-1, -1);
@@ -68,6 +95,7 @@ public class GameModel implements InGameTimeTickListener, Serializable {
     private final ArrayList<MoralChangeListener> moralListeners = new ArrayList<>();
     private final ArrayList<PeopleChangeListener> peopleChangeListeners = new ArrayList<>();
     private final ArrayList<WealthChangeListener> wealthListeners = new ArrayList<>();
+    @Getter private final ArrayList<Animation> animations = new ArrayList<>();
     private Date nextDisaster;
     @Getter
     private int cityMood = 60;
@@ -153,6 +181,10 @@ public class GameModel implements InGameTimeTickListener, Serializable {
 
     public static void showMessage(String title, String message) {
         JOptionPane.showMessageDialog(null, message, title + " | SimpliCity", JOptionPane.WARNING_MESSAGE);
+    }
+
+    public static void showError(String title, String message) {
+        JOptionPane.showMessageDialog(null, message, title + " | SimpliCity", JOptionPane.ERROR_MESSAGE);
     }
 
     public static boolean isSafe(int i, int j, int[][] matrix) {
@@ -1766,9 +1798,36 @@ public class GameModel implements InGameTimeTickListener, Serializable {
     }
 
     private void doIndustrialDisaster(Point position) {
-        //animation for 3-5 sec
-
+        playAnim(Animation.createFireAnim(position), 3200);
         removeIndustrial(position, true);
+    }
+
+    public void playAnim(Animation anim){
+        addAnimation(anim);
+    }
+
+    public void playAnim(Animation anim, int duration){
+        playAnim(anim);
+        Timer animTimer = new Timer();
+        TimerTask animTask = new TimerTask() {
+            @Override
+            public void run() {
+                stopAnimation(anim);
+            }
+        };
+        animTimer.schedule(animTask, duration);
+    }
+
+    private void addAnimation(Animation anim){
+        animations.add(anim);
+        anim.start();
+    }
+
+    public void stopAnimation(Animation anim){
+        if(animations.contains(anim)){
+            animations.remove(anim);
+        }
+        anim.stop();
     }
 
     /**

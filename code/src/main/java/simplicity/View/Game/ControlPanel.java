@@ -15,8 +15,8 @@ import java.awt.*;
 
 public class ControlPanel extends JPanel {
 
-    private final JButton infoBtn;
-    private final JButton buildBtn;
+    private final ControlPanelTabButton infoBtn;
+    private final ControlPanelTabButton buildBtn;
     private final InfoTab infoTab;
     private final BuildTab buildTab;
     private final JPanel container;
@@ -30,23 +30,21 @@ public class ControlPanel extends JPanel {
         buildTab = new BuildTab();
         container = new JPanel();
         container.setLayout(new BoxLayout(container, BoxLayout.Y_AXIS));
-        //container.setAlignmentX(Component.LEFT_ALIGNMENT);
-        // container.setPreferredSize(new Dimension(10, 1000));
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(0, 24, 0, 24);
         this.setLayout(new GridBagLayout());
-        //this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         JPanel btnContainer = new JPanel();
-        //btnContainer.setLayout(new GridLayout(1,2));
+        GridLayout gridLayout = new GridLayout(1,2);
+        gridLayout.setHgap(8);
+        btnContainer.setLayout(gridLayout);
         font = CFont.get(Font.PLAIN, 22);
-        infoBtn = new ControlPanelTabButton("infobtn");
-        buildBtn = new ControlPanelTabButton("buildbtn");
+        infoBtn = new ControlPanelTabButton("Info");
+        buildBtn = new ControlPanelTabButton("Build");
         infoBtn.setFont(font);
         buildBtn.setFont(font);
         infoBtn.addActionListener((e) -> showInfoTab());
+        infoBtn.select();
         buildBtn.addActionListener((e) -> showBuildTab());
-        //infoTab.init();
-        //buildTab.init();
         container.add(infoTab);
         btnContainer.add(infoBtn);
         btnContainer.add(buildBtn);
@@ -54,9 +52,10 @@ public class ControlPanel extends JPanel {
         this.add(Box.createRigidArea(new Dimension(0, 20)));
         JScrollPane scrollPane = new JScrollPane(container,JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         scrollPane.setBorder(BorderFactory.createEmptyBorder());
-        //UIManager.put("ScrollBar.thumb", new ColorUIResource(Color.RED));
         scrollPane.getVerticalScrollBar().setUI(new ScrollBarUI());
         scrollPane.getHorizontalScrollBar().setUI(new ScrollBarUI());
+        scrollPane.getVerticalScrollBar().setUnitIncrement(8);
+        scrollPane.getHorizontalScrollBar().setUnitIncrement(8);
         this.add(scrollPane, GamePanel.changeGbc(gbc, 1, 0, 1, 1, 1, 1));
     }
 
@@ -68,6 +67,8 @@ public class ControlPanel extends JPanel {
     public void showInfoTab() {
         //if(!infoTabShowing){
         this.infoTabShowing = true;
+        infoBtn.select();
+        buildBtn.unselect();
         container.removeAll();
         container.revalidate();
         container.repaint();
@@ -79,6 +80,8 @@ public class ControlPanel extends JPanel {
     public void showBuildTab() {
         //if(infoTabShowing){
         this.infoTabShowing = false;
+        infoBtn.unselect();
+        buildBtn.select();
         container.removeAll();
         container.revalidate();
         container.repaint();
