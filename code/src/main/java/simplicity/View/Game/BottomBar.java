@@ -19,7 +19,7 @@ public class BottomBar extends JPanel implements MoralChangeListener, PeopleChan
 
     public BottomBar() {
         this.model = GameModel.getInstance();
-        this.personCountLabel = new JLabel("Person count: " + model.getPeople().size());
+        this.personCountLabel = new JLabel("Population: " + model.getPeople().size());
         this.moralLabel = new JLabel("Overall moral: " + model.getCityMood());
         this.wealthLabel = new JLabel("Wealth: " + model.getCurrentWealth());
 
@@ -44,13 +44,13 @@ public class BottomBar extends JPanel implements MoralChangeListener, PeopleChan
     }
 
     @Override
-    public void onMoralChanged() {
-        moralLabel.setText("Overall moral: " + model.getCityMood() + " |");
+    public void onPeopleCountChange() {
+        personCountLabel.setText("Population: " + model.getPeople().size() + " |");
     }
 
     @Override
-    public void onPeopleCountChange() {
-        personCountLabel.setText("Person count: " + model.getPeople().size() + " |");
+    public void onMoralChanged() {
+        moralLabel.setText("Overall moral: " + model.getCityMood() + " |");
     }
 
     @Override
