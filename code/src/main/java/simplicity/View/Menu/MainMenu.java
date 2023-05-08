@@ -166,53 +166,63 @@ public class MainMenu extends JPanel {
 
         //List
         File saveFolder = new File("code/SavedGames/");
-        JPanel saveBoxes = new JPanel();
-        saveBoxes.setOpaque(false);
-        saveBoxes.setLayout(new BoxLayout(saveBoxes, BoxLayout.Y_AXIS));
-        for(File f : saveFolder.listFiles()){
-            JPanel saveBox = new JPanel(){
-                @Override
-                protected void paintComponent(Graphics _g) {
-                    super.paintComponent(_g);
-                    Graphics2D g = (Graphics2D) _g;
-                    g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                    g.setColor(new Color(0,0,0,128));
-                    g.fillRoundRect(0, 0, getWidth(), getHeight(), 20, 20);
-                }
-            };
-            saveBox.setOpaque(false);
-            saveBox.setLayout(new BoxLayout(saveBox, BoxLayout.Y_AXIS));
-            Dimension saveBoxSize = new Dimension(Math.min((int)Math.round(GameWindow.getWindowWidth()*0.7),672), 50);
-            saveBox.setSize(saveBoxSize);
-            saveBox.setMinimumSize(saveBoxSize);
-            saveBox.setMaximumSize(new Dimension(saveBoxSize.width, 200));
-            JLabel saveLabel = new JLabel("===== " + f.getName() + " =====");
-            saveLabel.setFont(CFont.get(Font.BOLD, 18));
-            saveLabel.setVerticalAlignment(SwingConstants.CENTER);
-            saveLabel.setHorizontalAlignment(SwingConstants.CENTER);
-            saveLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-            JButton loadButton = new JButton("Load");
-            loadButton.setFont(CFont.get(Font.BOLD, 20));
-            loadButton.addActionListener(e -> {
-                System.out.println("loading code/SavedGames/" + f.getName() + "...");
-            });
-            loadButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-            saveBox.add(Box.createRigidArea(new Dimension(0, 16)));
-            saveBox.add(saveLabel);
-            saveBox.add(Box.createRigidArea(new Dimension(0, 8)));
-            saveBox.add(loadButton);
-            saveBox.add(Box.createRigidArea(new Dimension(0, 16)));
-            saveBox.setAlignmentX(Component.CENTER_ALIGNMENT);
-            saveBoxes.add(saveBox);
-            saveBoxes.add(Box.createRigidArea(new Dimension(0, gap)));
+        if(!saveFolder.exists()) saveFolder.mkdirs();
+        if(saveFolder.listFiles().length > 0){
+            JPanel saveBoxes = new JPanel();
+            saveBoxes.setOpaque(false);
+            saveBoxes.setLayout(new BoxLayout(saveBoxes, BoxLayout.Y_AXIS));
+            for(File f : saveFolder.listFiles()){
+                JPanel saveBox = new JPanel(){
+                    @Override
+                    protected void paintComponent(Graphics _g) {
+                        super.paintComponent(_g);
+                        Graphics2D g = (Graphics2D) _g;
+                        g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                        g.setColor(new Color(0,0,0,128));
+                        g.fillRoundRect(0, 0, getWidth(), getHeight(), 20, 20);
+                    }
+                };
+                saveBox.add(Box.createVerticalGlue());
+                saveBox.setOpaque(false);
+                saveBox.setLayout(new BoxLayout(saveBox, BoxLayout.Y_AXIS));
+                Dimension saveBoxSize = new Dimension(Math.min((int)Math.round(GameWindow.getWindowWidth()*0.7),672), 50);
+                saveBox.setSize(saveBoxSize);
+                saveBox.setMinimumSize(saveBoxSize);
+                saveBox.setMaximumSize(new Dimension(saveBoxSize.width, 200));
+                JLabel saveLabel = new JLabel("===== " + f.getName() + " =====");
+                saveLabel.setFont(CFont.get(Font.BOLD, 18));
+                saveLabel.setVerticalAlignment(SwingConstants.CENTER);
+                saveLabel.setHorizontalAlignment(SwingConstants.CENTER);
+                saveLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+                JButton loadButton = new JButton("Load");
+                loadButton.setFont(CFont.get(Font.BOLD, 20));
+                loadButton.addActionListener(e -> {
+                    System.out.println("loading code/SavedGames/" + f.getName() + "...");
+                });
+                loadButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+                saveBox.add(Box.createRigidArea(new Dimension(0, 16)));
+                saveBox.add(saveLabel);
+                saveBox.add(Box.createRigidArea(new Dimension(0, 8)));
+                saveBox.add(loadButton);
+                saveBox.add(Box.createRigidArea(new Dimension(0, 16)));
+                saveBox.setAlignmentX(Component.CENTER_ALIGNMENT);
+                saveBox.add(Box.createVerticalGlue());
+                saveBoxes.add(saveBox);
+                saveBoxes.add(Box.createRigidArea(new Dimension(0, gap)));
+            }
+            JScrollPane scrollPane = new JScrollPane(saveBoxes, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+            scrollPane.setOpaque(false);
+            scrollPane.getViewport().setOpaque(false);
+            scrollPane.setBorder(BorderFactory.createEmptyBorder());
+            scrollPane.getVerticalScrollBar().setUI(new MenuScrollBarUI());
+            scrollPane.getVerticalScrollBar().setUnitIncrement(8);
+            loadMenuPanel.add(scrollPane);
+        }else{
+            JLabel noSaveLabel = new JLabel("There are no saved games yet");
+            noSaveLabel.setFont(CFont.get(Font.BOLD, 22));
+            noSaveLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+            loadMenuPanel.add(noSaveLabel);
         }
-        JScrollPane scrollPane = new JScrollPane(saveBoxes, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-        scrollPane.setOpaque(false);
-        scrollPane.getViewport().setOpaque(false);
-        scrollPane.setBorder(BorderFactory.createEmptyBorder());
-        scrollPane.getVerticalScrollBar().setUI(new MenuScrollBarUI());
-        scrollPane.getVerticalScrollBar().setUnitIncrement(8);
-        loadMenuPanel.add(scrollPane);
 
         //Exit
         MenuButton back_btn = new MenuButton("BACK");

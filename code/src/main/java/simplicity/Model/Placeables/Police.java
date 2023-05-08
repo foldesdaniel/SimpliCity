@@ -19,4 +19,9 @@ public class Police extends Building implements Serializable {
         return GameModel.POLICE_IMG;
     }
 
+    @Override
+    public boolean roadConnects(){
+        return false;
+    }
+
 }

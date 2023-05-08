@@ -213,22 +213,6 @@ public class GameModel implements InGameTimeTickListener, Serializable {
         return false;
     }
 
-    /**
-     * used to load a previous save
-     *
-     * @param filename name of the file to be loaded
-     */
-    public static void loadGame(String filename) {
-        if (instance == null) {
-            try {
-                instance = (GameModel) Persistence.load("gm0.txt");
-                instance.getInGameTime().startInGameTime(InGameSpeeds.NORMAL);
-            } catch (IOException | ClassNotFoundException e) {
-                throw new RuntimeException(e);
-            }
-        }
-    }
-
     private void generateNextDisasterDate() {
         Random rand = new Random();
         int year = this.inGameTime.getInGameYear() + rand.nextInt(5) + 1;
@@ -1861,6 +1845,21 @@ public class GameModel implements InGameTimeTickListener, Serializable {
             Persistence.save(this, "gm" + +saveCount++ + ".txt");
         } catch (IOException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * used to load a previous save
+     * @param filename name of the file to be loaded
+     */
+    public static void loadGame(String filename) {
+        if (instance == null) {
+            try {
+                instance = (GameModel) Persistence.load(filename);
+                instance.getInGameTime().startInGameTime(InGameSpeeds.NORMAL);
+            } catch (IOException | ClassNotFoundException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 

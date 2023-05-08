@@ -3,6 +3,7 @@ package simplicity.Model.Placeables;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import simplicity.Model.Game.FieldType;
+import simplicity.Model.GameModel;
 
 import java.awt.*;
 import java.io.Serializable;
@@ -66,6 +67,22 @@ public abstract class Placeable implements Serializable {
 
     public Dimension getDisplaySize() {
         return this.getSize();
+    }
+
+
+    /**
+     * Checks if there is at least 1 road near the object (purely for visual purposes)
+     * @return true if there is a road near the object, false otherwise
+     */
+    public boolean roadConnects(){
+        int x = this.position.x;
+        int y = this.position.y;
+        GameModel model = GameModel.getInstance();
+        boolean left = x > 0 && model.grid(x-1,y) != null && model.grid(x-1,y).type == FieldType.ROAD;
+        boolean right = x < GameModel.GRID_SIZE-1 && model.grid(x+1,y) != null && model.grid(x+1,y).type == FieldType.ROAD;
+        boolean up = y > 0 && model.grid(x,y-1) != null && model.grid(x,y-1).type == FieldType.ROAD;
+        boolean down = y < GameModel.GRID_SIZE-1 && model.grid(x,y+1) != null && model.grid(x,y+1).type == FieldType.ROAD;
+        return left || right || up || down;
     }
 
 }

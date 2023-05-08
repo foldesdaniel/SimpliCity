@@ -69,4 +69,9 @@ public class Forest extends Placeable implements Serializable {
         return 0;
     }
 
+    @Override
+    public boolean roadConnects(){
+        return false;
+    }
+
 }
