@@ -18,6 +18,7 @@ import simplicity.Model.Listeners.MoralChangeListener;
 import simplicity.Model.Listeners.PeopleChangeListener;
 import simplicity.Model.Listeners.WealthChangeListener;
 import simplicity.Model.Persistence.Persistence;
+import simplicity.Model.Persistence.SaveEntry;
 import simplicity.Model.Person.Person;
 import simplicity.Model.Placeables.*;
 import simplicity.Model.Placeables.Zones.Industrial;
@@ -39,7 +40,7 @@ public class GameModel implements InGameTimeTickListener, Serializable {
 
     public static final String GAME_TITLE = "SimpliCity";
     @Getter @Setter
-    public static String cityName = "";
+    private String cityName = "";
     public static final Image BACKGROUND_IMG = ResourceLoader.loadImage("bg_temp.jpg");
     public static final Image MISSING_IMG = ResourceLoader.loadImage("missing.png");
     public static final Image GRASS_IMG = ResourceLoader.loadImage("grass.png");
@@ -163,17 +164,21 @@ public class GameModel implements InGameTimeTickListener, Serializable {
     }
 
     public static GameModel getInstance() {
-//        GameModel.loadGame("gm0.txt");
         if (instance == null) {
             instance = new GameModel();
         }
         return instance;
     }
 
-    public static GameModel reset() {
+    public static GameModel loadInstance(GameModel inst){
+        instance = inst;
+        return instance;
+    }
+
+    /*public static GameModel reset() {
         instance = null;
         return getInstance();
-    }
+    }*/
 
     public static int showDialog(String title, String message) {
         return JOptionPane.showConfirmDialog(null, message, title + " | SimpliCity", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
@@ -1842,7 +1847,8 @@ public class GameModel implements InGameTimeTickListener, Serializable {
      */
     public void saveGame() {
         try {
-            Persistence.save(this, "gm" + +saveCount++ + ".txt");
+            //Persistence.save(this, "gm" + +saveCount++ + ".txt");
+            SaveEntry.createOrUpdateEntry(getCityName(), this);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -1855,7 +1861,7 @@ public class GameModel implements InGameTimeTickListener, Serializable {
     public static void loadGame(String filename) {
         if (instance == null) {
             try {
-                instance = (GameModel) Persistence.load(filename);
+                loadInstance((GameModel) Persistence.load(filename));
                 instance.getInGameTime().startInGameTime(InGameSpeeds.NORMAL);
             } catch (IOException | ClassNotFoundException e) {
                 throw new RuntimeException(e);

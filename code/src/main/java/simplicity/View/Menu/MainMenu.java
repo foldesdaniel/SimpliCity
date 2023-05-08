@@ -3,17 +3,28 @@ package simplicity.View.Menu;
 import simplicity.Model.GameModel;
 import simplicity.Model.Listeners.MenuEventListener;
 import simplicity.Model.Listeners.StartStopGameListener;
+import simplicity.Model.Persistence.Persistence;
+import simplicity.Model.Persistence.SaveEntries;
+import simplicity.Model.Persistence.SaveEntry;
 import simplicity.View.GameWindow;
 import simplicity.View.Style.CFont;
 import simplicity.View.Style.MenuScrollBarUI;
 import simplicity.View.Style.ScrollBarUI;
 
 import javax.swing.*;
+import javax.swing.text.DateFormatter;
 import java.awt.*;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.io.File;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.TemporalAccessor;
+import java.time.temporal.TemporalField;
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Date;
 
 import static java.lang.Integer.parseInt;
 
@@ -165,13 +176,18 @@ public class MainMenu extends JPanel {
         loadMenuPanel.add(Box.createRigidArea(new Dimension(0, gap)));
 
         //List
-        File saveFolder = new File("code/SavedGames/");
-        if(!saveFolder.exists()) saveFolder.mkdirs();
-        if(saveFolder.listFiles().length > 0){
+        ArrayList<SaveEntry> entries = SaveEntries.getInstance().getSaveEntries();
+        entries.sort(new Comparator<SaveEntry>() {
+            @Override
+            public int compare(SaveEntry o1, SaveEntry o2) {
+                return (int)(o2.getModifyDate() - o1.getModifyDate());
+            }
+        });
+        if(entries.size() > 0){
             JPanel saveBoxes = new JPanel();
             saveBoxes.setOpaque(false);
             saveBoxes.setLayout(new BoxLayout(saveBoxes, BoxLayout.Y_AXIS));
-            for(File f : saveFolder.listFiles()){
+            for(SaveEntry entry : entries){
                 JPanel saveBox = new JPanel(){
                     @Override
                     protected void paintComponent(Graphics _g) {
@@ -189,24 +205,73 @@ public class MainMenu extends JPanel {
                 saveBox.setSize(saveBoxSize);
                 saveBox.setMinimumSize(saveBoxSize);
                 saveBox.setMaximumSize(new Dimension(saveBoxSize.width, 200));
-                JLabel saveLabel = new JLabel("===== " + f.getName() + " =====");
+                saveBox.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+                JLabel saveLabel = new JLabel("===== " + entry.getCityName() + " =====");
                 saveLabel.setFont(CFont.get(Font.BOLD, 18));
                 saveLabel.setVerticalAlignment(SwingConstants.CENTER);
                 saveLabel.setHorizontalAlignment(SwingConstants.CENTER);
                 saveLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+                SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                Font smallFont = CFont.get(Font.BOLD, 16);
+
+                JLabel modifiedLabel = new JLabel("Modified: " + df.format(new Date(entry.getModifyDate())));
+                modifiedLabel.setFont(smallFont);
+                modifiedLabel.setVerticalAlignment(SwingConstants.CENTER);
+                modifiedLabel.setHorizontalAlignment(SwingConstants.CENTER);
+                modifiedLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+                JLabel createdLabel = new JLabel("Created: " + df.format(new Date(entry.getSaveDate())));
+                createdLabel.setFont(smallFont);
+                createdLabel.setVerticalAlignment(SwingConstants.CENTER);
+                createdLabel.setHorizontalAlignment(SwingConstants.CENTER);
+                createdLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+                JLabel saveNumber = new JLabel("Number of saves: " + entry.getNumberOfSaves());
+                saveNumber.setFont(smallFont);
+                saveNumber.setVerticalAlignment(SwingConstants.CENTER);
+                saveNumber.setHorizontalAlignment(SwingConstants.CENTER);
+                saveNumber.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+                JPanel btnPanel = new JPanel();
+                btnPanel.setOpaque(false);
                 JButton loadButton = new JButton("Load");
                 loadButton.setFont(CFont.get(Font.BOLD, 20));
                 loadButton.addActionListener(e -> {
-                    System.out.println("loading code/SavedGames/" + f.getName() + "...");
+                    GameModel.loadGame(entry.getFileName());
+                    startGame();
                 });
                 loadButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+                JButton deleteButton = new JButton("Delete");
+                deleteButton.setBackground(new Color(150,70,70));
+                deleteButton.setFont(CFont.get(Font.BOLD, 20));
+                deleteButton.addActionListener(e -> {
+                    switch(GameModel.showDialog("Delete?", "Are you sure you want to delete " + entry.getCityName())){
+                        case JOptionPane.YES_OPTION:
+                            GameModel.showMessage("Not yet", "Feature not implemented yet");
+                            break;
+                        default:
+                            break;
+                    }
+                });
+                deleteButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+                btnPanel.add(loadButton);
+                btnPanel.add(deleteButton);
+
                 saveBox.add(Box.createRigidArea(new Dimension(0, 16)));
                 saveBox.add(saveLabel);
                 saveBox.add(Box.createRigidArea(new Dimension(0, 8)));
-                saveBox.add(loadButton);
+                saveBox.add(modifiedLabel);
+                saveBox.add(Box.createRigidArea(new Dimension(0, 8)));
+                saveBox.add(createdLabel);
+                saveBox.add(Box.createRigidArea(new Dimension(0, 8)));
+                saveBox.add(saveNumber);
+                saveBox.add(Box.createRigidArea(new Dimension(0, 8)));
+                saveBox.add(btnPanel);
                 saveBox.add(Box.createRigidArea(new Dimension(0, 16)));
-                saveBox.setAlignmentX(Component.CENTER_ALIGNMENT);
                 saveBox.add(Box.createVerticalGlue());
+
                 saveBoxes.add(saveBox);
                 saveBoxes.add(Box.createRigidArea(new Dimension(0, gap)));
             }
@@ -243,11 +308,14 @@ public class MainMenu extends JPanel {
     private void startGame(String _cityName){
         String cityName = _cityName.trim();
         if(cityName.length() > 0){
-            GameModel.setCityName(cityName);
-            for(StartStopGameListener l : startGameListeners) l.onGameStart();
+            GameModel.getInstance().setCityName(cityName);
+            startGame();
         }else{
             GameModel.showError("Input error", "Your city name cannot be empty");
         }
+    }
+    private void startGame(){
+        for(StartStopGameListener l : startGameListeners) l.onGameStart();
     }
 
     /**

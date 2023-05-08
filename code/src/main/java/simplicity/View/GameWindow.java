@@ -4,6 +4,8 @@ import lombok.Getter;
 import simplicity.Model.GameModel;
 import simplicity.Model.Listeners.MenuEventListener;
 import simplicity.Model.Listeners.StartStopGameListener;
+import simplicity.Model.Persistence.Persistence;
+import simplicity.Model.Persistence.SaveEntries;
 import simplicity.View.Game.GamePanel;
 import simplicity.View.Menu.MainMenu;
 
@@ -22,10 +24,11 @@ public class GameWindow extends JFrame implements MenuEventListener, StartStopGa
     private GameModel gameModel;
 
     public GameWindow() {
+        SaveEntries.loadEntries();
         this.setTitle(GameModel.GAME_TITLE);
         this.setUndecorated(true);
         this.changedFullscreen();
-        //this.changedWindowed(960,540);
+        this.changedWindowed(960,540);
         this.setResizable(false);
         this.getContentPane().setLayout(new BorderLayout());
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -85,12 +88,12 @@ public class GameWindow extends JFrame implements MenuEventListener, StartStopGa
         this.revalidate();
         this.repaint();
         this.updateSize(); // needs to be called here as well
-        if (gamePanel == null) {
-            gameModel = GameModel.reset();
+        //if (gamePanel == null) {
+            //gameModel = GameModel.reset();
             gamePanel = new GamePanel();
             gamePanel.addStopGameListener(this);
             //mainMenu.displayButtons();
-        }
+        //}
         // gameModel = GameModel.getInstance();
         this.add(gamePanel);
         gamePanel.revalidate();

@@ -21,7 +21,7 @@ public class TopRightBar extends JPanel implements InGameTimeListener {
 
     public TopRightBar(){
         Font font = CFont.get();
-        nameLabel = new JLabel(GameModel.getCityName());
+        nameLabel = new JLabel(GameModel.getInstance().getCityName());
         nameLabel.setFont(CFont.get(Font.BOLD, 20));
         this.setLayout(new BorderLayout());
         JPanel nameContainer = new JPanel();

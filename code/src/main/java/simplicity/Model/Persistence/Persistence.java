@@ -13,6 +13,8 @@ public class Persistence {
      * @param filename where we save the byte stream
      */
     public static void save(Object obj, String filename) throws IOException {
+        File f = new File(pathToSavedGamesDir);
+        if(!f.exists()) f.mkdirs();
         String fullPathToFile = pathToSavedGamesDir + filename;
         if (filename.startsWith("__test")) fullPathToFile = filename;
 
@@ -20,6 +22,28 @@ public class Persistence {
         ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
         objectOutputStream.writeObject(obj);
         objectOutputStream.close();
+
+        FileOutputStream fileOutputStream2 = new FileOutputStream(pathToSavedGamesDir + "saveentries.txt");
+        ObjectOutputStream objectOutputStream2 = new ObjectOutputStream(fileOutputStream2);
+        objectOutputStream2.writeObject(SaveEntries.getInstance());
+        objectOutputStream2.close();
+    }
+
+    /**
+     * used to deserialize SaveEntries
+     */
+    public static SaveEntries loadEntries() {
+        try{
+            String fullPathToFile = pathToSavedGamesDir + "saveentries.txt";
+            //if (filename.startsWith("__test")) fullPathToFile = filename;
+            FileInputStream fileInputStream = new FileInputStream(fullPathToFile);
+            ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
+            SaveEntries obj = (SaveEntries) objectInputStream.readObject();
+            objectInputStream.close();
+            return obj;
+        }catch(Exception ex){
+            return null;
+        }
     }
 
     /**
@@ -50,5 +74,6 @@ public class Persistence {
         File file = new File(fullPathToFile);
         if (!file.delete()) System.err.println("Unable to delete file: " + filename);
     }
+
 }
 

@@ -39,6 +39,7 @@ public class TopLeftBar extends JPanel {
         });
         saveBtn.addActionListener((e) -> {
             model.saveGame();
+            GameModel.showMessage("Success", "Game has been saved");
         });
         this.add(backToMenuBtn);
         this.add(saveBtn);
