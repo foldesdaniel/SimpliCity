@@ -148,8 +148,8 @@ public class PlayingFieldView extends JPanel implements MouseListener, MouseMoti
         }
         for(Animation anim : model.getAnimations()){
             Point coord = new Point(
-                fieldSize * anim.getPosition().x,
-                fieldSize * anim.getPosition().y
+                fieldSize * anim.getPosition().y,
+                fieldSize * anim.getPosition().x
             );
             g.drawImage(anim.getCurrentImage(), offsetX + coord.y, offsetY + coord.x, fieldSize, fieldSize, null);
         }

@@ -53,12 +53,12 @@ public abstract class Placeable implements Serializable {
     }
 
     public String getDisplayName() {
-        return this.type.getDisplayName();
+        return this.type == null ? "Null" : this.type.getDisplayName();
     }
 
     @Override
     public String toString() {
-        return this.type.name() + "(" + this.position.x + "," + this.position.y + ")";
+        return (this.type == null ? "NULL" : this.type.name()) + "(" + this.position.x + "," + this.position.y + ")";
     }
 
     public Dimension getSize() {
