@@ -102,6 +102,7 @@ public class GameModel implements InGameTimeTickListener, Serializable {
     private int cityMood = 60;
     @Getter
     private Placeable grid[][];
+    @Getter
     private Finance finance;
     @Getter
     private ArrayList<Person> people = new ArrayList<>();
