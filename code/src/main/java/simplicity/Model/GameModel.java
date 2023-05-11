@@ -1392,7 +1392,7 @@ public class GameModel implements InGameTimeTickListener, Serializable {
      * @param p     Person
      * @param boost the amount the person's mood should be boosted by
      */
-    private void boostMood(Person p, int boost) {
+    public void boostMood(Person p, int boost) {
         p.setBoostMood(p.getBoostMood() + boost);
         for (MoralChangeListener l : this.moralListeners) l.onMoralChanged();
 
@@ -1529,7 +1529,7 @@ public class GameModel implements InGameTimeTickListener, Serializable {
     /**
      * @return 1 if there are more people working in Industrial zone, 0 if more in Service zone
      */
-    private int workersRatio() {
+    public int workersRatio() {
         //return 1 if we need service workers
         //return 0 if we need industrial workers
 
@@ -1597,7 +1597,7 @@ public class GameModel implements InGameTimeTickListener, Serializable {
      * @param toBeDestroyed the road we wish to destroy
      * @return true if the road can be destroyed, false if it can't
      */
-    private boolean canRoadBeDestroyed(Placeable startPoint, Placeable endPoint, Placeable toBeDestroyed) {
+    public boolean canRoadBeDestroyed(Placeable startPoint, Placeable endPoint, Placeable toBeDestroyed) {
         boolean directPath = isPath(convertToNumMatrix(startPoint, endPoint, null));
         boolean moreThanOnePath = isPath(convertToNumMatrix(startPoint, endPoint, toBeDestroyed));
         return directPath && (moreThanOnePath);
@@ -1662,7 +1662,7 @@ public class GameModel implements InGameTimeTickListener, Serializable {
     /**
      * used to collect the tax every year from all the eligible Placeables in the grid
      */
-    private void newYearTaxCollection() {
+    public void newYearTaxCollection() {
         int sum = 0;
         for (int i = 0; i < GRID_SIZE; ++i) {
             for (int j = 0; j < GRID_SIZE; ++j) {
@@ -1799,7 +1799,7 @@ public class GameModel implements InGameTimeTickListener, Serializable {
     /**
      * @return if the city mood if over a certain threshold
      */
-    private boolean isMoodGoodEnough() {
+    public boolean isMoodGoodEnough() {
         return this.cityMood >= 30;
     }
 
@@ -1860,7 +1860,7 @@ public class GameModel implements InGameTimeTickListener, Serializable {
      *
      * @return a Residential if there is a free place, null if there isn't
      */
-    private Residential findHome() {
+    public Residential findHome() {
         for (int i = 0; i < GRID_SIZE; i++) {
             for (int j = 0; j < GRID_SIZE; j++) {
                 if (this.grid[i][j] instanceof Residential && ((Residential) this.grid[i][j]).areSpacesLeft() && isNextToARoad(new Point(i, j))) {
@@ -1910,9 +1910,7 @@ public class GameModel implements InGameTimeTickListener, Serializable {
                     boostMood(person, -4);
                 }
             }
-
         }
-
     }
 
     /**
@@ -1921,7 +1919,7 @@ public class GameModel implements InGameTimeTickListener, Serializable {
      * @param point the point in the grid we are investigating
      * @return false if there are no roads, true if there is a road near
      */
-    private boolean isNextToARoad(Point point) {
+    public boolean isNextToARoad(Point point) {
         int x = point.x;
         int y = point.y;
 
@@ -1935,7 +1933,7 @@ public class GameModel implements InGameTimeTickListener, Serializable {
     /**
      * used to calculate all the maintenance costs of the eligible buildings in the grid
      */
-    private void newYearMaintenanceCost() {
+    public void newYearMaintenanceCost() {
         int sum = 0;
         for (int i = 0; i < GRID_SIZE; ++i) {
             for (int j = 0; j < GRID_SIZE; ++j) {
@@ -1974,7 +1972,7 @@ public class GameModel implements InGameTimeTickListener, Serializable {
      *
      * @return true if there is
      */
-    private boolean isIndustrialBuiltAlready() {
+    public boolean isIndustrialBuiltAlready() {
         for (int i = 0; i < GRID_SIZE; ++i) {
             for (int j = 0; j < GRID_SIZE; ++j) {
                 if (grid[i][j] != null && grid[i][j] instanceof Industrial) {
@@ -1990,7 +1988,7 @@ public class GameModel implements InGameTimeTickListener, Serializable {
      *
      * @return the point of the random zone
      */
-    private Point searchRandomIndustrial() {
+    public Point searchRandomIndustrial() {
         while (true) {
             Random rand = new Random();
             int i = rand.nextInt(GRID_SIZE);
@@ -2005,7 +2003,7 @@ public class GameModel implements InGameTimeTickListener, Serializable {
      *
      * @param position position of the zone
      */
-    private void doIndustrialDisaster(Point position) {
+    public void doIndustrialDisaster(Point position) {
         playAnim(Animation.createFireAnim(position), 3200);
         removeIndustrial(position, true);
     }
@@ -2056,7 +2054,7 @@ public class GameModel implements InGameTimeTickListener, Serializable {
                 toBeRemoved.add(p);
             }
         }
-        this.people.removeAll(toBeRemoved);
+        if(toBeRemoved.size() > 0) this.people.removeAll(toBeRemoved);
         for (PeopleChangeListener l : peopleChangeListeners) l.onPeopleCountChange();
 
     }
