@@ -1,9 +1,11 @@
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import simplicity.Model.GameModel;
+import simplicity.Model.Person.Person;
 import simplicity.Model.Placeables.PlaceableTemp;
 import simplicity.Model.Placeables.Police;
 import simplicity.Model.Placeables.Stadium;
+import simplicity.Model.Placeables.Zones.Residential;
 
 import java.awt.*;
 
@@ -12,10 +14,12 @@ import static org.junit.jupiter.api.Assertions.*;
 public class GameModelTest {
 
     GameModel gameModel;
+
     @BeforeEach
     public void generateModel() {
         gameModel = new GameModel();
     }
+
     @Test
     public void testGameModelConstructor() {
         assertEquals(35000, gameModel.getCurrentWealth());
@@ -63,4 +67,23 @@ public class GameModelTest {
         assertFalse(gameModel.grid(2, 2) instanceof Police);
         assertEquals("", gameModel.getFinance().yearlySpendToString());
     }
+
+    @Test
+    public void testRemoveDepressedPeople() {
+        Residential residential = new Residential(new Point(0,0));
+        for (int i = 0; i < 3; i++) {
+            Person person = new Person();
+            person.setMood(0);
+            person.moveIn(residential);
+            gameModel.getPeople().add(person);
+        }
+        Person person = new Person();
+        person.setMood(1);
+        person.moveIn(residential);
+        gameModel.getPeople().add(person);
+
+        gameModel.removeDepressedPeople();
+        assertEquals(1, gameModel.getPeople().size());
+    }
+
 }

@@ -2032,16 +2032,15 @@ public class GameModel implements InGameTimeTickListener, Serializable {
     }
 
     public void stopAnimation(Animation anim) {
-        if (animations.contains(anim)) {
-            animations.remove(anim);
-        }
+        animations.remove(anim);
         anim.stop();
     }
 
     /**
      * used to remove people from the city whose mood has reached zero
      */
-    private void removeDepressedPeople() {
+    public void removeDepressedPeople() {
+        ArrayList<Person> toBeRemoved = new ArrayList<>();
         for (int i = 0; i < this.people.size(); i++) {
             Person p = this.people.get(i);
             if (p.getMood() == 0) {
@@ -2054,9 +2053,10 @@ public class GameModel implements InGameTimeTickListener, Serializable {
                     p.getWorkplace().removePerson(p);
                 }
                 p.getHome().removePerson(p);
-                this.people.remove(p);
+                toBeRemoved.add(p);
             }
         }
+        this.people.removeAll(toBeRemoved);
         for (PeopleChangeListener l : peopleChangeListeners) l.onPeopleCountChange();
 
     }
