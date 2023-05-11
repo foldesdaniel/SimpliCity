@@ -20,6 +20,10 @@ public class School extends Education implements InGameTimeTickListener, Seriali
 
     private final InGameTime inGameTime;
 
+    /**
+     *
+     * @param position the current position in the grid
+     */
     public School(Point position) {
         super(FieldType.SCHOOL, position, 7000, 20, 1500);
         inGameTime = InGameTimeManager.getInstance().getInGameTime();

@@ -225,6 +225,12 @@ public class GameModel implements InGameTimeTickListener, Serializable {
         this.nextDisaster = new Date(year, day, 0);
     }
 
+    /**
+     * counts how many stadiums are in the position range
+     *
+     * @param position grid position
+     * @return count / 4 because it has a 2x2 size
+     */
     private int countStadium(Point position) {
         int count = 0;
         int r = new Stadium(new Point(-1, -1)).getRadius();
@@ -240,6 +246,12 @@ public class GameModel implements InGameTimeTickListener, Serializable {
         return count / 4;
     }
 
+    /**
+     * counts how many police stations are in the position range
+     *
+     * @param position grid position
+     * @return count
+     */
     private int countPolice(Point position) {
         int count = 0;
         int r = new Police(new Point(-1, -1)).getRadius();
@@ -255,6 +267,12 @@ public class GameModel implements InGameTimeTickListener, Serializable {
         return count;
     }
 
+    /**
+     * counts how many industrials are in the position range
+     *
+     * @param position grid position
+     * @return count
+     */
     private int countIndustrial(Point position) {
         int count = 0;
         int r = 5;
@@ -547,6 +565,13 @@ public class GameModel implements InGameTimeTickListener, Serializable {
         for (WealthChangeListener l : this.wealthListeners) l.onWealthChange();
     }
 
+    /**
+     * checks if there is a forest between a residential and industrial zone
+     *
+     * @param industrial position of the zone
+     * @param residential position of the zone
+     * @return return true if found
+     */
     private boolean isForestBetweenResidential_Industrial(Point industrial, Point residential) {
         int fx = industrial.x, fy = industrial.y;
         int rx = residential.x, ry = residential.y;
@@ -592,6 +617,12 @@ public class GameModel implements InGameTimeTickListener, Serializable {
         return false;
     }
 
+    /**
+     * removes industrial zone if there are no workers
+     *
+     * @param position position of the zone
+     * @param forceRemove if it is true then it will be deleted no matter what
+     */
     public void removeIndustrial(Point position, boolean forceRemove) {
         //check if it can be removed
         //if (!forceRemove) return;
@@ -849,6 +880,11 @@ public class GameModel implements InGameTimeTickListener, Serializable {
         for (WealthChangeListener l : this.wealthListeners) l.onWealthChange();
     }
 
+    /**
+     * removes service zone
+     *
+     * @param position position of the service zone
+     */
     public void removeService(Point position) {
         //check if it can be removed
         Service service = ((Service) grid[position.x][position.y]);
@@ -996,6 +1032,12 @@ public class GameModel implements InGameTimeTickListener, Serializable {
         for (WealthChangeListener l : this.wealthListeners) l.onWealthChange();
     }
 
+    /**
+     * boosts people mood in the forest radius
+     *
+     * @param position forest zone position
+     * @param boost amount of boost
+     */
     private void boostForestMood(Point position, int boost) {
         int r = 3;
         for (int i = position.x - r; i <= position.x + r; ++i) {
@@ -1021,6 +1063,13 @@ public class GameModel implements InGameTimeTickListener, Serializable {
         }
     }
 
+    /**
+     * checks if there is an industrial zone after forest
+     *
+     * @param forest position of the forest
+     * @param residential position of the residential zone
+     * @return returns true if found
+     */
     private boolean isIndustrialAfterForest(Point forest, Point residential) {
         int fx = forest.x, fy = forest.y;
         int rx = residential.x, ry = residential.y;
@@ -1068,6 +1117,13 @@ public class GameModel implements InGameTimeTickListener, Serializable {
         return false;
     }
 
+    /**
+     * checks if forest should boost the people mood in the area
+     *
+     * @param forest position of the forest
+     * @param residential position of the residential zone
+     * @return returns true if it should boost mood
+     */
     private boolean doesForestBoostMood(Point forest, Point residential) {
         int fx = forest.x, fy = forest.y;
         int rx = residential.x, ry = residential.y;
@@ -1188,6 +1244,7 @@ public class GameModel implements InGameTimeTickListener, Serializable {
         }
 
         return false;
+        
     }
 
     //TODO why no usages
@@ -1209,6 +1266,14 @@ public class GameModel implements InGameTimeTickListener, Serializable {
         return false;
     }
 
+    /**
+     * calculates the shortest distance between the residential zone and the workplace
+     * based on BFS algorithm
+     *
+     * @param person the person
+     * @param type type of the workplace
+     * @return returns the distance
+     */
     private int getWorkplaceDistance(Person person, String type) {
         if (type.equals("uni") || type.equals("secondary")) type = "school";
         Residential home = person.getHome();
@@ -1481,6 +1546,11 @@ public class GameModel implements InGameTimeTickListener, Serializable {
         return industrialCount > serviceCount ? 1 : 0;
     }
 
+    /**
+     * calculates the starting mood of the person based on boosting factors
+     *
+     * @param person person
+     */
     private void calculateMood(Person person) {
         int count = countStadium(person.getHome().getPosition());
         person.setBoostMood(count * 7);
@@ -1494,6 +1564,12 @@ public class GameModel implements InGameTimeTickListener, Serializable {
         //todo : searchForForest
     }
 
+    /**
+     * calculates the current forest boosting mood
+     *
+     * @param position forest position
+     * @return the sum of the years
+     */
     private int calculateForestMood(Point position) {
         int sum = 0;
 
@@ -1872,6 +1948,11 @@ public class GameModel implements InGameTimeTickListener, Serializable {
         finance.removeMoney(sum);
     }
 
+    /**
+     * rechecks every year the forest logic
+     * this is needed in order to delete the yearly maintenance cost at the end
+     * and boost forest mood
+     */
     private void newYearForest() {
         for (int i = 0; i < GRID_SIZE; ++i) {
             for (int j = 0; j < GRID_SIZE; ++j) {
@@ -1888,6 +1969,11 @@ public class GameModel implements InGameTimeTickListener, Serializable {
         }
     }
 
+    /**
+     * checks if there is at least one industrial zone already
+     *
+     * @return true if there is
+     */
     private boolean isIndustrialBuiltAlready() {
         for (int i = 0; i < GRID_SIZE; ++i) {
             for (int j = 0; j < GRID_SIZE; ++j) {
@@ -1899,6 +1985,11 @@ public class GameModel implements InGameTimeTickListener, Serializable {
         return false;
     }
 
+    /**
+     * searches one random industrial zone
+     *
+     * @return the point of the random zone
+     */
     private Point searchRandomIndustrial() {
         while (true) {
             Random rand = new Random();
@@ -1908,6 +1999,12 @@ public class GameModel implements InGameTimeTickListener, Serializable {
         }
     }
 
+    /**
+     * industrial disaster logic
+     * (animation, delete industrial zone)
+     *
+     * @param position position of the zone
+     */
     private void doIndustrialDisaster(Point position) {
         playAnim(Animation.createFireAnim(position), 3200);
         removeIndustrial(position, true);

@@ -20,6 +20,10 @@ public class University extends Education implements InGameTimeTickListener, Ser
 
     private final InGameTime inGameTime;
 
+    /**
+     *
+     * @param position the current position in the grid
+     */
     public University(Point position) {
         super(FieldType.UNIVERSITY, position, 9000, 20, 1900);
         inGameTime = InGameTimeManager.getInstance().getInGameTime();
