@@ -1,10 +1,10 @@
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import simplicity.Model.Education.School;
+import simplicity.Model.Education.University;
 import simplicity.Model.GameModel;
 import simplicity.Model.Person.Person;
-import simplicity.Model.Placeables.PlaceableTemp;
-import simplicity.Model.Placeables.Police;
-import simplicity.Model.Placeables.Stadium;
+import simplicity.Model.Placeables.*;
 import simplicity.Model.Placeables.Zones.Industrial;
 import simplicity.Model.Placeables.Zones.Residential;
 import simplicity.Model.Placeables.Zones.Service;
@@ -48,6 +48,9 @@ public class GameModelTest {
         gameModel.placeStadium(new Point(2, 2));
         gameModel.removeStadium(new Point(2, 2));
         assertFalse(gameModel.grid(2, 2) instanceof Stadium);
+        assertFalse(gameModel.grid(2, 1) instanceof PlaceableTemp);
+        assertFalse(gameModel.grid(3, 2) instanceof PlaceableTemp);
+        assertFalse(gameModel.grid(3, 1) instanceof PlaceableTemp);
         assertEquals("", gameModel.getFinance().yearlySpendToString());
     }
 
@@ -69,6 +72,171 @@ public class GameModelTest {
         gameModel.removePolice(new Point(2, 2));
         assertFalse(gameModel.grid(2, 2) instanceof Police);
         assertEquals("", gameModel.getFinance().yearlySpendToString());
+    }
+
+    @Test
+    public void testPlaceIndustrial() {
+        gameModel.placeIndustrial(new Point(2, 2));
+        assertTrue(gameModel.grid(2, 2) instanceof Industrial);
+        assertEquals(29000, gameModel.getCurrentWealth());
+        assertEquals("-$6000 Ipari zóna kijelölés\n", gameModel.getFinance().builtToString());
+
+        gameModel.placeIndustrial(new Point(2, 2));
+        assertEquals(29000, gameModel.getCurrentWealth());
+    }
+
+    @Test
+    public void testRemoveIndustrial() {
+        gameModel.placeIndustrial(new Point(2, 2));
+        gameModel.removeIndustrial(new Point(2, 2), false);
+        assertFalse(gameModel.grid(2, 2) instanceof Industrial);
+
+        gameModel.placeIndustrial(new Point(2, 2));
+        ((Industrial)gameModel.grid(2,2)).addPerson(new Person());
+        gameModel.removeIndustrial(new Point(2, 2), false);
+        assertTrue(gameModel.grid(2, 2) instanceof Industrial);
+        gameModel.removeIndustrial(new Point(2, 2), true);
+        assertFalse(gameModel.grid(2, 2) instanceof Industrial);
+    }
+
+    @Test
+    public void testPlaceRoad() {
+        gameModel.placeRoad(new Point(2, 2));
+        assertTrue(gameModel.grid(2, 2) instanceof Road);
+        assertEquals(34400, gameModel.getCurrentWealth());
+        assertEquals("-$600 Út építés\n", gameModel.getFinance().builtToString());
+        assertEquals("-$100 Út fenntartási díj\n", gameModel.getFinance().yearlySpendToString());
+
+        gameModel.placeRoad(new Point(2, 2));
+        assertEquals(34400, gameModel.getCurrentWealth());
+    }
+
+    @Test
+    public void testRemoveRoad() {
+        gameModel.placeRoad(new Point(2, 2));
+        gameModel.removeRoad(new Point(2, 2));
+        assertFalse(gameModel.grid(2, 2) instanceof Road);
+        assertEquals("", gameModel.getFinance().yearlySpendToString());
+
+        //complicated test
+        Person p = new Person();
+        gameModel.placeRoad(new Point(2, 2));
+        gameModel.placeResidential(new Point(1, 2));
+        gameModel.placeService(new Point(2, 1));
+        ((Residential)gameModel.grid(1,2)).addPerson(p);
+        ((Residential)gameModel.grid(1,2)).getPeople().get(0).goToWork((Service)gameModel.grid(2, 1));
+        gameModel.removeRoad(new Point(2, 2));
+        assertTrue(gameModel.grid(2, 2) instanceof Road);
+    }
+
+    @Test
+    public void testPlaceForest() {
+        gameModel.placeForest(new Point(2, 2));
+        assertTrue(gameModel.grid(2, 2) instanceof Forest);
+        assertEquals(30000, gameModel.getCurrentWealth());
+        assertEquals("-$5000 Erdő építés\n", gameModel.getFinance().builtToString());
+        assertEquals("-$500 Erdő fenntartási díj\n", gameModel.getFinance().yearlySpendToString());
+
+        gameModel.placeForest(new Point(2, 2));
+        assertEquals(30000, gameModel.getCurrentWealth());
+    }
+
+    @Test
+    public void testRemoveForest() {
+        gameModel.placeForest(new Point(2, 2));
+        gameModel.removeForest(new Point(2, 2));
+        assertFalse(gameModel.grid(2, 2) instanceof Forest);
+        assertEquals("", gameModel.getFinance().yearlySpendToString());
+    }
+
+    @Test
+    public void testPlaceUniversity() {
+        gameModel.placeUniversity(new Point(2, 2));
+        assertTrue(gameModel.grid(2, 2) instanceof University);
+        assertTrue(gameModel.grid(2, 1) instanceof PlaceableTemp);
+        assertTrue(gameModel.grid(3, 2) instanceof PlaceableTemp);
+        assertTrue(gameModel.grid(3, 1) instanceof PlaceableTemp);
+        assertEquals(26000, gameModel.getCurrentWealth());
+        assertEquals("-$9000 Egyetem építés\n", gameModel.getFinance().builtToString());
+        assertEquals("-$1900 Egyetem fenntartási díj\n", gameModel.getFinance().yearlySpendToString());
+
+        gameModel.placeForest(new Point(2, 2));
+        assertEquals(26000, gameModel.getCurrentWealth());
+    }
+
+    @Test
+    public void testRemoveUniversity() {
+        gameModel.placeUniversity(new Point(2, 2));
+        gameModel.removeUniversity(new Point(2, 2));
+        assertFalse(gameModel.grid(2, 2) instanceof University);
+        assertFalse(gameModel.grid(2, 1) instanceof PlaceableTemp);
+        assertFalse(gameModel.grid(3, 2) instanceof PlaceableTemp);
+        assertFalse(gameModel.grid(3, 1) instanceof PlaceableTemp);
+        assertEquals("", gameModel.getFinance().yearlySpendToString());
+    }
+
+    @Test
+    public void testPlaceSchool() {
+        gameModel.placeSchool(new Point(2, 2));
+        assertTrue(gameModel.grid(2, 2) instanceof School);
+        assertTrue(gameModel.grid(3, 2) instanceof PlaceableTemp);
+        assertEquals(28000, gameModel.getCurrentWealth());
+        assertEquals("-$7000 Iskola építés\n", gameModel.getFinance().builtToString());
+        assertEquals("-$1500 Iskola fenntartási díj\n", gameModel.getFinance().yearlySpendToString());
+
+        gameModel.placeSchool(new Point(2, 2));
+        assertEquals(28000, gameModel.getCurrentWealth());
+    }
+
+    @Test
+    public void testRemoveSchool() {
+        gameModel.placeSchool(new Point(2, 2));
+        gameModel.removeSchool(new Point(2, 2));
+        assertFalse(gameModel.grid(2, 2) instanceof School);
+        assertFalse(gameModel.grid(3, 2) instanceof PlaceableTemp);
+        assertEquals("", gameModel.getFinance().yearlySpendToString());
+    }
+
+    @Test
+    public void testPlaceService() {
+        gameModel.placeService(new Point(2, 2));
+        assertTrue(gameModel.grid(2, 2) instanceof Service);
+        assertEquals(26000, gameModel.getCurrentWealth());
+        assertEquals("-$9000 Szolgáltatási zóna kijelölés\n", gameModel.getFinance().builtToString());
+
+        gameModel.placeService(new Point(2, 2));
+        assertEquals(26000, gameModel.getCurrentWealth());
+    }
+
+    @Test
+    public void testRemoveService() {
+        gameModel.placeService(new Point(2, 2));
+        gameModel.removeService(new Point(2, 2));
+        assertFalse(gameModel.grid(2, 2) instanceof Service);
+    }
+
+    @Test
+    public void testPlaceResidential() {
+        gameModel.placeResidential(new Point(2, 2));
+        assertTrue(gameModel.grid(2, 2) instanceof Residential);
+        assertEquals(30000, gameModel.getCurrentWealth());
+        assertEquals("-$5000 Lakóhely zóna kijelölés\n", gameModel.getFinance().builtToString());
+
+        gameModel.placeResidential(new Point(2, 2));
+        assertEquals(30000, gameModel.getCurrentWealth());
+    }
+
+    @Test
+    public void testRemoveResidential() {
+        gameModel.placeResidential(new Point(2, 2));
+        gameModel.removeResidential(new Point(2, 2));
+        assertFalse(gameModel.grid(2, 2) instanceof Residential);
+
+        //complicated test
+        gameModel.placeResidential(new Point(2, 2));
+        ((Residential)gameModel.grid(2, 2)).addPerson(new Person());
+        gameModel.removeResidential(new Point(2, 2));
+        assertTrue(gameModel.grid(2, 2) instanceof Residential);
     }
 
     @Test

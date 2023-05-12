@@ -1180,6 +1180,9 @@ public class GameModel implements InGameTimeTickListener, Serializable {
         int elapsed = this.inGameTime.getInGameYear() - ((Forest) grid[i][j]).getPlantTime().getYear();
         boostForestMood(position, -elapsed);
 
+        int maintenanceCost = new Forest(GameModel.NO_SELECTION).getMaintenanceCost();
+        finance.removeYearlySpend(maintenanceCost, "Erdő fenntartási díj");
+
         grid[position.x][position.y] = null;
         for (WealthChangeListener l : this.wealthListeners) l.onWealthChange();
     }
@@ -1194,7 +1197,13 @@ public class GameModel implements InGameTimeTickListener, Serializable {
         if (!canPlace(pl, position)) return;
         grid[position.x][position.y] = pl;
         fillTemps(pl, position);
-        finance.removeMoney(new University(GameModel.NO_SELECTION).getBuildPrice());
+
+        int price = new University(GameModel.NO_SELECTION).getBuildPrice();
+        int maintenanceCost = new University(GameModel.NO_SELECTION).getMaintenanceCost();
+        finance.removeMoney(price);
+        finance.addBuilt(price, "Egyetem építés");
+        finance.addYearlySpend(maintenanceCost, "Egyetem fenntartási díj");
+
         for (WealthChangeListener l : this.wealthListeners) l.onWealthChange();
     }
 
@@ -1206,6 +1215,8 @@ public class GameModel implements InGameTimeTickListener, Serializable {
      */
     public void removeUniversity(Point position) {
         deleteTemps(grid[position.x][position.y], position);
+        int maintenanceCost = new University(GameModel.NO_SELECTION).getMaintenanceCost();
+        finance.removeYearlySpend(maintenanceCost, "Egyetem fenntartási díj");
         ((University) grid[position.x][position.y]).deleteData();
         grid[position.x][position.y] = null;
         for (WealthChangeListener l : this.wealthListeners) l.onWealthChange();
