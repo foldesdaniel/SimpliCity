@@ -13,10 +13,7 @@ import simplicity.Model.GameTime.Date;
 import simplicity.Model.GameTime.InGameSpeeds;
 import simplicity.Model.GameTime.InGameTime;
 import simplicity.Model.GameTime.InGameTimeManager;
-import simplicity.Model.Listeners.InGameTimeTickListener;
-import simplicity.Model.Listeners.MoralChangeListener;
-import simplicity.Model.Listeners.PeopleChangeListener;
-import simplicity.Model.Listeners.WealthChangeListener;
+import simplicity.Model.Listeners.*;
 import simplicity.Model.Persistence.Persistence;
 import simplicity.Model.Persistence.SaveEntry;
 import simplicity.Model.Person.Person;
@@ -94,6 +91,7 @@ public class GameModel implements InGameTimeTickListener, Serializable {
     private final ArrayList<MoralChangeListener> moralListeners = new ArrayList<>();
     private final ArrayList<PeopleChangeListener> peopleChangeListeners = new ArrayList<>();
     private final ArrayList<WealthChangeListener> wealthListeners = new ArrayList<>();
+    private static final ArrayList<StartStopGameListener> stopGameListeners = new ArrayList<>();
     @Getter
     private final ArrayList<Animation> animations = new ArrayList<>();
     @Getter
@@ -108,6 +106,7 @@ public class GameModel implements InGameTimeTickListener, Serializable {
     private Finance finance;
     @Getter
     private ArrayList<Person> people = new ArrayList<>();
+    private boolean isGameOver = false;
     private int r;
 
     public GameModel() {
@@ -115,7 +114,8 @@ public class GameModel implements InGameTimeTickListener, Serializable {
         generateNextDisasterDate();
         this.initGrid();
         inGameTime.addInGameTimeTickListener(this);
-        inGameTime.startInGameTime(InGameSpeeds.ULTRASONIC_DEV_ONLY);
+        //inGameTime.startInGameTime(InGameSpeeds.ULTRASONIC_DEV_ONLY);
+        inGameTime.startInGameTime(InGameSpeeds.NORMAL);
     }
 
     /**
@@ -141,6 +141,9 @@ public class GameModel implements InGameTimeTickListener, Serializable {
         return instance;
     }
 
+    /**
+     * used to reset the instance of the GameModel singleton class
+     */
     public static GameModel reset() {
         instance = null;
         return getInstance();
@@ -156,6 +159,10 @@ public class GameModel implements InGameTimeTickListener, Serializable {
 
     public static void showError(String title, String message) {
         JOptionPane.showMessageDialog(null, message, title + " | SimpliCity", JOptionPane.ERROR_MESSAGE);
+    }
+
+    public static void showGameOverDialog() {
+        JOptionPane.showMessageDialog(null, "Game over, click OK to return to menu", "Uh oh! | SimpliCity", JOptionPane.ERROR_MESSAGE);
     }
 
     /**
@@ -1721,8 +1728,20 @@ public class GameModel implements InGameTimeTickListener, Serializable {
         this.wealthListeners.add(l);
     }
 
+    public static void addStopGameListener(StartStopGameListener l){
+        stopGameListeners.add(l);
+    }
+
     public int getCurrentWealth() {
         return this.finance.getCurrentWealth();
+    }
+
+    private void gameOver(){
+        if(!isGameOver){
+            isGameOver = true;
+            showGameOverDialog();
+            for(StartStopGameListener l : stopGameListeners) l.onGameStop();
+        }
     }
 
     /**
@@ -1741,8 +1760,8 @@ public class GameModel implements InGameTimeTickListener, Serializable {
 
         double multiplier = 1;
         if (this.finance.getProfitableYearsInARow() < -1.5) {
-            //gameover
             multiplier = 0.85;
+            this.gameOver();
         } else if (this.finance.getProfitableYearsInARow() > 1.5) {
             multiplier = 1.15;
         } else {
@@ -2085,6 +2104,7 @@ public class GameModel implements InGameTimeTickListener, Serializable {
      */
     @Override
     public void timeTick() {
+        if(isGameOver) return;
 //        System.out.println("Time: Y: " + inGameTime.getInGameYear() + " D: " + inGameTime.getInGameDay() + " H: " + inGameTime.getInGameHour());
         if (this.inGameTime.getInGameHour() > 0) {
             calculateCityMood();
@@ -2105,6 +2125,7 @@ public class GameModel implements InGameTimeTickListener, Serializable {
 
         if (this.inGameTime.getInGameYear() > 0 && this.inGameTime.getInGameDay() == 0 && this.inGameTime.getInGameHour() == 0) {
             changeMoodOfPeople();
+            if(isGameOver) return;
             newYearTaxCollection();
             newYearMaintenanceCost();
             newYearForest();

@@ -131,6 +131,7 @@ public class MainMenu extends JPanel {
         //Input field
         MenuTextField input = new MenuTextField();
         input.setAlignmentX(Component.CENTER_ALIGNMENT);
+        input.addActionListener((ActionEvent) -> startGame(input.getText()));
         newGamePanel.add(input);
         newGamePanel.add(Box.createRigidArea(new Dimension(0, gap)));
 

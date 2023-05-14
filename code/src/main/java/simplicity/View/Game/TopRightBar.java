@@ -103,6 +103,7 @@ public class TopRightBar extends JPanel implements InGameTimeListener {
         timeControls.add(btn5);
         timeControls.add(btn6);
         this.add(timeControls, BorderLayout.LINE_END);
+        timeChanged(0,0,0);
     }
 
     @Override

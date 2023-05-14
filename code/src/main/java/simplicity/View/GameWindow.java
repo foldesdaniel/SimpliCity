@@ -28,7 +28,7 @@ public class GameWindow extends JFrame implements MenuEventListener, StartStopGa
         this.setTitle(GameModel.GAME_TITLE);
         this.setUndecorated(true);
         this.changedFullscreen();
-        this.changedWindowed(960,540);
+        this.changedWindowed(1280,720);
         this.setResizable(false);
         this.getContentPane().setLayout(new BorderLayout());
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -88,13 +88,9 @@ public class GameWindow extends JFrame implements MenuEventListener, StartStopGa
         this.revalidate();
         this.repaint();
         this.updateSize(); // needs to be called here as well
-        //if (gamePanel == null) {
-            //if(newGame) gameModel = GameModel.reset();
-            gamePanel = new GamePanel();
-            gamePanel.addStopGameListener(this);
-            //mainMenu.displayButtons();
-        //}
-        // gameModel = GameModel.getInstance();
+        gamePanel = new GamePanel();
+        gamePanel.addStopGameListener(this);
+        GameModel.addStopGameListener(this);
         this.add(gamePanel);
         gamePanel.revalidate();
     }

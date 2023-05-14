@@ -9,6 +9,7 @@ import simplicity.View.Style.CFont;
 import simplicity.View.Style.ScrollBarUI;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import javax.swing.plaf.ColorUIResource;
 import javax.swing.plaf.basic.BasicScrollBarUI;
 import java.awt.*;
@@ -46,8 +47,8 @@ public class ControlPanel extends JPanel {
         container.add(infoTab);
         btnContainer.add(infoBtn);
         btnContainer.add(buildBtn);
+        btnContainer.setBorder(new EmptyBorder(8,0,0,0));
         this.add(btnContainer, GamePanel.changeGbc(gbc, 0, 0, 1, 1, 1, 0));
-        this.add(Box.createRigidArea(new Dimension(0, 20)));
         JScrollPane scrollPane = new JScrollPane(container,JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         scrollPane.setBorder(BorderFactory.createEmptyBorder());
         scrollPane.getVerticalScrollBar().setUI(new ScrollBarUI());

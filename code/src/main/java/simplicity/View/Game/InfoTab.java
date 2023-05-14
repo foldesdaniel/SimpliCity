@@ -19,6 +19,7 @@ import java.util.ArrayList;
 public class InfoTab extends JPanel implements PeopleChangeListener, MoralChangeListener {
 
     private final JLabel emptyLabel;
+    private final Component boxGap = Box.createRigidArea(new Dimension(0, 16));
     private Placeable lastInfo = null;
     private final Dimension defaultImageSize = new Dimension(32,32);
 
@@ -33,6 +34,7 @@ public class InfoTab extends JPanel implements PeopleChangeListener, MoralChange
     public void init(){
         this.removeAll();
         this.setAlignmentX(Component.CENTER_ALIGNMENT);
+        this.add(this.boxGap);
         this.add(this.emptyLabel);
     }
 
