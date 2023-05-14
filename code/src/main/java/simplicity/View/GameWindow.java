@@ -28,7 +28,7 @@ public class GameWindow extends JFrame implements MenuEventListener, StartStopGa
         this.setTitle(GameModel.GAME_TITLE);
         this.setUndecorated(true);
         this.changedFullscreen();
-        this.changedWindowed(1280,720);
+        //this.changedWindowed(1280,720);
         this.setResizable(false);
         this.getContentPane().setLayout(new BorderLayout());
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

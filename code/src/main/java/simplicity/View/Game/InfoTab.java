@@ -52,6 +52,7 @@ public class InfoTab extends JPanel implements PeopleChangeListener, MoralChange
         if (f == null) {
             this.init();
         } else {
+            this.add(this.boxGap);
             InfoIcon icon = new InfoIcon(f);
             icon.setAlignmentX(Component.LEFT_ALIGNMENT);
             this.add(icon);

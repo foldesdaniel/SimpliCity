@@ -73,6 +73,14 @@ public class MainMenu extends JPanel {
         mainMenuPanel.setOpaque(false);
         mainMenuPanel.add(Box.createRigidArea(new Dimension(0, 32)));
 
+        // Title
+        JLabel title = new JLabel();
+        title.setFont(CFont.get(Font.BOLD,72));
+        title.setAlignmentX(Component.CENTER_ALIGNMENT);
+        title.setIcon(new ImageIcon(GameModel.LOGO_IMG));
+        mainMenuPanel.add(title);
+        mainMenuPanel.add(Box.createRigidArea(new Dimension(0, gap)));
+
         //New game
         MenuButton newGame_btn = new MenuButton("NEW GAME");
         newGame_btn.setAlignmentX(Component.CENTER_ALIGNMENT);
