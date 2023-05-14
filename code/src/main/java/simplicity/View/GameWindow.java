@@ -83,13 +83,13 @@ public class GameWindow extends JFrame implements MenuEventListener, StartStopGa
     }
 
     @Override
-    public void onGameStart() {
+    public void onGameStart(boolean newGame) {
         this.getContentPane().removeAll();
         this.revalidate();
         this.repaint();
         this.updateSize(); // needs to be called here as well
         //if (gamePanel == null) {
-            //gameModel = GameModel.reset();
+            //if(newGame) gameModel = GameModel.reset();
             gamePanel = new GamePanel();
             gamePanel.addStopGameListener(this);
             //mainMenu.displayButtons();

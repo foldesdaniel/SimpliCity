@@ -29,12 +29,10 @@ public class PlayingFieldView extends JPanel implements MouseListener, MouseMoti
     private Point hoverField;
     private int offsetX;
     private int offsetY;
-    private GameModel model;
     private final ArrayList<ModeChangeListener> modeListeners;
 
     public PlayingFieldView() {
         this.modeListeners = new ArrayList<>();
-        this.model = GameModel.getInstance();
         this.gridSize = GameModel.GRID_SIZE;
         this.fieldSize = defaultFieldSize;
         this.hoverField = GameModel.NO_SELECTION;
@@ -74,6 +72,7 @@ public class PlayingFieldView extends JPanel implements MouseListener, MouseMoti
     @Override
     protected void paintComponent(Graphics graphics) {
         Graphics2D g = (Graphics2D) graphics;
+        GameModel model = GameModel.getInstance();
         int panelWidth = this.getWidth();
         int panelHeight = this.getHeight();
         g.setColor(new Color(255, 200, 200));
@@ -207,6 +206,7 @@ public class PlayingFieldView extends JPanel implements MouseListener, MouseMoti
     }
 
     private void placingClick(){
+        GameModel model = GameModel.getInstance();
         Placeable placee = GamePanel.stopPlacing(true);
         if(placee instanceof Residential){
             model.placeResidential(hoverField);
@@ -231,6 +231,7 @@ public class PlayingFieldView extends JPanel implements MouseListener, MouseMoti
     }
 
     private void isDeleteClick(){
+        GameModel model = GameModel.getInstance();
         Placeable h = model.grid(hoverField.x,hoverField.y);
         if(h == null) return;
         Placeable placee = h instanceof PlaceableTemp hh ? hh.getPlaceable() : h;
@@ -264,7 +265,7 @@ public class PlayingFieldView extends JPanel implements MouseListener, MouseMoti
         }else if(GamePanel.isDeleteMode()){
             this.isDeleteClick();
         }else{
-            fieldClickListener.fieldClicked(fieldHit ? model.grid(hoverField.x,hoverField.y) : null);
+            fieldClickListener.fieldClicked(fieldHit ? GameModel.getInstance().grid(hoverField.x,hoverField.y) : null);
         }
         // this.repaint();
     }
@@ -394,7 +395,7 @@ public class PlayingFieldView extends JPanel implements MouseListener, MouseMoti
             }else if(GamePanel.isDeleteMode()){
                 this.isDeleteClick();
             }else{
-                fieldClickListener.fieldClicked(fieldHit ? model.grid(hoverField.x, hoverField.y) : null);
+                fieldClickListener.fieldClicked(fieldHit ? GameModel.getInstance().grid(hoverField.x, hoverField.y) : null);
             }
         }
     }

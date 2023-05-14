@@ -22,10 +22,8 @@ public class ControlPanel extends JPanel {
     private final JPanel container;
     private boolean infoTabShowing = true;
     private final Font font;
-    private final GameModel model;
 
     public ControlPanel() {
-        this.model = GameModel.getInstance();
         infoTab = new InfoTab();
         buildTab = new BuildTab();
         container = new JPanel();

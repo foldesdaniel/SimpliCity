@@ -14,7 +14,6 @@ public class TopLeftBar extends JPanel {
     private ArrayList<StartStopGameListener> stopGameListeners;
 
     public TopLeftBar(){
-        GameModel model = GameModel.getInstance();
         this.stopGameListeners = new ArrayList<>();
         this.setLayout(new GridLayout(1,2));
         JButton backToMenuBtn = new JButton("Main menu");
@@ -27,7 +26,7 @@ public class TopLeftBar extends JPanel {
             int answer = GameModel.showDialog("Save game?", "Would you like to save your current progress?");
             switch(answer){
                 case JOptionPane.YES_OPTION:
-                    model.saveGame();
+                    GameModel.getInstance().saveGame();
                     for(StartStopGameListener l : stopGameListeners) l.onGameStop();
                     break;
                 case JOptionPane.NO_OPTION:
@@ -38,7 +37,7 @@ public class TopLeftBar extends JPanel {
             }
         });
         saveBtn.addActionListener((e) -> {
-            model.saveGame();
+            GameModel.getInstance().saveGame();
             GameModel.showMessage("Success", "Game has been saved");
         });
         this.add(backToMenuBtn);

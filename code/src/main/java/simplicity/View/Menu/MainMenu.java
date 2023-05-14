@@ -240,7 +240,7 @@ public class MainMenu extends JPanel {
                 loadButton.setFont(CFont.get(Font.BOLD, 20));
                 loadButton.addActionListener(e -> {
                     GameModel.loadGame(entry.getFileName());
-                    startGame();
+                    startGame(false);
                 });
                 loadButton.setAlignmentX(Component.CENTER_ALIGNMENT);
                 JButton deleteButton = new JButton("Delete");
@@ -308,14 +308,14 @@ public class MainMenu extends JPanel {
     private void startGame(String _cityName){
         String cityName = _cityName.trim();
         if(cityName.length() > 0){
-            GameModel.getInstance().setCityName(cityName);
-            startGame();
+            GameModel.reset().setCityName(cityName);
+            startGame(true);
         }else{
             GameModel.showError("Input error", "Your city name cannot be empty");
         }
     }
-    private void startGame(){
-        for(StartStopGameListener l : startGameListeners) l.onGameStart();
+    private void startGame(boolean newGame){
+        for(StartStopGameListener l : startGameListeners) l.onGameStart(newGame);
     }
 
     /**

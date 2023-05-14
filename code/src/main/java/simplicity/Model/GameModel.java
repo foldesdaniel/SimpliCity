@@ -141,10 +141,10 @@ public class GameModel implements InGameTimeTickListener, Serializable {
         return instance;
     }
 
-    /*public static GameModel reset() {
+    public static GameModel reset() {
         instance = null;
         return getInstance();
-    }*/
+    }
 
     public static int showDialog(String title, String message) {
         return JOptionPane.showConfirmDialog(null, message, title + " | SimpliCity", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
@@ -205,13 +205,11 @@ public class GameModel implements InGameTimeTickListener, Serializable {
      * @param filename name of the file to be loaded
      */
     public static void loadGame(String filename) {
-        if (instance == null) {
-            try {
-                loadInstance((GameModel) Persistence.load(filename));
-                instance.getInGameTime().startInGameTime(InGameSpeeds.NORMAL);
-            } catch (IOException | ClassNotFoundException e) {
-                throw new RuntimeException(e);
-            }
+        try {
+            loadInstance((GameModel) Persistence.load(filename));
+            instance.getInGameTime().startInGameTime(InGameSpeeds.NORMAL);
+        } catch (IOException | ClassNotFoundException e) {
+            throw new RuntimeException(e);
         }
     }
 
