@@ -89,6 +89,7 @@ public class InfoTab extends JPanel implements PeopleChangeListener, MoralChange
                             }else{
                                 infoText += "No school or workplace";
                             }
+                            infoText += "<li>Education level: " + person.getEducationLevel() + "</li>";
                             infoText += "</li></ul>";
                         }else if(ff instanceof Workplace || ff instanceof Education){
                             infoText += "<ul><li>";
