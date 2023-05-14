@@ -3,7 +3,6 @@ package simplicity.Model;
 import lombok.Getter;
 import lombok.Setter;
 import simplicity.Model.Algorithm.NodeCount;
-import simplicity.Model.Education.Education;
 import simplicity.Model.Education.EducationLevel;
 import simplicity.Model.Education.School;
 import simplicity.Model.Education.University;
@@ -85,6 +84,7 @@ public class GameModel implements InGameTimeTickListener, Serializable {
     public static final Point NO_SELECTION = new Point(-1, -1);
     public static final int DRAG_THRESHOLD = 5;
     public static final int GRID_SIZE = 20;
+    private static final ArrayList<StartStopGameListener> stopGameListeners = new ArrayList<>();
     private static GameModel instance;
     private static int saveCount;
     @Getter
@@ -92,7 +92,6 @@ public class GameModel implements InGameTimeTickListener, Serializable {
     private final ArrayList<MoralChangeListener> moralListeners = new ArrayList<>();
     private final ArrayList<PeopleChangeListener> peopleChangeListeners = new ArrayList<>();
     private final ArrayList<WealthChangeListener> wealthListeners = new ArrayList<>();
-    private static final ArrayList<StartStopGameListener> stopGameListeners = new ArrayList<>();
     @Getter
     private final ArrayList<Animation> animations = new ArrayList<>();
     @Getter
@@ -219,6 +218,10 @@ public class GameModel implements InGameTimeTickListener, Serializable {
         } catch (IOException | ClassNotFoundException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public static void addStopGameListener(StartStopGameListener l) {
+        stopGameListeners.add(l);
     }
 
     /**
@@ -429,6 +432,8 @@ public class GameModel implements InGameTimeTickListener, Serializable {
         for (WealthChangeListener l : this.wealthListeners) l.onWealthChange();
     }
 
+    //todo : place/remove road, forest, service, residential, school, university and finish industrial
+
     /**
      * used to remove an already built Stadium
      *
@@ -464,8 +469,6 @@ public class GameModel implements InGameTimeTickListener, Serializable {
         }
         for (WealthChangeListener l : this.wealthListeners) l.onWealthChange();
     }
-
-    //todo : place/remove road, forest, service, residential, school, university and finish industrial
 
     /**
      * used to place a Police station on the grid
@@ -574,7 +577,7 @@ public class GameModel implements InGameTimeTickListener, Serializable {
     /**
      * checks if there is a forest between a residential and industrial zone
      *
-     * @param industrial position of the zone
+     * @param industrial  position of the zone
      * @param residential position of the zone
      * @return return true if found
      */
@@ -626,7 +629,7 @@ public class GameModel implements InGameTimeTickListener, Serializable {
     /**
      * removes industrial zone if there are no workers
      *
-     * @param position position of the zone
+     * @param position    position of the zone
      * @param forceRemove if it is true then it will be deleted no matter what
      */
     public void removeIndustrial(Point position, boolean forceRemove) {
@@ -1042,7 +1045,7 @@ public class GameModel implements InGameTimeTickListener, Serializable {
      * boosts people mood in the forest radius
      *
      * @param position forest zone position
-     * @param boost amount of boost
+     * @param boost    amount of boost
      */
     private void boostForestMood(Point position, int boost) {
         int r = 3;
@@ -1072,7 +1075,7 @@ public class GameModel implements InGameTimeTickListener, Serializable {
     /**
      * checks if there is an industrial zone after forest
      *
-     * @param forest position of the forest
+     * @param forest      position of the forest
      * @param residential position of the residential zone
      * @return returns true if found
      */
@@ -1126,7 +1129,7 @@ public class GameModel implements InGameTimeTickListener, Serializable {
     /**
      * checks if forest should boost the people mood in the area
      *
-     * @param forest position of the forest
+     * @param forest      position of the forest
      * @param residential position of the residential zone
      * @return returns true if it should boost mood
      */
@@ -1261,7 +1264,7 @@ public class GameModel implements InGameTimeTickListener, Serializable {
         }
 
         return false;
-        
+
     }
 
     //TODO why no usages
@@ -1288,7 +1291,7 @@ public class GameModel implements InGameTimeTickListener, Serializable {
      * based on BFS algorithm
      *
      * @param person the person
-     * @param type type of the workplace
+     * @param type   type of the workplace
      * @return returns the distance
      */
     private int getWorkplaceDistance(Person person, String type) {
@@ -1729,19 +1732,15 @@ public class GameModel implements InGameTimeTickListener, Serializable {
         this.wealthListeners.add(l);
     }
 
-    public static void addStopGameListener(StartStopGameListener l){
-        stopGameListeners.add(l);
-    }
-
     public int getCurrentWealth() {
         return this.finance.getCurrentWealth();
     }
 
-    private void gameOver(){
-        if(!isGameOver){
+    private void gameOver() {
+        if (!isGameOver) {
             isGameOver = true;
             showGameOverDialog();
-            for(StartStopGameListener l : stopGameListeners) l.onGameStop();
+            for (StartStopGameListener l : stopGameListeners) l.onGameStop();
         }
     }
 
@@ -2083,7 +2082,7 @@ public class GameModel implements InGameTimeTickListener, Serializable {
                 toBeRemoved.add(p);
             }
         }
-        if(toBeRemoved.size() > 0) this.people.removeAll(toBeRemoved);
+        if (toBeRemoved.size() > 0) this.people.removeAll(toBeRemoved);
         for (PeopleChangeListener l : peopleChangeListeners) l.onPeopleCountChange();
 
     }
@@ -2105,7 +2104,7 @@ public class GameModel implements InGameTimeTickListener, Serializable {
      */
     @Override
     public void timeTick() {
-        if(isGameOver) return;
+        if (isGameOver) return;
 //        System.out.println("Time: Y: " + inGameTime.getInGameYear() + " D: " + inGameTime.getInGameDay() + " H: " + inGameTime.getInGameHour());
         if (this.inGameTime.getInGameHour() > 0) {
             calculateCityMood();
@@ -2126,7 +2125,7 @@ public class GameModel implements InGameTimeTickListener, Serializable {
 
         if (this.inGameTime.getInGameYear() > 0 && this.inGameTime.getInGameDay() == 0 && this.inGameTime.getInGameHour() == 0) {
             changeMoodOfPeople();
-            if(isGameOver) return;
+            if (isGameOver) return;
             newYearTaxCollection();
             newYearMaintenanceCost();
             newYearForest();
@@ -2152,16 +2151,6 @@ public class GameModel implements InGameTimeTickListener, Serializable {
     @Serial
     private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException {
         in.defaultReadObject();
-        for (int i = 0; i < GRID_SIZE; i++) {
-            for (int j = 0; j < GRID_SIZE; j++) {
-                if (grid[i][j] instanceof Workplace) {
-                    System.out.println(((Workplace) grid[i][j]).getPeople().size());
-                }
-                if (grid[i][j] instanceof Education) {
-                    System.out.println(((Education) grid[i][j]).getPeople().size());
-                }
-            }
-        }
         calculateCityMood();
         for (MoralChangeListener l : this.moralListeners) l.onMoralChanged();
         for (PeopleChangeListener l : this.peopleChangeListeners) l.onPeopleCountChange();
