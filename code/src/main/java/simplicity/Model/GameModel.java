@@ -1231,61 +1231,6 @@ public class GameModel implements InGameTimeTickListener, Serializable {
         for (WealthChangeListener l : this.wealthListeners) l.onWealthChange();
     }
 
-    //TODO why no usages
-    private Boolean searchForStadium(Person person) {
-        //Searching around home first
-        Residential home = person.getHome();
-        Point homePosition = home.getPosition();
-        int r = new Stadium(GameModel.NO_SELECTION).getRadius();
-
-        for (int i = homePosition.x - r; i <= homePosition.x + r; ++i) {
-            for (int j = homePosition.y - r; j <= homePosition.y + r; ++j) {
-                if (i >= 0 && j >= 0 && i < GRID_SIZE && j < GRID_SIZE) {
-                    if (grid[i][j] != null && grid[i][j].getType() == FieldType.STADIUM) {
-                        return true;
-                    }
-                }
-            }
-        }
-
-        //If not found around home then search around workplace
-        Workplace workplace = person.getWorkplace();
-        if (workplace == null) return false;
-        Point workplacePosition = workplace.getPosition();
-
-        for (int i = workplacePosition.x - r; i <= workplacePosition.x + r; ++i) {
-            for (int j = workplacePosition.y - r; j <= workplacePosition.y + r; ++j) {
-                if (i >= 0 && j >= 0 && i < GRID_SIZE && j < GRID_SIZE) {
-                    if (grid[i][j] != null && grid[i][j].getType() == FieldType.STADIUM) {
-                        return true;
-                    }
-                }
-            }
-        }
-
-        return false;
-
-    }
-
-    //TODO why no usages
-    private Boolean searchForPolice(Person person) {
-        Residential home = person.getHome();
-        Point homePosition = home.getPosition();
-        int r = new Police(GameModel.NO_SELECTION).getRadius();
-
-        for (int i = homePosition.x - r; i <= homePosition.x + r; ++i) {
-            for (int j = homePosition.y - r; j <= homePosition.y + r; ++j) {
-                if (i >= 0 && j >= 0 && i < GRID_SIZE && j < GRID_SIZE) {
-                    if (grid[i][j] != null && grid[i][j].getType() == FieldType.POLICE) {
-                        return true;
-                    }
-                }
-            }
-        }
-
-        return false;
-    }
-
     /**
      * calculates the shortest distance between the residential zone and the workplace
      * based on BFS algorithm
@@ -1385,25 +1330,6 @@ public class GameModel implements InGameTimeTickListener, Serializable {
         }
 
         return -1;
-    }
-
-    //TODO why no usages
-    private Boolean searchForIndustrial(Person person) {
-        Residential home = person.getHome();
-        Point homePosition = home.getPosition();
-        int r = 5;
-
-        for (int i = homePosition.x - r; i <= homePosition.x + r; ++i) {
-            for (int j = homePosition.y - r; j <= homePosition.y + r; ++j) {
-                if (i >= 0 && j >= 0 && i < GRID_SIZE && j < GRID_SIZE) {
-                    if (grid[i][j] != null && grid[i][j].getType() == FieldType.ZONE_INDUSTRIAL) {
-                        return true;
-                    }
-                }
-            }
-        }
-
-        return false;
     }
 
     /**
