@@ -5,6 +5,7 @@ import simplicity.Model.Listeners.StartStopGameListener;
 import simplicity.View.Style.CFont;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.util.ArrayList;
 
@@ -18,12 +19,14 @@ public class TopLeftBar extends JPanel {
         JButton backToMenuBtn = new JButton("Main menu");
         JButton saveBtn = new JButton("Save game");
         backToMenuBtn.setFont(CFont.get());
+        backToMenuBtn.setBorder(new EmptyBorder(0,0,0,0));
         saveBtn.setFont(CFont.get());
+        saveBtn.setBorder(new EmptyBorder(0,0,0,0));
         backToMenuBtn.addActionListener((e) -> {
             int answer = GameModel.showDialog("Save game?", "Would you like to save your current progress?");
             switch(answer){
                 case JOptionPane.YES_OPTION:
-                    GameModel.showMessage("Not yet", "Feature not implemented yet");
+                    GameModel.getInstance().saveGame();
                     for(StartStopGameListener l : stopGameListeners) l.onGameStop();
                     break;
                 case JOptionPane.NO_OPTION:
@@ -34,7 +37,8 @@ public class TopLeftBar extends JPanel {
             }
         });
         saveBtn.addActionListener((e) -> {
-
+            GameModel.getInstance().saveGame();
+            GameModel.showMessage("Success", "Game has been saved");
         });
         this.add(backToMenuBtn);
         this.add(saveBtn);

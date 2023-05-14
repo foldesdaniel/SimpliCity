@@ -19,6 +19,7 @@ import java.util.ArrayList;
 public class InfoTab extends JPanel implements PeopleChangeListener, MoralChangeListener {
 
     private final JLabel emptyLabel;
+    private final Component boxGap = Box.createRigidArea(new Dimension(0, 16));
     private Placeable lastInfo = null;
     private final Dimension defaultImageSize = new Dimension(32,32);
 
@@ -33,6 +34,7 @@ public class InfoTab extends JPanel implements PeopleChangeListener, MoralChange
     public void init(){
         this.removeAll();
         this.setAlignmentX(Component.CENTER_ALIGNMENT);
+        this.add(this.boxGap);
         this.add(this.emptyLabel);
     }
 
@@ -50,6 +52,7 @@ public class InfoTab extends JPanel implements PeopleChangeListener, MoralChange
         if (f == null) {
             this.init();
         } else {
+            this.add(this.boxGap);
             InfoIcon icon = new InfoIcon(f);
             icon.setAlignmentX(Component.LEFT_ALIGNMENT);
             this.add(icon);
@@ -86,6 +89,7 @@ public class InfoTab extends JPanel implements PeopleChangeListener, MoralChange
                             }else{
                                 infoText += "No school or workplace";
                             }
+                            infoText += "<li>Education level: " + person.getEducationLevel() + "</li>";
                             infoText += "</li></ul>";
                         }else if(ff instanceof Workplace || ff instanceof Education){
                             infoText += "<ul><li>";

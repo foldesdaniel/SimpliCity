@@ -14,18 +14,30 @@ import java.awt.event.ActionListener;
 
 public class TopRightBar extends JPanel implements InGameTimeListener {
 
+    private JLabel nameLabel;
     private JLabel timeLabel;
 
     private final InGameTime inGameTime = InGameTimeManager.getInstance().getInGameTime();
 
     public TopRightBar(){
         Font font = CFont.get();
+        nameLabel = new JLabel(GameModel.getInstance().getCityName());
+        nameLabel.setFont(CFont.get(Font.BOLD, 20));
+        this.setLayout(new BorderLayout());
+        JPanel nameContainer = new JPanel();
+        nameContainer.setLayout(new BoxLayout(nameContainer, BoxLayout.X_AXIS));
+        nameContainer.add(Box.createRigidArea(new Dimension(16, 0)));
+        nameContainer.add(nameLabel);
+        nameContainer.setOpaque(false);
+        this.add(nameContainer, BorderLayout.LINE_START);
         timeLabel = new JLabel();
         timeLabel.setFont(font);
+        timeLabel.setHorizontalAlignment(SwingConstants.CENTER);
         this.add(timeLabel);
-        // inGameTime.startInGameTime(InGameSpeeds.NORMAL);
         inGameTime.setInGameTimeListener(this);
-        // this.setBackground(new Color(150, 0, 0));
+        JPanel timeControls = new JPanel();
+        timeControls.setLayout(new BoxLayout(timeControls, BoxLayout.X_AXIS));
+        timeControls.setOpaque(false);
         JButton btn1 = new JButton("⏹");
         btn1.addActionListener(new ActionListener() {
             @Override
@@ -84,12 +96,14 @@ public class TopRightBar extends JPanel implements InGameTimeListener {
         btn3.setPreferredSize(btnSize);
         btn4.setPreferredSize(btnSize);
         btn5.setPreferredSize(btnSize);
-        this.add(btn1);
-        this.add(btn2);
-        this.add(btn3);
-        this.add(btn4);
-        this.add(btn5);
-        this.add(btn6);
+        timeControls.add(btn1);
+        timeControls.add(btn2);
+        timeControls.add(btn3);
+        timeControls.add(btn4);
+        timeControls.add(btn5);
+        timeControls.add(btn6);
+        this.add(timeControls, BorderLayout.LINE_END);
+        timeChanged(0,0,0);
     }
 
     @Override

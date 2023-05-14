@@ -1,8 +1,8 @@
 package simplicity.Model;
 
 import lombok.Getter;
+import lombok.Setter;
 import simplicity.Model.Algorithm.NodeCount;
-import simplicity.Model.Education.Education;
 import simplicity.Model.Education.EducationLevel;
 import simplicity.Model.Education.School;
 import simplicity.Model.Education.University;
@@ -12,11 +12,9 @@ import simplicity.Model.GameTime.Date;
 import simplicity.Model.GameTime.InGameSpeeds;
 import simplicity.Model.GameTime.InGameTime;
 import simplicity.Model.GameTime.InGameTimeManager;
-import simplicity.Model.Listeners.InGameTimeTickListener;
-import simplicity.Model.Listeners.MoralChangeListener;
-import simplicity.Model.Listeners.PeopleChangeListener;
-import simplicity.Model.Listeners.WealthChangeListener;
+import simplicity.Model.Listeners.*;
 import simplicity.Model.Persistence.Persistence;
+import simplicity.Model.Persistence.SaveEntry;
 import simplicity.Model.Person.Person;
 import simplicity.Model.Placeables.*;
 import simplicity.Model.Placeables.Zones.Industrial;
@@ -37,6 +35,7 @@ import java.util.*;
 public class GameModel implements InGameTimeTickListener, Serializable {
 
     public static final String GAME_TITLE = "SimpliCity";
+    public static final Image LOGO_IMG = ResourceLoader.loadImage("logo.png");
     public static final Image BACKGROUND_IMG = ResourceLoader.loadImage("bg_temp.jpg");
     public static final Image MISSING_IMG = ResourceLoader.loadImage("missing.png");
     public static final Image GRASS_IMG = ResourceLoader.loadImage("grass.png");
@@ -48,7 +47,22 @@ public class GameModel implements InGameTimeTickListener, Serializable {
     public static final Image ROAD_TURN_IMG = ResourceLoader.loadImage("road_turn.png");
     public static final Image ROAD_T = ResourceLoader.loadImage("road_t.png");
     public static final Image ROAD_ALL = ResourceLoader.loadImage("road_all.png");
-    public static final Image FOREST_IMG = ResourceLoader.loadImage("forest.png");
+    public static final Image FOREST_ALL = ResourceLoader.loadImage("forest_all.png");
+    public static final Image FOREST_NONE = ResourceLoader.loadImage("forest_none.png");
+    public static final Image FOREST_HORIZONTAL = ResourceLoader.loadImage("forest_horizontal.png");
+    public static final Image FOREST_VERTICAL = ResourceLoader.loadImage("forest_vertical.png");
+    public static final Image FOREST_LEFT = ResourceLoader.loadImage("forest_left.png");
+    public static final Image FOREST_RIGHT = ResourceLoader.loadImage("forest_right.png");
+    public static final Image FOREST_DOWN = ResourceLoader.loadImage("forest_down.png");
+    public static final Image FOREST_UP = ResourceLoader.loadImage("forest_up.png");
+    public static final Image FOREST_DOWN_TO_LEFT = ResourceLoader.loadImage("forest_dtol.png");
+    public static final Image FOREST_DOWN_TO_RIGHT = ResourceLoader.loadImage("forest_dtor.png");
+    public static final Image FOREST_UP_TO_LEFT = ResourceLoader.loadImage("forest_utol.png");
+    public static final Image FOREST_UP_TO_RIGHT = ResourceLoader.loadImage("forest_utor.png");
+    public static final Image FOREST_LEFT_T = ResourceLoader.loadImage("forest_left_t.png");
+    public static final Image FOREST_RIGHT_T = ResourceLoader.loadImage("forest_right_t.png");
+    public static final Image FOREST_DOWN_T = ResourceLoader.loadImage("forest_down_t.png");
+    public static final Image FOREST_UP_T = ResourceLoader.loadImage("forest_up_t.png");
     public static final Image ZONE_RESIDENTIAL_IMG = ResourceLoader.loadImage("zone_residential.png");
     public static final Image ZONE_RESIDENTIAL_2_IMG = ResourceLoader.loadImage("zone_residential_2.png");
     public static final Image ZONE_WORK_SERVICE_IMG = ResourceLoader.loadImage("zone_work_service.png");
@@ -70,6 +84,7 @@ public class GameModel implements InGameTimeTickListener, Serializable {
     public static final Point NO_SELECTION = new Point(-1, -1);
     public static final int DRAG_THRESHOLD = 5;
     public static final int GRID_SIZE = 20;
+    private static final ArrayList<StartStopGameListener> stopGameListeners = new ArrayList<>();
     private static GameModel instance;
     private static int saveCount;
     @Getter
@@ -77,81 +92,58 @@ public class GameModel implements InGameTimeTickListener, Serializable {
     private final ArrayList<MoralChangeListener> moralListeners = new ArrayList<>();
     private final ArrayList<PeopleChangeListener> peopleChangeListeners = new ArrayList<>();
     private final ArrayList<WealthChangeListener> wealthListeners = new ArrayList<>();
-    @Getter private final ArrayList<Animation> animations = new ArrayList<>();
+    @Getter
+    private final ArrayList<Animation> animations = new ArrayList<>();
+    @Getter
+    @Setter
+    private String cityName = "";
     private Date nextDisaster;
     @Getter
     private int cityMood = 60;
     @Getter
     private Placeable grid[][];
+    @Getter
     private Finance finance;
     @Getter
     private ArrayList<Person> people = new ArrayList<>();
+    private boolean isGameOver = false;
     private int r;
 
     public GameModel() {
-        this.finance = new Finance(35000); //starting wealth
+        this.finance = new Finance(35000);
         generateNextDisasterDate();
-
-        //Initialize grid
         this.initGrid();
-
-        /*for (int i = 0; i < 10; i++) {
-            this.people.add(new Person());
-        }*/
-
-        //this.printGrid();
-
-
-//        grid[0][0] = new Residential(new Point(0, 0));
-//        grid[1][0] = new Residential(new Point(1, 0));
-//        grid[0][1] = new Road(new Point(0, 1));
-//        grid[1][1] = new Road(new Point(1, 1));
-//        grid[1][2] = new Residential(new Point(1, 2));
-//        grid[0][2] = new Industrial(new Point(0, 2));
-//        School s1 = new School(new Point(2, 1));
-//        grid[2][1] = s1;
-//        grid[3][1] = new PlaceableTemp(s1, new Point(3, 1));
-//        grid[4][1] = new Road(new Point(4, 1));
-//        grid[5][1] = new Residential(new Point(5, 1));
-
-//        System.out.println(isPath(convertToNumMatrix(grid[5][1],grid[3][1],null)));
-//
-//        placeUniversity(new Point(6,6));
-//        placeRoad(new Point(7,4));
-//        placeResidential(new Point(7,3));
-//        System.out.println((grid[7][5] instanceof PlaceableTemp) + " " + grid[7][5].getPosition());
-//        System.out.println((grid[3][1] instanceof PlaceableTemp) + " " + grid[3][1].getPosition());
-
-//        grid[0][3] = new Road(new Point(0,3));
-//        grid[0][4] = new Road(new Point(0,4));
-//        grid[0][5] = new Road(new Point(0,5));
-//        grid[1][2] = new Road(new Point(1,2));
-//        grid[2][2] = new Road(new Point(2,2));
-//        grid[3][2] = new Road(new Point(3,2));
-//        grid[3][3] = new Road(new Point(3,3));
-//        grid[3][4] = new Road(new Point(3,4));
-//        grid[3][5] = new Road(new Point(3,5));
-//        grid[1][5] = new Road(new Point(1,5));
-//
-//
-//        grid[2][5] = new Service(new Point(2, 5));
-//
-//        ((Residential)grid[0][1]).getPeople().get(0).goToWork((Workplace)grid[2][5]);
-//        System.out.println(removeRoad(new Point(1, 2)));
-
-
         inGameTime.addInGameTimeTickListener(this);
-        inGameTime.startInGameTime(InGameSpeeds.ULTRASONIC_DEV_ONLY);
+        //inGameTime.startInGameTime(InGameSpeeds.ULTRASONIC_DEV_ONLY);
+        inGameTime.startInGameTime(InGameSpeeds.NORMAL);
     }
 
+    /**
+     * used to get the instance of the singleton GameModel class
+     *
+     * @return GameModel instance
+     */
     public static GameModel getInstance() {
-//        GameModel.loadGame("gm0.txt");
         if (instance == null) {
             instance = new GameModel();
         }
         return instance;
     }
 
+    /**
+     * used to set the instance of the GameModel singleton class after a save
+     *
+     * @param inst GameModel instance received from loading a save
+     * @return GameModel instance
+     */
+    public static GameModel loadInstance(GameModel inst) {
+        instance = inst;
+        return instance;
+    }
+
+    /**
+     * used to reset the instance of the GameModel singleton class
+     */
     public static GameModel reset() {
         instance = null;
         return getInstance();
@@ -165,10 +157,33 @@ public class GameModel implements InGameTimeTickListener, Serializable {
         JOptionPane.showMessageDialog(null, message, title + " | SimpliCity", JOptionPane.WARNING_MESSAGE);
     }
 
+    public static void showError(String title, String message) {
+        JOptionPane.showMessageDialog(null, message, title + " | SimpliCity", JOptionPane.ERROR_MESSAGE);
+    }
+
+    public static void showGameOverDialog() {
+        JOptionPane.showMessageDialog(null, "Game over, click OK to return to menu", "Uh oh! | SimpliCity", JOptionPane.ERROR_MESSAGE);
+    }
+
+    /**
+     * @param i      index
+     * @param j      index
+     * @param matrix number matrix made from the grid
+     * @return if i and j are within bounds
+     */
     public static boolean isSafe(int i, int j, int[][] matrix) {
         return i >= 0 && i < matrix.length && j >= 0 && j < matrix[0].length;
     }
 
+    /**
+     * used to calculate paths in the grid along with other functions
+     *
+     * @param matrix  number matrix made from the grid
+     * @param i       x coordinate
+     * @param j       y coordinate
+     * @param visited number matrix with the already visited area
+     * @return false if isSafe is false otherwise if there is a path in another direction then true
+     */
     public static boolean isPath(int[][] matrix, int i, int j, boolean[][] visited) {
         if (isSafe(i, j, matrix) && matrix[i][j] != 0 && !visited[i][j]) {
 
@@ -191,17 +206,27 @@ public class GameModel implements InGameTimeTickListener, Serializable {
         return false;
     }
 
+    /**
+     * used to load a previous save
+     *
+     * @param filename name of the file to be loaded
+     */
     public static void loadGame(String filename) {
-        if (instance == null) {
-            try {
-                instance = (GameModel) Persistence.load("gm0.txt");
-                instance.getInGameTime().startInGameTime(InGameSpeeds.NORMAL);
-            } catch (IOException | ClassNotFoundException e) {
-                throw new RuntimeException(e);
-            }
+        try {
+            loadInstance((GameModel) Persistence.load(filename));
+            instance.getInGameTime().startInGameTime(InGameSpeeds.NORMAL);
+        } catch (IOException | ClassNotFoundException e) {
+            throw new RuntimeException(e);
         }
     }
 
+    public static void addStopGameListener(StartStopGameListener l) {
+        stopGameListeners.add(l);
+    }
+
+    /**
+     * used to generate a random date when the next disaster will occur
+     */
     private void generateNextDisasterDate() {
         Random rand = new Random();
         int year = this.inGameTime.getInGameYear() + rand.nextInt(5) + 1;
@@ -209,6 +234,12 @@ public class GameModel implements InGameTimeTickListener, Serializable {
         this.nextDisaster = new Date(year, day, 0);
     }
 
+    /**
+     * counts how many stadiums are in the position range
+     *
+     * @param position grid position
+     * @return count / 4 because it has a 2x2 size
+     */
     private int countStadium(Point position) {
         int count = 0;
         int r = new Stadium(new Point(-1, -1)).getRadius();
@@ -224,6 +255,12 @@ public class GameModel implements InGameTimeTickListener, Serializable {
         return count / 4;
     }
 
+    /**
+     * counts how many police stations are in the position range
+     *
+     * @param position grid position
+     * @return count
+     */
     private int countPolice(Point position) {
         int count = 0;
         int r = new Police(new Point(-1, -1)).getRadius();
@@ -239,6 +276,12 @@ public class GameModel implements InGameTimeTickListener, Serializable {
         return count;
     }
 
+    /**
+     * counts how many industrials are in the position range
+     *
+     * @param position grid position
+     * @return count
+     */
     private int countIndustrial(Point position) {
         int count = 0;
         int r = 5;
@@ -254,6 +297,11 @@ public class GameModel implements InGameTimeTickListener, Serializable {
         return count;
     }
 
+    /**
+     * @param i x coordinate
+     * @param j y coordinate
+     * @return returns the Placeable in the given position in the grid
+     */
     public Placeable grid(int i, int j) {
         return this.grid[i][j];
     }
@@ -269,6 +317,9 @@ public class GameModel implements InGameTimeTickListener, Serializable {
         System.out.println("******************");
     }
 
+    /**
+     * used to initialize the grid with null values at the beginning of the game
+     */
     public void initGrid() {
         this.grid = new Placeable[GRID_SIZE][GRID_SIZE];
         for (int i = 0; i < GRID_SIZE; ++i) {
@@ -344,6 +395,11 @@ public class GameModel implements InGameTimeTickListener, Serializable {
         }
     }
 
+    /**
+     * used to place a Stadium on the grid
+     *
+     * @param position the position where the Stadium should be placed
+     */
     public void placeStadium(Point position) {
         Stadium pl = new Stadium(position);
         if (!canPlace(pl, position)) return;
@@ -376,6 +432,13 @@ public class GameModel implements InGameTimeTickListener, Serializable {
         for (WealthChangeListener l : this.wealthListeners) l.onWealthChange();
     }
 
+    //todo : place/remove road, forest, service, residential, school, university and finish industrial
+
+    /**
+     * used to remove an already built Stadium
+     *
+     * @param position the position where the Stadium is
+     */
     public void removeStadium(Point position) {
         deleteTemps(grid[position.x][position.y], position);
         int price = ((Stadium) grid[position.x][position.y]).getBuildPrice() / 3;
@@ -407,6 +470,11 @@ public class GameModel implements InGameTimeTickListener, Serializable {
         for (WealthChangeListener l : this.wealthListeners) l.onWealthChange();
     }
 
+    /**
+     * used to place a Police station on the grid
+     *
+     * @param position the position where the Police Station should be placed
+     */
     public void placePolice(Point position) {
         Police pl = new Police(position);
         if (!canPlace(pl, position)) return;
@@ -435,8 +503,11 @@ public class GameModel implements InGameTimeTickListener, Serializable {
         for (WealthChangeListener l : this.wealthListeners) l.onWealthChange();
     }
 
-    //todo : place/remove road, forest, service, residential, school, university and finish industrial
-
+    /**
+     * used to remove an already built Police Station
+     *
+     * @param position the position where the Police Station is
+     */
     public void removePolice(Point position) {
         int price = ((Police) grid[position.x][position.y]).getBuildPrice() / 3;
         this.finance.addIncome(price, "Rendőrség törlés");
@@ -468,6 +539,11 @@ public class GameModel implements InGameTimeTickListener, Serializable {
         for (WealthChangeListener l : this.wealthListeners) l.onWealthChange();
     }
 
+    /**
+     * used to place an Industrial zone on the grid
+     *
+     * @param position the position where the Industrial Zone should be placed
+     */
     public void placeIndustrial(Point position) {
         Industrial pl = new Industrial(position);
         if (!canPlace(pl, position)) return;
@@ -498,6 +574,13 @@ public class GameModel implements InGameTimeTickListener, Serializable {
         for (WealthChangeListener l : this.wealthListeners) l.onWealthChange();
     }
 
+    /**
+     * checks if there is a forest between a residential and industrial zone
+     *
+     * @param industrial  position of the zone
+     * @param residential position of the zone
+     * @return return true if found
+     */
     private boolean isForestBetweenResidential_Industrial(Point industrial, Point residential) {
         int fx = industrial.x, fy = industrial.y;
         int rx = residential.x, ry = residential.y;
@@ -543,6 +626,12 @@ public class GameModel implements InGameTimeTickListener, Serializable {
         return false;
     }
 
+    /**
+     * removes industrial zone if there are no workers
+     *
+     * @param position    position of the zone
+     * @param forceRemove if it is true then it will be deleted no matter what
+     */
     public void removeIndustrial(Point position, boolean forceRemove) {
         //check if it can be removed
         //if (!forceRemove) return;
@@ -582,6 +671,11 @@ public class GameModel implements InGameTimeTickListener, Serializable {
         for (WealthChangeListener l : this.wealthListeners) l.onWealthChange();
     }
 
+    /**
+     * used to place a Road zone on the grid
+     *
+     * @param position the position where the Road should be placed
+     */
     public void placeRoad(Point position) {
         Road pl = new Road(position);
         if (!canPlace(pl, position)) return;
@@ -606,6 +700,16 @@ public class GameModel implements InGameTimeTickListener, Serializable {
         for (WealthChangeListener l : this.wealthListeners) l.onWealthChange();
     }
 
+    /**
+     * used to remove a road
+     * if the road connects people to their Workplace or place of education then the player has to agree to the demolition
+     * if the player agrees to the demolition, some inhabitants will move places or go work/study somewhere else
+     * it will also cost more for the player
+     * if the player doesn't agree, nothing happens
+     *
+     * @param position the road to be removed
+     * @return true if the road was removed, false if it wasn't
+     */
     public Boolean removeRoad(Point position) {
         Placeable toBeDestroyed = grid[position.x][position.y];
         boolean canBeDestroyed = true;
@@ -713,6 +817,12 @@ public class GameModel implements InGameTimeTickListener, Serializable {
         return true;
     }
 
+    /**
+     * used to find a new home or new workplace/education for people
+     * or make them leave if they have no other choice
+     *
+     * @param people list of people who have been affected by a demolition
+     */
     public void moveAffectedPeople(ArrayList<Person> people) {
         ArrayList<Person> movedPeople = new ArrayList<>();
         OUTER:
@@ -746,10 +856,6 @@ public class GameModel implements InGameTimeTickListener, Serializable {
         }
 
         people.removeAll(movedPeople);
-        for (Person p : people) {
-            System.out.println(p.getHome().getPosition());
-        }
-        System.out.println(people.size());
         for (int i = 0; i < people.size(); i++) {
             Person person = people.get(i);
             if (person.getEducation() != null) {
@@ -767,6 +873,11 @@ public class GameModel implements InGameTimeTickListener, Serializable {
         }
     }
 
+    /**
+     * used to place a Service zone on the grid
+     *
+     * @param position the position where the Service Zone should be placed
+     */
     public void placeService(Point position) {
         Service pl = new Service(position);
         if (!canPlace(pl, position)) return;
@@ -778,6 +889,11 @@ public class GameModel implements InGameTimeTickListener, Serializable {
         for (WealthChangeListener l : this.wealthListeners) l.onWealthChange();
     }
 
+    /**
+     * removes service zone
+     *
+     * @param position position of the service zone
+     */
     public void removeService(Point position) {
         //check if it can be removed
         Service service = ((Service) grid[position.x][position.y]);
@@ -797,6 +913,11 @@ public class GameModel implements InGameTimeTickListener, Serializable {
         for (WealthChangeListener l : this.wealthListeners) l.onWealthChange();
     }
 
+    /**
+     * used to place a Residential zone on the grid
+     *
+     * @param position the position where the Residential Zone should be placed
+     */
     public void placeResidential(Point position) {
         Residential pl = new Residential(position);
         if (!canPlace(pl, position)) return;
@@ -808,6 +929,14 @@ public class GameModel implements InGameTimeTickListener, Serializable {
         for (WealthChangeListener l : this.wealthListeners) l.onWealthChange();
     }
 
+    /**
+     * used to remove a Residential zone
+     * if there are people living in the zone the player has to agree to the demolition
+     * if the player accepts the people will move houses or leave the city depending on the vacancy
+     * if the player doesn't accept, nothing happens
+     *
+     * @param position position of the Residential zone
+     */
     public void removeResidential(Point position) {
         //check if it can be removed
         Residential r = ((Residential) grid[position.x][position.y]);
@@ -853,6 +982,11 @@ public class GameModel implements InGameTimeTickListener, Serializable {
         for (WealthChangeListener l : this.wealthListeners) l.onWealthChange();
     }
 
+    /**
+     * used to place a School on the grid
+     *
+     * @param position the position where the School should be placed
+     */
     public void placeSchool(Point position) {
         School pl = new School(position);
         if (!canPlace(pl, position)) return;
@@ -866,6 +1000,12 @@ public class GameModel implements InGameTimeTickListener, Serializable {
         for (WealthChangeListener l : this.wealthListeners) l.onWealthChange();
     }
 
+    /**
+     * used to remove a School
+     * all students will be kicked out upon demolition
+     *
+     * @param position the position where the School is
+     */
     public void removeSchool(Point position) {
         deleteTemps(grid[position.x][position.y], position);
         ((School) grid[position.x][position.y]).deleteData();
@@ -875,6 +1015,11 @@ public class GameModel implements InGameTimeTickListener, Serializable {
         for (WealthChangeListener l : this.wealthListeners) l.onWealthChange();
     }
 
+    /**
+     * used to place a Forest on the grid
+     *
+     * @param position the position where the Forest should be placed
+     */
     public void placeForest(Point position) {
         Forest pl = new Forest(position, new Date(this.inGameTime.getInGameYear(), this.inGameTime.getInGameDay(), this.inGameTime.getInGameHour()));
         if (!canPlace(pl, position)) return;
@@ -896,6 +1041,12 @@ public class GameModel implements InGameTimeTickListener, Serializable {
         for (WealthChangeListener l : this.wealthListeners) l.onWealthChange();
     }
 
+    /**
+     * boosts people mood in the forest radius
+     *
+     * @param position forest zone position
+     * @param boost    amount of boost
+     */
     private void boostForestMood(Point position, int boost) {
         int r = 3;
         for (int i = position.x - r; i <= position.x + r; ++i) {
@@ -921,6 +1072,13 @@ public class GameModel implements InGameTimeTickListener, Serializable {
         }
     }
 
+    /**
+     * checks if there is an industrial zone after forest
+     *
+     * @param forest      position of the forest
+     * @param residential position of the residential zone
+     * @return returns true if found
+     */
     private boolean isIndustrialAfterForest(Point forest, Point residential) {
         int fx = forest.x, fy = forest.y;
         int rx = residential.x, ry = residential.y;
@@ -968,6 +1126,13 @@ public class GameModel implements InGameTimeTickListener, Serializable {
         return false;
     }
 
+    /**
+     * checks if forest should boost the people mood in the area
+     *
+     * @param forest      position of the forest
+     * @param residential position of the residential zone
+     * @return returns true if it should boost mood
+     */
     private boolean doesForestBoostMood(Point forest, Point residential) {
         int fx = forest.x, fy = forest.y;
         int rx = residential.x, ry = residential.y;
@@ -1013,84 +1178,67 @@ public class GameModel implements InGameTimeTickListener, Serializable {
         return true;
     }
 
+    /**
+     * used to remove a Forest
+     *
+     * @param position the position where the Forest is
+     */
     public void removeForest(Point position) {
         int i = position.x, j = position.y;
         ;
         int elapsed = this.inGameTime.getInGameYear() - ((Forest) grid[i][j]).getPlantTime().getYear();
         boostForestMood(position, -elapsed);
 
+        int maintenanceCost = new Forest(GameModel.NO_SELECTION).getMaintenanceCost();
+        finance.removeYearlySpend(maintenanceCost, "Erdő fenntartási díj");
+
         grid[position.x][position.y] = null;
         for (WealthChangeListener l : this.wealthListeners) l.onWealthChange();
     }
 
+    /**
+     * used to place a University on the grid
+     *
+     * @param position the position where the University should be placed
+     */
     public void placeUniversity(Point position) {
         University pl = new University(position);
         if (!canPlace(pl, position)) return;
         grid[position.x][position.y] = pl;
         fillTemps(pl, position);
-        finance.removeMoney(new University(GameModel.NO_SELECTION).getBuildPrice());
+
+        int price = new University(GameModel.NO_SELECTION).getBuildPrice();
+        int maintenanceCost = new University(GameModel.NO_SELECTION).getMaintenanceCost();
+        finance.removeMoney(price);
+        finance.addBuilt(price, "Egyetem építés");
+        finance.addYearlySpend(maintenanceCost, "Egyetem fenntartási díj");
+
         for (WealthChangeListener l : this.wealthListeners) l.onWealthChange();
     }
 
+    /**
+     * used to remove a University
+     * all students will be kicked out upon demolition
+     *
+     * @param position the position where the University is
+     */
     public void removeUniversity(Point position) {
         deleteTemps(grid[position.x][position.y], position);
+        int maintenanceCost = new University(GameModel.NO_SELECTION).getMaintenanceCost();
+        finance.removeYearlySpend(maintenanceCost, "Egyetem fenntartási díj");
         ((University) grid[position.x][position.y]).deleteData();
         grid[position.x][position.y] = null;
         for (WealthChangeListener l : this.wealthListeners) l.onWealthChange();
     }
 
-    private Boolean searchForStadium(Person person) {
-        //Searching around home first
-        Residential home = person.getHome();
-        Point homePosition = home.getPosition();
-        int r = new Stadium(GameModel.NO_SELECTION).getRadius();
-
-        for (int i = homePosition.x - r; i <= homePosition.x + r; ++i) {
-            for (int j = homePosition.y - r; j <= homePosition.y + r; ++j) {
-                if (i >= 0 && j >= 0 && i < GRID_SIZE && j < GRID_SIZE) {
-                    if (grid[i][j] != null && grid[i][j].getType() == FieldType.STADIUM) {
-                        return true;
-                    }
-                }
-            }
-        }
-
-        //If not found around home then search around workplace
-        Workplace workplace = person.getWorkplace();
-        if (workplace == null) return false;
-        Point workplacePosition = workplace.getPosition();
-
-        for (int i = workplacePosition.x - r; i <= workplacePosition.x + r; ++i) {
-            for (int j = workplacePosition.y - r; j <= workplacePosition.y + r; ++j) {
-                if (i >= 0 && j >= 0 && i < GRID_SIZE && j < GRID_SIZE) {
-                    if (grid[i][j] != null && grid[i][j].getType() == FieldType.STADIUM) {
-                        return true;
-                    }
-                }
-            }
-        }
-
-        return false;
-    }
-
-    private Boolean searchForPolice(Person person) {
-        Residential home = person.getHome();
-        Point homePosition = home.getPosition();
-        int r = new Police(GameModel.NO_SELECTION).getRadius();
-
-        for (int i = homePosition.x - r; i <= homePosition.x + r; ++i) {
-            for (int j = homePosition.y - r; j <= homePosition.y + r; ++j) {
-                if (i >= 0 && j >= 0 && i < GRID_SIZE && j < GRID_SIZE) {
-                    if (grid[i][j] != null && grid[i][j].getType() == FieldType.POLICE) {
-                        return true;
-                    }
-                }
-            }
-        }
-
-        return false;
-    }
-
+    /**
+     * calculates the shortest distance between the residential zone and the workplace
+     * based on BFS algorithm
+     *
+     * @param person the person
+     * @param type   type of the workplace
+     * @return returns the distance
+     */
     private int getWorkplaceDistance(Person person, String type) {
         if (type.equals("uni") || type.equals("secondary")) type = "school";
         Residential home = person.getHome();
@@ -1184,30 +1332,24 @@ public class GameModel implements InGameTimeTickListener, Serializable {
         return -1;
     }
 
-    private Boolean searchForIndustrial(Person person) {
-        Residential home = person.getHome();
-        Point homePosition = home.getPosition();
-        int r = 5;
-
-        for (int i = homePosition.x - r; i <= homePosition.x + r; ++i) {
-            for (int j = homePosition.y - r; j <= homePosition.y + r; ++j) {
-                if (i >= 0 && j >= 0 && i < GRID_SIZE && j < GRID_SIZE) {
-                    if (grid[i][j] != null && grid[i][j].getType() == FieldType.ZONE_INDUSTRIAL) {
-                        return true;
-                    }
-                }
-            }
-        }
-
-        return false;
-    }
-
-    private void boostMood(Person p, int boost) {
+    /**
+     * used to boost the mood of a person
+     *
+     * @param p     Person
+     * @param boost the amount the person's mood should be boosted by
+     */
+    public void boostMood(Person p, int boost) {
         p.setBoostMood(p.getBoostMood() + boost);
         for (MoralChangeListener l : this.moralListeners) l.onMoralChanged();
 
     }
 
+    /**
+     * used to boost a persons mood, depending on how far their occupation is
+     *
+     * @param person Person
+     * @param type   the Placeable we are measuring the distance to - work, school, uni, etc.
+     */
     private void boostPersonMoodBasedOnDistance(Person person, String type) {
         //TODO: when object is deleted then recalculate the distance boost
         if (getWorkplaceDistance(person, type) < 6) boostMood(person, 4);
@@ -1215,7 +1357,13 @@ public class GameModel implements InGameTimeTickListener, Serializable {
         else boostMood(person, -7);
     }
 
-    private boolean searchForJob(Person person, String type) {
+    /**
+     * used to find an occupation for a person
+     *
+     * @param person person that we want to find an occupation for
+     * @param type   the type of occupation we want to find - work/education
+     */
+    private void searchForJob(Person person, String type) {
         Residential home = person.getHome();
         Point position = home.getPosition();
         int x = position.x;
@@ -1241,7 +1389,7 @@ public class GameModel implements InGameTimeTickListener, Serializable {
                                 if (((School) current).areSpacesLeft() && isPath(convertToNumMatrix(person.getHome(), temp, null)) && !((School) current).getPeople().contains(person)) {
                                     person.goToSchool(((School) current));
                                     boostPersonMoodBasedOnDistance(person, type);
-                                    return true;
+                                    return;
                                 }
                             }
                         } else if (type.equals("uni")) {
@@ -1249,7 +1397,7 @@ public class GameModel implements InGameTimeTickListener, Serializable {
                                 if (((University) current).areSpacesLeft() && isPath(convertToNumMatrix(person.getHome(), temp, null)) && !((University) current).getPeople().contains(person)) {
                                     person.goToSchool(((University) current));
                                     boostPersonMoodBasedOnDistance(person, type);
-                                    return true;
+                                    return;
                                 }
                             }
                         }
@@ -1273,7 +1421,7 @@ public class GameModel implements InGameTimeTickListener, Serializable {
                                 if (((Service) current).areSpacesLeft() && isPath(convertToNumMatrix(person.getHome(), temp, null)) && !((Service) current).getPeople().contains(person)) {
                                     person.goToWork(((Service) current));
                                     boostPersonMoodBasedOnDistance(person, type);
-                                    return true;
+                                    return;
                                 }
                             }
                         } else { //we need industrial workers
@@ -1281,7 +1429,7 @@ public class GameModel implements InGameTimeTickListener, Serializable {
                                 if (((Industrial) current).areSpacesLeft() && isPath(convertToNumMatrix(person.getHome(), temp, null)) && !((Industrial) current).getPeople().contains(person)) {
                                     person.goToWork(((Industrial) current));
                                     boostPersonMoodBasedOnDistance(person, type);
-                                    return true;
+                                    return;
                                 }
                             }
                         }
@@ -1305,7 +1453,7 @@ public class GameModel implements InGameTimeTickListener, Serializable {
                                 if (((Industrial) current).areSpacesLeft() && isPath(convertToNumMatrix(person.getHome(), temp, null)) && !((Industrial) current).getPeople().contains(person)) {
                                     person.goToWork(((Industrial) current));
                                     boostPersonMoodBasedOnDistance(person, type);
-                                    return true;
+                                    return;
                                 }
                             }
                         } else { //we need NOT industrial workers
@@ -1313,7 +1461,7 @@ public class GameModel implements InGameTimeTickListener, Serializable {
                                 if (((Service) current).areSpacesLeft() && isPath(convertToNumMatrix(person.getHome(), temp, null)) && !((Service) current).getPeople().contains(person)) {
                                     person.goToWork(((Service) current));
                                     boostPersonMoodBasedOnDistance(person, type);
-                                    return true;
+                                    return;
                                 }
                             }
                         }
@@ -1322,10 +1470,12 @@ public class GameModel implements InGameTimeTickListener, Serializable {
             }
         }
 
-        return false;
     }
 
-    private int workersRatio() {
+    /**
+     * @return 1 if there are more people working in Industrial zone, 0 if more in Service zone
+     */
+    public int workersRatio() {
         //return 1 if we need service workers
         //return 0 if we need industrial workers
 
@@ -1342,6 +1492,11 @@ public class GameModel implements InGameTimeTickListener, Serializable {
         return industrialCount > serviceCount ? 1 : 0;
     }
 
+    /**
+     * calculates the starting mood of the person based on boosting factors
+     *
+     * @param person person
+     */
     private void calculateMood(Person person) {
         int count = countStadium(person.getHome().getPosition());
         person.setBoostMood(count * 7);
@@ -1355,6 +1510,12 @@ public class GameModel implements InGameTimeTickListener, Serializable {
         //todo : searchForForest
     }
 
+    /**
+     * calculates the current forest boosting mood
+     *
+     * @param position forest position
+     * @return the sum of the years
+     */
     private int calculateForestMood(Point position) {
         int sum = 0;
 
@@ -1374,12 +1535,32 @@ public class GameModel implements InGameTimeTickListener, Serializable {
         return sum;
     }
 
-    private boolean canRoadBeDestroyed(Placeable startPoint, Placeable endPoint, Placeable toBeDestroyed) {
+    /**
+     * used to calculate if start point and end point are still connected after destroying a road
+     *
+     * @param startPoint    start of the path
+     * @param endPoint      end of the path
+     * @param toBeDestroyed the road we wish to destroy
+     * @return true if the road can be destroyed, false if it can't
+     */
+    public boolean canRoadBeDestroyed(Placeable startPoint, Placeable endPoint, Placeable toBeDestroyed) {
         boolean directPath = isPath(convertToNumMatrix(startPoint, endPoint, null));
         boolean moreThanOnePath = isPath(convertToNumMatrix(startPoint, endPoint, toBeDestroyed));
         return directPath && (moreThanOnePath);
     }
 
+    /**
+     * used to prepare date for isPath method
+     *
+     * @param startPoint    start of the path
+     * @param endPoint      end of the path
+     * @param toBeDestroyed the road we wish to destroy
+     * @return a number matrix representing the grid with numbers
+     * 1 - start point
+     * 2 - end point
+     * 3 - road
+     * 0 - everything else
+     */
     private int[][] convertToNumMatrix(Placeable startPoint, Placeable endPoint, Placeable toBeDestroyed) {
         int[][] matrix = new int[GRID_SIZE][GRID_SIZE];
         for (int i = 0; i < GRID_SIZE; i++) {
@@ -1402,6 +1583,10 @@ public class GameModel implements InGameTimeTickListener, Serializable {
         return matrix;
     }
 
+    /**
+     * @param matrix number matrix provided by convertToNumMatrix
+     * @return true if start point and end point are connected, otherwise false
+     */
     private boolean isPath(int[][] matrix) {
         int n = GRID_SIZE;
         boolean[][] visited = new boolean[n][n];
@@ -1420,7 +1605,10 @@ public class GameModel implements InGameTimeTickListener, Serializable {
         return flag;
     }
 
-    private void newYearTaxCollection() {
+    /**
+     * used to collect the tax every year from all the eligible Placeables in the grid
+     */
+    public void newYearTaxCollection() {
         int sum = 0;
         for (int i = 0; i < GRID_SIZE; ++i) {
             for (int j = 0; j < GRID_SIZE; ++j) {
@@ -1434,6 +1622,10 @@ public class GameModel implements InGameTimeTickListener, Serializable {
         finance.addMoney(sum);
     }
 
+    /**
+     * used to calculate the overall mood of the city
+     * takes an average of the zone moods
+     */
     private void calculateCityMood() {
         if (this.people.size() == 0) return;
         int cityMood = 0;
@@ -1470,6 +1662,21 @@ public class GameModel implements InGameTimeTickListener, Serializable {
         return this.finance.getCurrentWealth();
     }
 
+    private void gameOver() {
+        if (!isGameOver) {
+            isGameOver = true;
+            showGameOverDialog();
+            for (StartStopGameListener l : stopGameListeners) l.onGameStop();
+        }
+    }
+
+    /**
+     * used to change the mood of all inhabitants yearly
+     * mood change depends on the current finances
+     * good finances - increasingly bigger mood boost
+     * bad finances - increasingly bigger mood decline
+     * after 3 years in a row of bad finances the game is over
+     */
     private void changeMoodOfPeople() {
         if (this.finance.getCurrentWealth() < -8000) {
             this.finance.setProfitableYearsInARow(this.finance.getProfitableYearsInARow() - 0.5);
@@ -1479,8 +1686,8 @@ public class GameModel implements InGameTimeTickListener, Serializable {
 
         double multiplier = 1;
         if (this.finance.getProfitableYearsInARow() < -1.5) {
-            //gameover
             multiplier = 0.85;
+            this.gameOver();
         } else if (this.finance.getProfitableYearsInARow() > 1.5) {
             multiplier = 1.15;
         } else {
@@ -1543,10 +1750,17 @@ public class GameModel implements InGameTimeTickListener, Serializable {
         for (MoralChangeListener l : this.moralListeners) l.onMoralChanged();
     }
 
-    private boolean isMoodGoodEnough() {
+    /**
+     * @return if the city mood if over a certain threshold
+     */
+    public boolean isMoodGoodEnough() {
         return this.cityMood >= 30;
     }
 
+    /**
+     * used to add new people to the city
+     * the rate of arrival depends on the amount of free spaces and the city mood
+     */
     private void welcomeNewInhabitants() {
         int freeSpace = 0;
         for (int i = 0; i < GRID_SIZE; i++) {
@@ -1566,6 +1780,10 @@ public class GameModel implements InGameTimeTickListener, Serializable {
         }
     }
 
+    /**
+     * used to make people leave the city
+     * number of people departing based on the city mood and the people who have the lowest mood
+     */
     private void departInhabitants() {
         double outgoingPeople = Math.ceil(this.people.size() * ((100 - cityMood - 30) / 100.0));
         //remove outgoingPeople amount of people from this.people who have the lowest mood
@@ -1591,7 +1809,12 @@ public class GameModel implements InGameTimeTickListener, Serializable {
         for (PeopleChangeListener l : peopleChangeListeners) l.onPeopleCountChange();
     }
 
-    private Residential findHome() {
+    /**
+     * used to find a home for a person
+     *
+     * @return a Residential if there is a free place, null if there isn't
+     */
+    public Residential findHome() {
         for (int i = 0; i < GRID_SIZE; i++) {
             for (int j = 0; j < GRID_SIZE; j++) {
                 if (this.grid[i][j] instanceof Residential && ((Residential) this.grid[i][j]).areSpacesLeft() && isNextToARoad(new Point(i, j))) {
@@ -1602,9 +1825,10 @@ public class GameModel implements InGameTimeTickListener, Serializable {
         return null;
     }
 
+    /**
+     * used to find an occupation for people who don't have one currently
+     */
     private void findOccupation() {
-
-//        printCurrentEmployment();
 
         Random random = new Random();
         for (Person person : this.people) {
@@ -1640,20 +1864,16 @@ public class GameModel implements InGameTimeTickListener, Serializable {
                     boostMood(person, -4);
                 }
             }
-
         }
-
-//        printCurrentEmployment();
     }
 
-    private void printCurrentEmployment() {
-        for (Person p : this.people) {
-            System.out.println("M: " + p.getMood() + " | E: " + p.getEducation() + " | W: " + p.getWorkplace());
-        }
-        System.out.println("-------------------------");
-    }
-
-    private boolean isNextToARoad(Point point) {
+    /**
+     * used to see if there are any roads around a point
+     *
+     * @param point the point in the grid we are investigating
+     * @return false if there are no roads, true if there is a road near
+     */
+    public boolean isNextToARoad(Point point) {
         int x = point.x;
         int y = point.y;
 
@@ -1664,7 +1884,10 @@ public class GameModel implements InGameTimeTickListener, Serializable {
         return false;
     }
 
-    private void newYearMaintenanceCost() {
+    /**
+     * used to calculate all the maintenance costs of the eligible buildings in the grid
+     */
+    public void newYearMaintenanceCost() {
         int sum = 0;
         for (int i = 0; i < GRID_SIZE; ++i) {
             for (int j = 0; j < GRID_SIZE; ++j) {
@@ -1677,6 +1900,11 @@ public class GameModel implements InGameTimeTickListener, Serializable {
         finance.removeMoney(sum);
     }
 
+    /**
+     * rechecks every year the forest logic
+     * this is needed in order to delete the yearly maintenance cost at the end
+     * and boost forest mood
+     */
     private void newYearForest() {
         for (int i = 0; i < GRID_SIZE; ++i) {
             for (int j = 0; j < GRID_SIZE; ++j) {
@@ -1693,7 +1921,12 @@ public class GameModel implements InGameTimeTickListener, Serializable {
         }
     }
 
-    private boolean isIndustrialBuiltAlready() {
+    /**
+     * checks if there is at least one industrial zone already
+     *
+     * @return true if there is
+     */
+    public boolean isIndustrialBuiltAlready() {
         for (int i = 0; i < GRID_SIZE; ++i) {
             for (int j = 0; j < GRID_SIZE; ++j) {
                 if (grid[i][j] != null && grid[i][j] instanceof Industrial) {
@@ -1704,7 +1937,12 @@ public class GameModel implements InGameTimeTickListener, Serializable {
         return false;
     }
 
-    private Point searchRandomIndustrial() {
+    /**
+     * searches one random industrial zone
+     *
+     * @return the point of the random zone
+     */
+    public Point searchRandomIndustrial() {
         while (true) {
             Random rand = new Random();
             int i = rand.nextInt(GRID_SIZE);
@@ -1713,13 +1951,23 @@ public class GameModel implements InGameTimeTickListener, Serializable {
         }
     }
 
-    private void doIndustrialDisaster(Point position) {
+    /**
+     * industrial disaster logic
+     * (animation, delete industrial zone)
+     *
+     * @param position position of the zone
+     */
+    public void doIndustrialDisaster(Point position) {
         playAnim(Animation.createFireAnim(position), 3200);
         removeIndustrial(position, true);
     }
 
-    public void playAnim(Animation anim, int duration){
+    public void playAnim(Animation anim) {
         addAnimation(anim);
+    }
+
+    public void playAnim(Animation anim, int duration) {
+        playAnim(anim);
         Timer animTimer = new Timer();
         TimerTask animTask = new TimerTask() {
             @Override
@@ -1730,17 +1978,21 @@ public class GameModel implements InGameTimeTickListener, Serializable {
         animTimer.schedule(animTask, duration);
     }
 
-    private void addAnimation(Animation anim){
+    private void addAnimation(Animation anim) {
         animations.add(anim);
         anim.start();
     }
 
-    private void stopAnimation(Animation anim){
+    public void stopAnimation(Animation anim) {
         animations.remove(anim);
         anim.stop();
     }
 
-    private void removeDepressedPeople() {
+    /**
+     * used to remove people from the city whose mood has reached zero
+     */
+    public void removeDepressedPeople() {
+        ArrayList<Person> toBeRemoved = new ArrayList<>();
         for (int i = 0; i < this.people.size(); i++) {
             Person p = this.people.get(i);
             if (p.getMood() == 0) {
@@ -1753,23 +2005,32 @@ public class GameModel implements InGameTimeTickListener, Serializable {
                     p.getWorkplace().removePerson(p);
                 }
                 p.getHome().removePerson(p);
-                this.people.remove(p);
+                toBeRemoved.add(p);
             }
         }
+        if (toBeRemoved.size() > 0) this.people.removeAll(toBeRemoved);
         for (PeopleChangeListener l : peopleChangeListeners) l.onPeopleCountChange();
 
     }
 
+    /**
+     * used the save the current GameModel object to a file
+     */
     public void saveGame() {
         try {
-            Persistence.save(this, "gm" + +saveCount++ + ".txt");
+            //Persistence.save(this, "gm" + +saveCount++ + ".txt");
+            SaveEntry.createOrUpdateEntry(getCityName(), this);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
+    /**
+     * used to drive the logic (functions) based on the passing of in-game time
+     */
     @Override
     public void timeTick() {
+        if (isGameOver) return;
 //        System.out.println("Time: Y: " + inGameTime.getInGameYear() + " D: " + inGameTime.getInGameDay() + " H: " + inGameTime.getInGameHour());
         if (this.inGameTime.getInGameHour() > 0) {
             calculateCityMood();
@@ -1784,12 +2045,13 @@ public class GameModel implements InGameTimeTickListener, Serializable {
             }
 
         }
-        if (this.inGameTime.getInGameDay() > 0 && this.inGameTime.getInGameDay() % 21 == 0 && this.inGameTime.getInGameHour() == 0) {
+//        if (this.inGameTime.getInGameDay() > 0 && this.inGameTime.getInGameDay() % 21 == 0 && this.inGameTime.getInGameHour() == 0) {
 //            saveGame();
-        }
+//        }
 
         if (this.inGameTime.getInGameYear() > 0 && this.inGameTime.getInGameDay() == 0 && this.inGameTime.getInGameHour() == 0) {
             changeMoodOfPeople();
+            if (isGameOver) return;
             newYearTaxCollection();
             newYearMaintenanceCost();
             newYearForest();
@@ -1806,19 +2068,15 @@ public class GameModel implements InGameTimeTickListener, Serializable {
         for (MoralChangeListener l : this.moralListeners) l.onMoralChanged();
     }
 
+    /**
+     * function that is automatically run when a GameModel object is deserialized
+     * used to set certain properties to ensure a game load is functional and accurate
+     *
+     * @param in GameModel object
+     */
     @Serial
     private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException {
         in.defaultReadObject();
-        for (int i = 0; i < GRID_SIZE; i++) {
-            for (int j = 0; j < GRID_SIZE; j++) {
-                if (grid[i][j] instanceof Workplace) {
-                    System.out.println(((Workplace) grid[i][j]).getPeople().size());
-                }
-                if (grid[i][j] instanceof Education) {
-                    System.out.println(((Education) grid[i][j]).getPeople().size());
-                }
-            }
-        }
         calculateCityMood();
         for (MoralChangeListener l : this.moralListeners) l.onMoralChanged();
         for (PeopleChangeListener l : this.peopleChangeListeners) l.onPeopleCountChange();

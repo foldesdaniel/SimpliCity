@@ -18,10 +18,10 @@ public enum RoadType {
     UNKNOWN;
 
     public static RoadType calc(Placeable _left, Placeable _right, Placeable _up, Placeable _down){
-        boolean left = _left != null /*&& _left.getType() == FieldType.ROAD*/;
-        boolean right = _right != null /*&& _right.getType() == FieldType.ROAD*/;
-        boolean down = _down != null /*&& _down.getType() == FieldType.ROAD*/;
-        boolean up = _up != null /*&& _up.getType() == FieldType.ROAD*/;
+        boolean left = _left != null && _left.roadConnects();
+        boolean right = _right != null && _right.roadConnects();
+        boolean down = _down != null && _down.roadConnects();
+        boolean up = _up != null && _up.roadConnects();
 
         if(left && right && down && up) return ALL;
         

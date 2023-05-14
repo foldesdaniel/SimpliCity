@@ -15,5 +15,14 @@ public class MenuTextField extends JTextField {
         this.setPreferredSize(buttonSize);
         this.setMinimumSize(buttonSize);
         this.setMaximumSize(buttonSize);
+        this.transferFocus();
+        MenuTextField self = this;
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                final JComponent component = self;
+                component.requestFocusInWindow();
+            }
+        });
     }
 }

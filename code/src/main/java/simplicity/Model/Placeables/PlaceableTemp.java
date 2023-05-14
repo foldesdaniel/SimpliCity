@@ -2,6 +2,8 @@ package simplicity.Model.Placeables;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import simplicity.Model.Game.FieldType;
+import simplicity.Model.GameModel;
 import simplicity.Model.Placeables.Placeable;
 
 import java.awt.*;
@@ -47,6 +49,18 @@ public class PlaceableTemp extends Placeable implements Serializable {
     @Override
     public Dimension getDisplaySize(){
         return placeable.getSize();
+    }
+
+    @Override
+    public boolean roadConnects(){
+        int x = this.getPosition().x;
+        int y = this.getPosition().y;
+        GameModel model = GameModel.getInstance();
+        boolean left = x > 0 && model.grid(x-1,y) != null && model.grid(x-1,y).getType() == FieldType.ROAD;
+        boolean right = x < GameModel.GRID_SIZE-1 && model.grid(x+1,y) != null && model.grid(x+1,y).getType() == FieldType.ROAD;
+        boolean up = y > 0 && model.grid(x,y-1) != null && model.grid(x,y-1).getType() == FieldType.ROAD;
+        boolean down = y < GameModel.GRID_SIZE-1 && model.grid(x,y+1) != null && model.grid(x,y+1).getType() == FieldType.ROAD;
+        return !placeable.roadConnects() && (left || right || up || down);
     }
 
 }

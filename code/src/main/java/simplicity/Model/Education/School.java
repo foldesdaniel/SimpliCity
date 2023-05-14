@@ -20,48 +20,58 @@ public class School extends Education implements InGameTimeTickListener, Seriali
 
     private final InGameTime inGameTime;
 
+    /**
+     *
+     * @param position the current position in the grid
+     */
     public School(Point position) {
         super(FieldType.SCHOOL, position, 7000, 20, 1500);
         inGameTime = InGameTimeManager.getInstance().getInGameTime();
         inGameTime.addInGameTimeTickListener(this);
     }
 
-    @Override
-    public void graduate(ArrayList<Integer> studentIds) {
+
+    /**
+     * used to upgrade a persons education level and remove their place of education
+     *
+     * @param studentIds list of the indexes of people graduating
+     */
+    private void removeGraduates(ArrayList<Integer> studentIds) {
         for (int i = 0; i < studentIds.size(); i++) {
             this.getPeople().get(i).setEducationLevel(levelOfEducation);
             this.getPeople().get(i).setEducation(null);
-//            System.out.println(this.getPeople().get(i).getEducationLevel() + " GRADUATED");
         }
+    }
+
+    /**
+     * used to clear out people from the place of education
+     *
+     * @param studentIds list of the indexes of people graduating
+     */
+    @Override
+    public void graduate(ArrayList<Integer> studentIds) {
+        removeGraduates(studentIds);
         if (studentIds.size() > 0) {
             studentIds.sort(Collections.reverseOrder());
             studentIds.forEach(index -> this.getArrivalDates().remove((int) index));
             studentIds.forEach(index -> this.removePerson((int) index));
-            System.out.println(this.getPeople().size());
-            System.out.println(this.getArrivalDates().size());
         }
     }
 
+    /**
+     * used to check if people attending have completed their education
+     */
     @Override
     public final void timeTick() {
-//        System.out.println("time changed: " + this.inGameTime.getInGameYear() + this.inGameTime.getInGameDay() + this.inGameTime.getInGameHour());
-        ArrayList<Integer> graduates = new ArrayList<>();
+        ArrayList<Integer> graduatingPeople = new ArrayList<>();
         for (int i = 0; i < this.getArrivalDates().size(); i++) {
-            //[0] year, [1] day, [2] hour
-            //change to
-//            this.getArrivalDates().get(i).getYear() + 1 == inGameTime.getInGameYear() &&
-//            this.getArrivalDates().get(i).getDay() == inGameTime.getInGameDay() &&
-//            this.getArrivalDates().get(i).getHour() == inGameTime.getInGameHour()
-//            this.getArrivalDates().get(i).getDay() + 1 == this.inGameTime.getInGameDay()
-//                    && this.getArrivalDates().get(i).getHour() == this.inGameTime.getInGameHour()
-            //to complete School it is 1 year
             if (this.getArrivalDates().get(i).getYear() + 1 == inGameTime.getInGameYear() &&
                     this.getArrivalDates().get(i).getDay() == inGameTime.getInGameDay() &&
                     this.getArrivalDates().get(i).getHour() == inGameTime.getInGameHour()) {
-                graduates.add(i);
+                graduatingPeople.add(i);
             }
         }
-        graduate(graduates);
+        graduate(graduatingPeople);
     }
 
     @Override

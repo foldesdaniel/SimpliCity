@@ -15,13 +15,11 @@ public class BottomBar extends JPanel implements MoralChangeListener, PeopleChan
     private final JLabel personCountLabel;
     private final JLabel moralLabel;
     private final JLabel wealthLabel;
-    private final GameModel model;
 
     public BottomBar() {
-        this.model = GameModel.getInstance();
-        this.personCountLabel = new JLabel("Person count: " + model.getPeople().size());
-        this.moralLabel = new JLabel("Overall moral: " + model.getCityMood());
-        this.wealthLabel = new JLabel("Wealth: " + model.getCurrentWealth());
+        this.personCountLabel = new JLabel("Population: " + GameModel.getInstance().getPeople().size() + " |");
+        this.moralLabel = new JLabel("Overall moral: " + GameModel.getInstance().getCityMood() + " |");
+        this.wealthLabel = new JLabel("Wealth: " + GameModel.getInstance().getCurrentWealth());
 
         Font font = CFont.get();
         this.personCountLabel.setFont(font);
@@ -38,24 +36,24 @@ public class BottomBar extends JPanel implements MoralChangeListener, PeopleChan
         this.add(moralLabel);
         this.add(wealthLabel);
 
-        this.model.addMoralChangeListener(this);
-        this.model.addPeopleChangeListener(this);
-        this.model.addWealthChangeListener(this);
-    }
-
-    @Override
-    public void onMoralChanged() {
-        moralLabel.setText("Overall moral: " + model.getCityMood() + " |");
+        GameModel.getInstance().addMoralChangeListener(this);
+        GameModel.getInstance().addPeopleChangeListener(this);
+        GameModel.getInstance().addWealthChangeListener(this);
     }
 
     @Override
     public void onPeopleCountChange() {
-        personCountLabel.setText("Person count: " + model.getPeople().size() + " |");
+        personCountLabel.setText("Population: " + GameModel.getInstance().getPeople().size() + " |");
+    }
+
+    @Override
+    public void onMoralChanged() {
+        moralLabel.setText("Overall moral: " + GameModel.getInstance().getCityMood() + " |");
     }
 
     @Override
     public void onWealthChange() {
-        wealthLabel.setText("Wealth: " + model.getCurrentWealth());
+        wealthLabel.setText("Wealth: " + GameModel.getInstance().getCurrentWealth());
     }
 
 }

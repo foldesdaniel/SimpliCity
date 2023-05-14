@@ -29,31 +29,20 @@ public class PlayingFieldView extends JPanel implements MouseListener, MouseMoti
     private Point hoverField;
     private int offsetX;
     private int offsetY;
-    private GameModel model;
     private final ArrayList<ModeChangeListener> modeListeners;
 
     public PlayingFieldView() {
         this.modeListeners = new ArrayList<>();
-        this.model = GameModel.getInstance();
         this.gridSize = GameModel.GRID_SIZE;
         this.fieldSize = defaultFieldSize;
         this.hoverField = GameModel.NO_SELECTION;
         this.offsetX = 0;
         this.offsetY = 0;
-        // resetPlayingField();
-        MouseAdapter mouseAdapter = new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                // System.out.println("clicked");
-            }
-        };
         this.addMouseListener(this);
-        this.addMouseListener(mouseAdapter);
         this.addMouseMotionListener(this);
         this.addMouseWheelListener(this);
         Animation.addAnimationTickListener(this);
         this.setBorder(new InsetShadowBorder(16));
-        model.playAnim(Animation.createFireAnim(new Point(0,0)), 3200);
     }
 
     public void addModeListener(ModeChangeListener l){
@@ -83,6 +72,7 @@ public class PlayingFieldView extends JPanel implements MouseListener, MouseMoti
     @Override
     protected void paintComponent(Graphics graphics) {
         Graphics2D g = (Graphics2D) graphics;
+        GameModel model = GameModel.getInstance();
         int panelWidth = this.getWidth();
         int panelHeight = this.getHeight();
         g.setColor(new Color(255, 200, 200));
@@ -157,8 +147,8 @@ public class PlayingFieldView extends JPanel implements MouseListener, MouseMoti
         }
         for(Animation anim : model.getAnimations()){
             Point coord = new Point(
-                fieldSize * anim.getPosition().x,
-                fieldSize * anim.getPosition().y
+                fieldSize * anim.getPosition().y,
+                fieldSize * anim.getPosition().x
             );
             g.drawImage(anim.getCurrentImage(), offsetX + coord.y, offsetY + coord.x, fieldSize, fieldSize, null);
         }
@@ -216,6 +206,7 @@ public class PlayingFieldView extends JPanel implements MouseListener, MouseMoti
     }
 
     private void placingClick(){
+        GameModel model = GameModel.getInstance();
         Placeable placee = GamePanel.stopPlacing(true);
         if(placee instanceof Residential){
             model.placeResidential(hoverField);
@@ -240,6 +231,7 @@ public class PlayingFieldView extends JPanel implements MouseListener, MouseMoti
     }
 
     private void isDeleteClick(){
+        GameModel model = GameModel.getInstance();
         Placeable h = model.grid(hoverField.x,hoverField.y);
         if(h == null) return;
         Placeable placee = h instanceof PlaceableTemp hh ? hh.getPlaceable() : h;
@@ -273,7 +265,7 @@ public class PlayingFieldView extends JPanel implements MouseListener, MouseMoti
         }else if(GamePanel.isDeleteMode()){
             this.isDeleteClick();
         }else{
-            fieldClickListener.fieldClicked(fieldHit ? model.grid(hoverField.x,hoverField.y) : null);
+            fieldClickListener.fieldClicked(fieldHit ? GameModel.getInstance().grid(hoverField.x,hoverField.y) : null);
         }
         // this.repaint();
     }
@@ -403,7 +395,7 @@ public class PlayingFieldView extends JPanel implements MouseListener, MouseMoti
             }else if(GamePanel.isDeleteMode()){
                 this.isDeleteClick();
             }else{
-                fieldClickListener.fieldClicked(fieldHit ? model.grid(hoverField.x, hoverField.y) : null);
+                fieldClickListener.fieldClicked(fieldHit ? GameModel.getInstance().grid(hoverField.x, hoverField.y) : null);
             }
         }
     }
