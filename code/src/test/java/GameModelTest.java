@@ -252,6 +252,85 @@ public class GameModelTest {
     }
 
     @Test
+    public void testCountStadium() {
+        gameModel.placeStadium(new Point(2, 2));
+        gameModel.placeStadium(new Point(4, 4));
+        gameModel.placeStadium(new Point(7, 7));
+        assertEquals(3, gameModel.countStadium(new Point(5, 5)));
+    }
+
+    @Test
+    public void testCountPolice() {
+        gameModel.placePolice(new Point(3, 3));
+        gameModel.placePolice(new Point(4, 4));
+        gameModel.placePolice(new Point(5, 5));
+        assertEquals(3, gameModel.countPolice(new Point(4, 4)));
+    }
+
+    @Test
+    public void testCountIndustrial() {
+        gameModel.placeIndustrial(new Point(3, 3));
+        gameModel.placeIndustrial(new Point(4, 4));
+        gameModel.placeIndustrial(new Point(5, 5));
+        assertEquals(3, gameModel.countIndustrial(new Point(4, 4)));
+    }
+
+    @Test
+    public void testIsForestBetweenResidential_Industrial() {
+        gameModel.placeResidential(new Point(1, 1));
+        gameModel.placeIndustrial(new Point(1, 5));
+        gameModel.placeForest(new Point(1, 3));
+        assertTrue(gameModel.isForestBetweenResidential_Industrial(new Point(1, 1), new Point(1, 5)));
+    }
+
+    @Test
+    public void testIsIndustrialAfterForest() {
+        gameModel.placeResidential(new Point(1, 1));
+        gameModel.placeIndustrial(new Point(1, 5));
+        gameModel.placeForest(new Point(1, 3));
+        assertTrue(gameModel.isIndustrialAfterForest(new Point(1, 3), new Point(1, 1)));
+    }
+
+    @Test
+    public void testDoesForestBoostMood() {
+        gameModel.placeResidential(new Point(1, 1));
+        gameModel.placeForest(new Point(1, 3));
+        assertTrue(gameModel.doesForestBoostMood(new Point(1, 3), new Point(1, 1)));
+    }
+
+    @Test
+    public void testGetWorkplaceDistance() {
+        gameModel.placeResidential(new Point(1, 1));
+        gameModel.placeService(new Point(1, 6));
+        for (int i = 2; i <= 5; ++i)
+            gameModel.placeRoad(new Point(1, i));
+        Person p = new Person();
+        p.moveIn((Residential) gameModel.grid(1,1));
+        p.goToWork((Service) gameModel.grid(1,6));
+        assertEquals(5, gameModel.getWorkplaceDistance(p, "workplace"));
+    }
+
+    @Test
+    public void testBoostPersonMoodBasedOnDistance() {
+        gameModel.placeResidential(new Point(1, 1));
+        gameModel.placeService(new Point(1, 6));
+        for (int i = 2; i <= 5; ++i)
+            gameModel.placeRoad(new Point(1, i));
+        Person p = new Person();
+        p.moveIn((Residential) gameModel.grid(1,1));
+        p.goToWork((Service) gameModel.grid(1,6));
+        int prevmood = p.getMood();
+        gameModel.boostPersonMoodBasedOnDistance(p, "workplace");
+        assertTrue(p.getMood() > prevmood);
+    }
+
+    @Test
+    public void testCalculateForestMood() {
+        gameModel.placeForest(new Point(1, 3));
+        assertEquals(0, gameModel.calculateForestMood(new Point(1, 3)));
+    }
+
+    @Test
     public void testRemoveDepressedPeople() {
         Residential residential = new Residential(new Point(0, 0));
         for (int i = 0; i < 3; i++) {

@@ -240,7 +240,7 @@ public class GameModel implements InGameTimeTickListener, Serializable {
      * @param position grid position
      * @return count / 4 because it has a 2x2 size
      */
-    private int countStadium(Point position) {
+    public int countStadium(Point position) {
         int count = 0;
         int r = new Stadium(new Point(-1, -1)).getRadius();
 
@@ -261,7 +261,7 @@ public class GameModel implements InGameTimeTickListener, Serializable {
      * @param position grid position
      * @return count
      */
-    private int countPolice(Point position) {
+    public int countPolice(Point position) {
         int count = 0;
         int r = new Police(new Point(-1, -1)).getRadius();
 
@@ -282,7 +282,7 @@ public class GameModel implements InGameTimeTickListener, Serializable {
      * @param position grid position
      * @return count
      */
-    private int countIndustrial(Point position) {
+    public int countIndustrial(Point position) {
         int count = 0;
         int r = 5;
 
@@ -304,17 +304,6 @@ public class GameModel implements InGameTimeTickListener, Serializable {
      */
     public Placeable grid(int i, int j) {
         return this.grid[i][j];
-    }
-
-    public void printGrid() {
-        System.out.println("******************");
-        for (int i = 0; i < GRID_SIZE; ++i) {
-            for (int j = 0; j < GRID_SIZE; ++j) {
-                System.out.print(grid[j][i] + " ");
-            }
-            System.out.println();
-        }
-        System.out.println("******************");
     }
 
     /**
@@ -581,7 +570,7 @@ public class GameModel implements InGameTimeTickListener, Serializable {
      * @param residential position of the zone
      * @return return true if found
      */
-    private boolean isForestBetweenResidential_Industrial(Point industrial, Point residential) {
+    public boolean isForestBetweenResidential_Industrial(Point industrial, Point residential) {
         int fx = industrial.x, fy = industrial.y;
         int rx = residential.x, ry = residential.y;
 
@@ -834,7 +823,6 @@ public class GameModel implements InGameTimeTickListener, Serializable {
                         Residential r = (Residential) grid[j][k];
                         if (p.getWorkplace() != null) {
                             if (isPath(convertToNumMatrix(r, p.getWorkplace(), null))) {
-//                                System.out.println(p.getHome().getPosition() + " moved to " + r.getPosition());
                                 p.getHome().removePerson(p);
                                 p.moveIn(r);
                                 movedPeople.add(p);
@@ -843,7 +831,6 @@ public class GameModel implements InGameTimeTickListener, Serializable {
                         }
                         if (p.getEducation() != null) {
                             if (isPath(convertToNumMatrix(r, p.getEducation(), null))) {
-//                                System.out.println(p.getHome().getPosition() + " moved to " + r.getPosition());
                                 p.getHome().removePerson(p);
                                 p.moveIn(r);
                                 movedPeople.add(p);
@@ -1079,7 +1066,7 @@ public class GameModel implements InGameTimeTickListener, Serializable {
      * @param residential position of the residential zone
      * @return returns true if found
      */
-    private boolean isIndustrialAfterForest(Point forest, Point residential) {
+    public boolean isIndustrialAfterForest(Point forest, Point residential) {
         int fx = forest.x, fy = forest.y;
         int rx = residential.x, ry = residential.y;
 
@@ -1133,7 +1120,7 @@ public class GameModel implements InGameTimeTickListener, Serializable {
      * @param residential position of the residential zone
      * @return returns true if it should boost mood
      */
-    private boolean doesForestBoostMood(Point forest, Point residential) {
+    public boolean doesForestBoostMood(Point forest, Point residential) {
         int fx = forest.x, fy = forest.y;
         int rx = residential.x, ry = residential.y;
 
@@ -1239,7 +1226,7 @@ public class GameModel implements InGameTimeTickListener, Serializable {
      * @param type   type of the workplace
      * @return returns the distance
      */
-    private int getWorkplaceDistance(Person person, String type) {
+    public int getWorkplaceDistance(Person person, String type) {
         if (type.equals("uni") || type.equals("secondary")) type = "school";
         Residential home = person.getHome();
         Point position = home.getPosition();
@@ -1350,7 +1337,7 @@ public class GameModel implements InGameTimeTickListener, Serializable {
      * @param person Person
      * @param type   the Placeable we are measuring the distance to - work, school, uni, etc.
      */
-    private void boostPersonMoodBasedOnDistance(Person person, String type) {
+    public void boostPersonMoodBasedOnDistance(Person person, String type) {
         //TODO: when object is deleted then recalculate the distance boost
         if (getWorkplaceDistance(person, type) < 6) boostMood(person, 4);
         else if (getWorkplaceDistance(person, type) < 12) boostMood(person, -2);
@@ -1516,7 +1503,7 @@ public class GameModel implements InGameTimeTickListener, Serializable {
      * @param position forest position
      * @return the sum of the years
      */
-    private int calculateForestMood(Point position) {
+    public int calculateForestMood(Point position) {
         int sum = 0;
 
         int r = 3;
