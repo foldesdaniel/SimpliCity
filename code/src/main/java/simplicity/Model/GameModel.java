@@ -146,6 +146,7 @@ public class GameModel implements InGameTimeTickListener, Serializable {
      */
     public static GameModel reset() {
         instance = null;
+        InGameTimeManager.getInstance().setInGameTime(new InGameTime());
         return getInstance();
     }
 
@@ -162,7 +163,7 @@ public class GameModel implements InGameTimeTickListener, Serializable {
     }
 
     public static void showGameOverDialog() {
-        JOptionPane.showMessageDialog(null, "Game over, click OK to return to menu", "Uh oh! | SimpliCity", JOptionPane.ERROR_MESSAGE);
+        JOptionPane.showMessageDialog(null, "You have been fired as the mayor! Click OK to return to menu", "Uh oh! | SimpliCity", JOptionPane.ERROR_MESSAGE);
     }
 
     /**

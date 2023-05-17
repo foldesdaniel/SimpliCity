@@ -103,6 +103,8 @@ public class GameWindow extends JFrame implements MenuEventListener, StartStopGa
         gamePanel = null;
         this.add(mainMenu);
         mainMenu.displayButtons();
+        this.revalidate();
+        this.repaint();
     }
 
 }
