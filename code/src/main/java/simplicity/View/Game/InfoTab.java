@@ -5,6 +5,7 @@ import simplicity.Model.GameModel;
 import simplicity.Model.Listeners.MoralChangeListener;
 import simplicity.Model.Listeners.PeopleChangeListener;
 import simplicity.Model.Person.Person;
+import simplicity.Model.Placeables.Forest;
 import simplicity.Model.Placeables.Placeable;
 import simplicity.Model.Placeables.PlaceableTemp;
 import simplicity.Model.Placeables.Workplace;
@@ -100,6 +101,8 @@ public class InfoTab extends JPanel implements PeopleChangeListener, MoralChange
                     }
                 }
                 infoText += "</ul>";
+            }else if(f instanceof Forest ff){
+                infoText += "Age: " + ff.getAge() + " years";
             }
             infoText += "</html>";
             JLabel infoLabel = new JLabel(infoText);
