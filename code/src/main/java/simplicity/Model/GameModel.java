@@ -63,6 +63,7 @@ public class GameModel implements InGameTimeTickListener, Serializable {
     public static final Image FOREST_RIGHT_T = ResourceLoader.loadImage("forest_right_t.png");
     public static final Image FOREST_DOWN_T = ResourceLoader.loadImage("forest_down_t.png");
     public static final Image FOREST_UP_T = ResourceLoader.loadImage("forest_up_t.png");
+    public static final Image FOREST_OVERLAY = ResourceLoader.loadImage("forest_overlay.png");
     public static final Image ZONE_RESIDENTIAL_IMG = ResourceLoader.loadImage("zone_residential.png");
     public static final Image ZONE_RESIDENTIAL_2_IMG = ResourceLoader.loadImage("zone_residential_2.png");
     public static final Image ZONE_WORK_SERVICE_IMG = ResourceLoader.loadImage("zone_work_service.png");
@@ -92,6 +93,7 @@ public class GameModel implements InGameTimeTickListener, Serializable {
     private final ArrayList<MoralChangeListener> moralListeners = new ArrayList<>();
     private final ArrayList<PeopleChangeListener> peopleChangeListeners = new ArrayList<>();
     private final ArrayList<WealthChangeListener> wealthListeners = new ArrayList<>();
+    private final ArrayList<ForestListener> forestListeners = new ArrayList<>();
     @Getter
     private final ArrayList<Animation> animations = new ArrayList<>();
     @Getter
@@ -112,7 +114,8 @@ public class GameModel implements InGameTimeTickListener, Serializable {
     public GameModel() {
         this.finance = new Finance(35000);
         generateNextDisasterDate();
-        this.initGrid();
+        //this.initGrid();
+        this.fillForest(115);
         inGameTime.addInGameTimeTickListener(this);
         //inGameTime.startInGameTime(InGameSpeeds.ULTRASONIC_DEV_ONLY);
         inGameTime.startInGameTime(InGameSpeeds.NORMAL);
@@ -315,6 +318,29 @@ public class GameModel implements InGameTimeTickListener, Serializable {
         for (int i = 0; i < GRID_SIZE; ++i) {
             for (int j = 0; j < GRID_SIZE; ++j) {
                 this.grid[i][j] = null; //null == not initialized block
+            }
+        }
+    }
+
+    public void fillForest(int threshold) {
+        this.grid = new Placeable[GRID_SIZE][GRID_SIZE];
+        double mean = 0;
+        double sigma = 30;
+        double variance = sigma * sigma;
+        double a = 0.0;
+        double b;
+        for (int i = 0; i < GRID_SIZE; i++) {
+            for (int j = 0; j < GRID_SIZE; j++) {
+                while (a == 0.0) a = Math.random();
+                b = Math.random();
+                double x = Math.sqrt(-2 * Math.log(a)) * Math.cos(2 * Math.PI * b);
+                double noise = mean + Math.sqrt(variance) * x;
+                int gray = 128;
+                double c = gray + noise;
+                if (c > 255) c = 255;
+                if (c < 0) c = 0;
+                int nc = (int) Math.round(c);
+                this.grid[i][j] = nc < threshold ? new Forest(new Point(i,j)) : null;
             }
         }
     }
@@ -1646,6 +1672,10 @@ public class GameModel implements InGameTimeTickListener, Serializable {
         this.wealthListeners.add(l);
     }
 
+    public void addForestListener(ForestListener l) {
+        this.forestListeners.add(l);
+    }
+
     public int getCurrentWealth() {
         return this.finance.getCurrentWealth();
     }
@@ -1900,6 +1930,7 @@ public class GameModel implements InGameTimeTickListener, Serializable {
                 if (grid[i][j] != null && grid[i][j] instanceof Forest) {
                     int elapsed = this.inGameTime.getInGameYear() - ((Forest) grid[i][j]).getPlantTime().getYear();
                     ((Forest) grid[i][j]).setAge(elapsed);
+                    for (ForestListener l : this.forestListeners) l.onForestAgeUp();
                     if (elapsed <= 10) boostForestMood(grid[i][j].getPosition(), 1);
                     else {
                         int maintenanceCost = ((Forest) grid[i][j]).getMaintenanceCost();

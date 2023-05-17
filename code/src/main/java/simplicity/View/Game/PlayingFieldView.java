@@ -5,6 +5,7 @@ import simplicity.Model.Education.University;
 import simplicity.Model.Listeners.AnimationTickListener;
 import simplicity.Model.Listeners.FieldClickListener;
 import simplicity.Model.GameModel;
+import simplicity.Model.Listeners.ForestListener;
 import simplicity.Model.Persistence.Persistence;
 import simplicity.Model.Listeners.ModeChangeListener;
 import simplicity.Model.Placeables.*;
@@ -19,7 +20,7 @@ import java.awt.event.*;
 import java.io.IOException;
 import java.util.ArrayList;
 
-public class PlayingFieldView extends JPanel implements MouseListener, MouseMotionListener, MouseWheelListener, AnimationTickListener {
+public class PlayingFieldView extends JPanel implements MouseListener, MouseMotionListener, MouseWheelListener, AnimationTickListener, ForestListener {
 
     // TODO: move to GameModel
     //private Placeable[][] grid;
@@ -32,6 +33,7 @@ public class PlayingFieldView extends JPanel implements MouseListener, MouseMoti
     private final ArrayList<ModeChangeListener> modeListeners;
 
     public PlayingFieldView() {
+        this.setBorder(new InsetShadowBorder(16));
         this.modeListeners = new ArrayList<>();
         this.gridSize = GameModel.GRID_SIZE;
         this.fieldSize = defaultFieldSize;
@@ -42,7 +44,12 @@ public class PlayingFieldView extends JPanel implements MouseListener, MouseMoti
         this.addMouseMotionListener(this);
         this.addMouseWheelListener(this);
         Animation.addAnimationTickListener(this);
-        this.setBorder(new InsetShadowBorder(16));
+        // GameModel.getInstance().addForestListener(this);
+    }
+
+    @Override
+    public void onForestAgeUp() {
+        this.repaint();
     }
 
     public void addModeListener(ModeChangeListener l){
@@ -142,6 +149,11 @@ public class PlayingFieldView extends JPanel implements MouseListener, MouseMoti
                     Image img = model.grid(j,i).getImage(leftNeighbor, rightNeighbor, upNeighbor, downNeighbor);
                     Dimension size = model.grid(j,i).getSize();
                     g.drawImage(img, offsetX + coord.y, offsetY + coord.x - (fieldSize * (size.height - 1)), fieldSize * size.width, fieldSize * size.height, null);
+                    if(model.grid(j,i) instanceof Forest forest){
+                        if(forest.getAge() < 1){
+                            g.drawImage(GameModel.FOREST_OVERLAY, offsetX + coord.y, offsetY + coord.x - (fieldSize * (size.height - 1)), fieldSize * size.width, fieldSize * size.height, null);
+                        }
+                    }
                 }
             }
         }
