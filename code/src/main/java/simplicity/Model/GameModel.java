@@ -1898,7 +1898,7 @@ public class GameModel implements InGameTimeTickListener, Serializable {
             for (int j = 0; j < GRID_SIZE; ++j) {
                 if (grid[i][j] != null && grid[i][j] instanceof Forest) {
                     int elapsed = this.inGameTime.getInGameYear() - ((Forest) grid[i][j]).getPlantTime().getYear();
-                    ((Forest) grid[i][j]).setAge(elapsed > 10 ? 10 : elapsed);
+                    ((Forest) grid[i][j]).setAge(elapsed);
                     if (elapsed <= 10) boostForestMood(grid[i][j].getPosition(), 1);
                     else {
                         int maintenanceCost = ((Forest) grid[i][j]).getMaintenanceCost();
