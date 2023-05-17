@@ -19,10 +19,15 @@ public class Forest extends Placeable implements Serializable {
     @Setter
     private int maintenanceCost;
 
+    @Setter
+    @Getter
+    private int age;
+
     public Forest(Point position, Date plantTime) {
         super(FieldType.FOREST, position, 5000);
         this.plantTime = plantTime;
         this.maintenanceCost = 500;
+        this.age = 0;
     }
 
     public Forest(Point position) {
