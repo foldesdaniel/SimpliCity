@@ -1653,6 +1653,7 @@ public class GameModel implements InGameTimeTickListener, Serializable {
         if (!isGameOver) {
             isGameOver = true;
             showGameOverDialog();
+            InGameTimeManager.getInstance().setInGameTime(new InGameTime());
             for (StartStopGameListener l : stopGameListeners) l.onGameStop();
         }
     }
