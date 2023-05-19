@@ -1,7 +1,5 @@
 package simplicity.Model.Game;
 
-import java.lang.reflect.Field;
-
 public enum FieldType {
 
     EMPTY("Empty"),
@@ -17,11 +15,11 @@ public enum FieldType {
 
     private String displayName;
 
-    private FieldType(String displayName){
+    FieldType(String displayName) {
         this.displayName = displayName;
     }
 
-    public String getDisplayName(){
+    public String getDisplayName() {
         return displayName;
     }
 

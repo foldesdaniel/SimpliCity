@@ -50,7 +50,9 @@ public class Finance implements Serializable {
      * @param text  Information about the building
      */
     public void addIncome(int price, String text) {
-        this.incomeList.add(new FinanceData(price, text));
+        if (this.incomeList != null) {
+            this.incomeList.add(new FinanceData(price, text));
+        }
     }
 
     /**
@@ -60,7 +62,9 @@ public class Finance implements Serializable {
      * @param text  Information about the building
      */
     public void addBuilt(int price, String text) {
-        this.builtList.add(new FinanceData(price, text));
+        if (this.builtList != null) {
+            this.builtList.add(new FinanceData(price, text));
+        }
     }
 
     /**
@@ -70,7 +74,9 @@ public class Finance implements Serializable {
      * @param text  Information about the building
      */
     public void addYearlySpend(int price, String text) {
-        this.yearlySpendList.add(new FinanceData(price, text));
+        if (this.yearlySpendList != null) {
+            this.yearlySpendList.add(new FinanceData(price, text));
+        }
     }
 
     /**
@@ -81,11 +87,13 @@ public class Finance implements Serializable {
      */
     public void removeYearlySpend(int price, String text) {
         int ind = -1;
-        for (int i = 0; i < this.yearlySpendList.size(); ++i) {
-            FinanceData data = this.yearlySpendList.get(i);
-            if (data.getPrice() == price && data.getText().equals(text)) {
-                ind = i;
-                break;
+        if (this.yearlySpendList != null) {
+            for (int i = 0; i < this.yearlySpendList.size(); ++i) {
+                FinanceData data = this.yearlySpendList.get(i);
+                if (data.getPrice() == price && data.getText().equals(text)) {
+                    ind = i;
+                    break;
+                }
             }
         }
         if (ind != -1) this.yearlySpendList.remove(ind);
@@ -97,11 +105,13 @@ public class Finance implements Serializable {
      * @return information about the built expenses
      */
     public String builtToString() {
-        String s = "";
-        for (FinanceData data : this.builtList) {
-            s += data.toString(false) + "\n";
+        StringBuilder s = new StringBuilder();
+        if (this.builtList != null) {
+            for (FinanceData data : this.builtList) {
+                s.append(data.toString(false)).append("\n");
+            }
         }
-        return s;
+        return s.toString();
     }
 
     /**
@@ -110,11 +120,13 @@ public class Finance implements Serializable {
      * @return information about the yearly maintenance expenses
      */
     public String yearlySpendToString() {
-        String s = "";
-        for (FinanceData data : this.yearlySpendList) {
-            s += data.toString(false) + "\n";
+        StringBuilder s = new StringBuilder();
+        if (this.yearlySpendList != null) {
+            for (FinanceData data : this.yearlySpendList) {
+                s.append(data.toString(false)).append("\n");
+            }
         }
-        return s;
+        return s.toString();
     }
 
     /**
@@ -123,10 +135,12 @@ public class Finance implements Serializable {
      * @return information about the income
      */
     public String incomeToString() {
-        String s = "";
-        for (FinanceData data : this.incomeList) {
-            s += data.toString(true) + "\n";
+        StringBuilder s = new StringBuilder();
+        if (this.incomeList != null) {
+            for (FinanceData data : this.incomeList) {
+                s.append(data.toString(true)).append("\n");
+            }
         }
-        return s;
+        return s.toString();
     }
 }

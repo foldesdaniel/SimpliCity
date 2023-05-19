@@ -13,24 +13,24 @@ public class TopLeftBar extends JPanel {
 
     private ArrayList<StartStopGameListener> stopGameListeners;
 
-    public TopLeftBar(){
+    public TopLeftBar() {
         this.stopGameListeners = new ArrayList<>();
-        this.setLayout(new GridLayout(1,2));
+        this.setLayout(new GridLayout(1, 2));
         JButton backToMenuBtn = new JButton("Main menu");
         JButton saveBtn = new JButton("Save game");
         backToMenuBtn.setFont(CFont.get());
-        backToMenuBtn.setBorder(new EmptyBorder(0,0,0,0));
+        backToMenuBtn.setBorder(new EmptyBorder(0, 0, 0, 0));
         saveBtn.setFont(CFont.get());
-        saveBtn.setBorder(new EmptyBorder(0,0,0,0));
+        saveBtn.setBorder(new EmptyBorder(0, 0, 0, 0));
         backToMenuBtn.addActionListener((e) -> {
             int answer = GameModel.showDialog("Save game?", "Would you like to save your current progress?");
-            switch(answer){
+            switch (answer) {
                 case JOptionPane.YES_OPTION:
                     GameModel.getInstance().saveGame();
-                    for(StartStopGameListener l : stopGameListeners) l.onGameStop();
+                    for (StartStopGameListener l : stopGameListeners) l.onGameStop();
                     break;
                 case JOptionPane.NO_OPTION:
-                    for(StartStopGameListener l : stopGameListeners) l.onGameStop();
+                    for (StartStopGameListener l : stopGameListeners) l.onGameStop();
                     break;
                 default:
                     break;
@@ -45,7 +45,7 @@ public class TopLeftBar extends JPanel {
         this.setBackground(new Color(50, 50, 50));
     }
 
-    public void addStopGameListener(StartStopGameListener stopGameListener){
+    public void addStopGameListener(StartStopGameListener stopGameListener) {
         this.stopGameListeners.add(stopGameListener);
     }
 

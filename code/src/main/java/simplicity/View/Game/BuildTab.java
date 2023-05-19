@@ -3,7 +3,10 @@ package simplicity.View.Game;
 import simplicity.Model.Education.School;
 import simplicity.Model.Education.University;
 import simplicity.Model.Listeners.ModeChangeListener;
-import simplicity.Model.Placeables.*;
+import simplicity.Model.Placeables.Forest;
+import simplicity.Model.Placeables.Police;
+import simplicity.Model.Placeables.Road;
+import simplicity.Model.Placeables.Stadium;
 import simplicity.Model.Placeables.Zones.Industrial;
 import simplicity.Model.Placeables.Zones.Residential;
 import simplicity.Model.Placeables.Zones.Service;
@@ -15,16 +18,15 @@ import java.awt.*;
 
 public class BuildTab extends JPanel implements ModeChangeListener {
 
+    private static final String startDeleteText = "Enter delete mode";
+    private static final String stopDeleteText = "Exit delete mode";
     private final JPanel zones;
     private final JPanel buildings;
     private final JPanel other;
     private JButton exitBuildBtn;
     private JButton deleteBtn;
 
-    private static final String startDeleteText = "Enter delete mode";
-    private static final String stopDeleteText = "Exit delete mode";
-
-    public BuildTab(){
+    public BuildTab() {
         this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         this.zones = new JPanel();
         this.buildings = new JPanel();
@@ -62,10 +64,10 @@ public class BuildTab extends JPanel implements ModeChangeListener {
         deleteBtn = new JButton();
         deleteBtn.setText(startDeleteText);
         deleteBtn.addActionListener((e) -> {
-            if(GamePanel.isDeleteMode()){
+            if (GamePanel.isDeleteMode()) {
                 GamePanel.stopDeleteMode();
                 //deleteBtn.setText(startDeleteText);
-            }else{
+            } else {
                 GamePanel.startDeleteMode();
                 //deleteBtn.setText(stopDeleteText);
             }
@@ -87,14 +89,6 @@ public class BuildTab extends JPanel implements ModeChangeListener {
         this.add(this.other);
     }
 
-    /*public void refreshDeleteBtnText(){
-        if(GamePanel.isDeleteMode()){
-            deleteBtn.setText(startDeleteText);
-        }else{
-            deleteBtn.setText(stopDeleteText);
-        }
-    }*/
-
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
@@ -109,9 +103,9 @@ public class BuildTab extends JPanel implements ModeChangeListener {
 
     @Override
     public void onDeleteModeChanged(boolean on) {
-        if(on){
+        if (on) {
             deleteBtn.setText(stopDeleteText);
-        }else{
+        } else {
             deleteBtn.setText(startDeleteText);
         }
     }

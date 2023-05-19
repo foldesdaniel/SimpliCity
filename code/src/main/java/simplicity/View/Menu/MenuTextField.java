@@ -11,7 +11,7 @@ public class MenuTextField extends JTextField {
      */
     public MenuTextField() {
         this.setFont(CFont.get());
-        Dimension buttonSize = new Dimension(300,40); // TODO: media query-like sizing based on resolution
+        Dimension buttonSize = new Dimension(300, 40); // TODO: media query-like sizing based on resolution
         this.setPreferredSize(buttonSize);
         this.setMinimumSize(buttonSize);
         this.setMaximumSize(buttonSize);

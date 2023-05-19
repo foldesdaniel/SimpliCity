@@ -11,12 +11,12 @@ public class WrapLabel extends JTextPane {
 
     private int baseHeight;
 
-    public WrapLabel(){
+    public WrapLabel() {
         this.setOpaque(false);
         this.setFocusable(false);
         //this.setBackground(new Color(0,0,255));
         this.baseHeight = this.getPreferredSize().height;
-        this.setBorder(new EmptyBorder(0,0,0,0));
+        this.setBorder(new EmptyBorder(0, 0, 0, 0));
         this.setEditable(false);
         this.setFont(CFont.get(Font.PLAIN, 20));
         //this.setLineWrap(true);
@@ -27,12 +27,12 @@ public class WrapLabel extends JTextPane {
         doc.setParagraphAttributes(0, doc.getLength(), center, false);
     }
 
-    public WrapLabel(String text){
+    public WrapLabel(String text) {
         this();
         this.setText(text);
     }
 
-    public int getLineCount(){
+    public int getLineCount() {
         int totalCharacters = this.getText().length();
         int lineCount = (totalCharacters == 0) ? 1 : 0;
         try {
@@ -47,7 +47,7 @@ public class WrapLabel extends JTextPane {
         return lineCount;
     }
 
-    public void setBaseHeight(int baseHeight){
+    public void setBaseHeight(int baseHeight) {
         this.baseHeight = baseHeight;
     }
 
@@ -57,8 +57,8 @@ public class WrapLabel extends JTextPane {
         this.setPreferredSize(d);
     }
 
-    public void fitHeight(int width){
-        Dimension d = new Dimension(width,this.baseHeight*this.getLineCount());
+    public void fitHeight(int width) {
+        Dimension d = new Dimension(width, this.baseHeight * this.getLineCount());
         this.setSize(d);
         this.setMaximumSize(d);
     }

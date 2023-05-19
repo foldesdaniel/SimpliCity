@@ -20,7 +20,7 @@ public class Stadium extends Building implements Serializable {
     }
 
     @Override
-    public Dimension getSize(){
+    public Dimension getSize() {
         return new Dimension(2, 2);
     }
 

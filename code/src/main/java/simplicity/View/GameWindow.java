@@ -4,7 +4,6 @@ import lombok.Getter;
 import simplicity.Model.GameModel;
 import simplicity.Model.Listeners.MenuEventListener;
 import simplicity.Model.Listeners.StartStopGameListener;
-import simplicity.Model.Persistence.Persistence;
 import simplicity.Model.Persistence.SaveEntries;
 import simplicity.View.Game.GamePanel;
 import simplicity.View.Menu.MainMenu;
@@ -45,7 +44,7 @@ public class GameWindow extends JFrame implements MenuEventListener, StartStopGa
         menuCategory1.add(menuItem2);
         JMenuBar menuBar = new JMenuBar();
         menuBar.add(menuCategory1);
-        this.setJMenuBar(menuBar);*/ // it's a little broken on macos
+        this.setJMenuBar(menuBar);*/ // it's a little broken on macOS
 
         this.pack();
     }

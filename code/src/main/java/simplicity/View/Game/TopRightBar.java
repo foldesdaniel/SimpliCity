@@ -14,12 +14,11 @@ import java.awt.event.ActionListener;
 
 public class TopRightBar extends JPanel implements InGameTimeListener {
 
+    private final InGameTime inGameTime = InGameTimeManager.getInstance().getInGameTime();
     private JLabel nameLabel;
     private JLabel timeLabel;
 
-    private final InGameTime inGameTime = InGameTimeManager.getInstance().getInGameTime();
-
-    public TopRightBar(){
+    public TopRightBar() {
         Font font = CFont.get();
         nameLabel = new JLabel(GameModel.getInstance().getCityName());
         nameLabel.setFont(CFont.get(Font.BOLD, 20));
@@ -31,7 +30,7 @@ public class TopRightBar extends JPanel implements InGameTimeListener {
         nameContainer.setOpaque(false);
         this.add(nameContainer, BorderLayout.LINE_START);
         timeLabel = new JLabel();
-        timeLabel.setFont(CFont.get(Font.PLAIN,20));
+        timeLabel.setFont(CFont.get(Font.PLAIN, 20));
         timeLabel.setHorizontalAlignment(SwingConstants.CENTER);
         this.add(timeLabel);
         inGameTime.setInGameTimeListener(this);
@@ -45,9 +44,9 @@ public class TopRightBar extends JPanel implements InGameTimeListener {
                 String bts = GameModel.getInstance().getFinance().builtToString();
                 String ysts = GameModel.getInstance().getFinance().yearlySpendToString();
                 String its = GameModel.getInstance().getFinance().incomeToString();
-                if(bts.length() == 0) bts = "No data on record\n";
-                if(ysts.length() == 0) ysts = "No data on record\n";
-                if(its.length() == 0) its = "No data on record\n";
+                if (bts.length() == 0) bts = "No data on record\n";
+                if (ysts.length() == 0) ysts = "No data on record\n";
+                if (its.length() == 0) its = "No data on record\n";
                 String bigStr = "Building expenses:\n" + bts + "\nYearly maintenance expenses:\n" + ysts + "\nIncome:\n" + its;
                 GameModel.showMessage("Finances", bigStr);
             }
@@ -105,7 +104,7 @@ public class TopRightBar extends JPanel implements InGameTimeListener {
         btn4.setFont(font);
         btn5.setFont(font);
         btn6.setFont(font);
-        Dimension btnSize = new Dimension(56,28);
+        Dimension btnSize = new Dimension(56, 28);
         btn1.setPreferredSize(btnSize);
         btn2.setPreferredSize(btnSize);
         btn3.setPreferredSize(btnSize);
@@ -119,12 +118,12 @@ public class TopRightBar extends JPanel implements InGameTimeListener {
         timeControls.add(btn5);
         timeControls.add(btn6);
         this.add(timeControls, BorderLayout.LINE_END);
-        timeChanged(0,0,0);
+        timeChanged(0, 0, 0);
     }
 
     @Override
     public void timeChanged(int inGameYear, int inGameDay, int inGameHour) {
-        java.time.LocalDate ld = java.time.Year.of(2023+inGameYear).atDay(inGameDay+1);
+        java.time.LocalDate ld = java.time.Year.of(2023 + inGameYear).atDay(inGameDay + 1);
         timeLabel.setText(ld.toString().replace("-", ".") + ". " + String.format("%02d", inGameHour) + ":00");
     }
 

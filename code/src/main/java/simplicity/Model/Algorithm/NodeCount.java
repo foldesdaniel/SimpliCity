@@ -11,11 +11,8 @@ public class NodeCount implements Serializable {
     public Point position;
 
     /**
-     *
-     * @param position
-     *          current position
-     * @param count
-     *          counted steps since start
+     * @param position current position
+     * @param count    counted steps since start
      */
     public NodeCount(Point position, int count) {
         this.position = position;

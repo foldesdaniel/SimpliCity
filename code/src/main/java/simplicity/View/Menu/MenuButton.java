@@ -3,8 +3,6 @@ package simplicity.View.Menu;
 import simplicity.View.Style.CFont;
 
 import javax.swing.*;
-import javax.swing.border.BevelBorder;
-import javax.swing.border.Border;
 import java.awt.*;
 
 public class MenuButton extends JButton {
@@ -12,13 +10,12 @@ public class MenuButton extends JButton {
     /**
      * Constructor with initialized label.
      *
-     * @param label
-     *            This button will display this text.
+     * @param label This button will display this text.
      */
     public MenuButton(String label) {
         this.setText(label);
         this.setFont(CFont.get(Font.BOLD, 28));
-        Dimension buttonSize = new Dimension(200,50); // TODO: media query-like sizing based on resolution
+        Dimension buttonSize = new Dimension(200, 50); // TODO: media query-like sizing based on resolution
         this.setPreferredSize(buttonSize);
         this.setMinimumSize(buttonSize);
         this.setMaximumSize(buttonSize);

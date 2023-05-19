@@ -9,8 +9,7 @@ public class MenuLabel extends JLabel {
     /**
      * Constructor with initialized label.
      *
-     * @param label
-     *            This label will display this text.
+     * @param label This label will display this text.
      */
     public MenuLabel(String label) {
         this.setText(label);

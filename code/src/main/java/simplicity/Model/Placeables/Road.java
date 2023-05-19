@@ -15,6 +15,7 @@ public class Road extends Placeable implements Serializable {
 
     @Getter
     private int maintenanceCost;
+
     public Road(Point position) {
         super(FieldType.ROAD, position, 600);
         this.maintenanceCost = 100;
@@ -33,9 +34,9 @@ public class Road extends Placeable implements Serializable {
     @Override
     public Image getImage(Placeable left, Placeable right, Placeable up, Placeable down) {
         Image roadImg;
-        if(this.getPosition() == GameModel.NO_SELECTION){
+        if (this.getPosition() == GameModel.NO_SELECTION) {
             roadImg = GameModel.ROAD_STRAIGHT_IMG;
-        }else{
+        } else {
             RoadType type = RoadType.calc(left, right, up, down);
             switch (type) {
                 case HORIZONTAL -> roadImg = GameModel.ROAD_STRAIGHT_IMG;

@@ -21,7 +21,6 @@ public class University extends Education implements InGameTimeTickListener, Ser
     private final InGameTime inGameTime;
 
     /**
-     *
      * @param position the current position in the grid
      */
     public University(Point position) {
@@ -53,7 +52,7 @@ public class University extends Education implements InGameTimeTickListener, Ser
         if (studentIds.size() > 0) {
             studentIds.sort(Collections.reverseOrder());
             studentIds.forEach(index -> this.getArrivalDates().remove((int) index));
-            studentIds.forEach(index -> this.removePerson((int) index));
+            studentIds.forEach(index -> this.removePerson(index));
         }
     }
 

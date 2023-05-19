@@ -31,7 +31,7 @@ public class Residential extends Zone implements Serializable {
         for (Person p : this.getPeople()) {
             mood += p.getMood();
         }
-        return this.getPeople().size() == 0 ? 0 : (int) mood / this.getPeople().size();
+        return this.getPeople().size() == 0 ? 0 : mood / this.getPeople().size();
     }
 
     /**

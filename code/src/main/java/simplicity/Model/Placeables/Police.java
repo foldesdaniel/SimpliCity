@@ -20,7 +20,7 @@ public class Police extends Building implements Serializable {
     }
 
     @Override
-    public boolean roadConnects(){
+    public boolean roadConnects() {
         return false;
     }
 

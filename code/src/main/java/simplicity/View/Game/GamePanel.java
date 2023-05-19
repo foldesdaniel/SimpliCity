@@ -15,6 +15,11 @@ import java.util.ArrayList;
 
 public class GamePanel extends JPanel implements FieldClickListener {
 
+    private static final ArrayList<ModeChangeListener> modeListeners = new ArrayList<>();
+    private static boolean isPlacing = false;
+    private static Placeable placee;
+    @Getter
+    private static boolean deleteMode = false;
     private final JMenuBar menuBar;
     private final TopLeftBar topLeftBar;
     private final TopRightBar topRightBar;
@@ -23,11 +28,6 @@ public class GamePanel extends JPanel implements FieldClickListener {
     private final BottomBar bottomBar;
     private final GridBagConstraints gbc;
     private final ArrayList<GameKeyListener> keyListeners;
-    private static final ArrayList<ModeChangeListener> modeListeners = new ArrayList<>();
-
-    private static boolean isPlacing = false;
-    private static Placeable placee;
-    @Getter private static boolean deleteMode = false;
 
     public GamePanel() {
         this.keyListeners = new ArrayList<>();
@@ -47,22 +47,22 @@ public class GamePanel extends JPanel implements FieldClickListener {
         kbmanager.addKeyEventDispatcher(new KeyEventDispatcher() {
             @Override
             public boolean dispatchKeyEvent(KeyEvent e) {
-                if(e.getID() == KeyEvent.KEY_PRESSED){
-                    if(e.getKeyCode() == KeyEvent.VK_ESCAPE || e.getKeyCode() == KeyEvent.VK_E){
-                        if(isPlacing){
+                if (e.getID() == KeyEvent.KEY_PRESSED) {
+                    if (e.getKeyCode() == KeyEvent.VK_ESCAPE || e.getKeyCode() == KeyEvent.VK_E) {
+                        if (isPlacing) {
                             stopPlacing();
-                        }else if(deleteMode){
+                        } else if (deleteMode) {
                             stopDeleteMode();
                         }
-                    }else if(e.getKeyCode() == KeyEvent.VK_Q){
-                        if(deleteMode){
+                    } else if (e.getKeyCode() == KeyEvent.VK_Q) {
+                        if (deleteMode) {
                             stopDeleteMode();
-                        }else{
+                        } else {
                             startDeleteMode();
                         }
                     }
                     repaint();
-                    for(GameKeyListener l : keyListeners) l.onKeyPressed(e);
+                    for (GameKeyListener l : keyListeners) l.onKeyPressed(e);
                 }
                 return false;
             }
@@ -116,58 +116,46 @@ public class GamePanel extends JPanel implements FieldClickListener {
         this.repaint();
     }
 
-    public void addKeyListener(GameKeyListener l){
-        this.keyListeners.add(l);
-    }
-
-    public static void addModeListener(ModeChangeListener l){
+    public static void addModeListener(ModeChangeListener l) {
         modeListeners.add(l);
     }
 
-    public void addStopGameListener(StartStopGameListener stopGameListener){
-        this.topLeftBar.addStopGameListener(stopGameListener);
-    }
-
-    public static void setPlacing(Placeable p){
-        if(deleteMode) stopDeleteMode();
-        isPlacing = true;
-        placee = p;
-        for(ModeChangeListener l : modeListeners) l.onBuildModeChanged(isPlacing);
-    }
-
-    public static Placeable stopPlacing(boolean restart){
+    public static Placeable stopPlacing(boolean restart) {
         Placeable p = placee;
         isPlacing = restart;
         placee = restart ? BuildTile.newInstance(placee.getClass()) : null;
-        for(ModeChangeListener l : modeListeners) l.onBuildModeChanged(isPlacing);
+        for (ModeChangeListener l : modeListeners) l.onBuildModeChanged(isPlacing);
         return p;
     }
 
-    public static Placeable stopPlacing(){
+    public static Placeable stopPlacing() {
         return stopPlacing(false);
     }
 
-    public static boolean isPlacing(){
+    public static boolean isPlacing() {
         return isPlacing;
     }
 
-    public static Placeable getPlacee(){
+    public static void setPlacing(Placeable p) {
+        if (deleteMode) stopDeleteMode();
+        isPlacing = true;
+        placee = p;
+        for (ModeChangeListener l : modeListeners) l.onBuildModeChanged(isPlacing);
+    }
+
+    public static Placeable getPlacee() {
         return placee;
     }
 
-    public static void startDeleteMode(){
-        if(isPlacing) stopPlacing();
+    public static void startDeleteMode() {
+        if (isPlacing) stopPlacing();
         deleteMode = true;
-        for(ModeChangeListener l : modeListeners) l.onDeleteModeChanged(deleteMode);
+        for (ModeChangeListener l : modeListeners) l.onDeleteModeChanged(deleteMode);
     }
 
-    public static void stopDeleteMode(){
+    public static void stopDeleteMode() {
         deleteMode = false;
-        for(ModeChangeListener l : modeListeners) l.onDeleteModeChanged(deleteMode);
-    }
-
-    private GridBagConstraints changeGbc(int row, int col, int rowSpan, int colSpan, double weightX, double weightY) {
-        return GamePanel.changeGbc(gbc, row, col, rowSpan, colSpan, weightX, weightY);
+        for (ModeChangeListener l : modeListeners) l.onDeleteModeChanged(deleteMode);
     }
 
     public static GridBagConstraints changeGbc(GridBagConstraints gbc, int row, int col, int rowSpan, int colSpan, double weightX, double weightY) {
@@ -181,6 +169,18 @@ public class GamePanel extends JPanel implements FieldClickListener {
         gbc.gridy = row;
         gbc.gridheight = rowSpan;
         return gbc;
+    }
+
+    public void addKeyListener(GameKeyListener l) {
+        this.keyListeners.add(l);
+    }
+
+    public void addStopGameListener(StartStopGameListener stopGameListener) {
+        this.topLeftBar.addStopGameListener(stopGameListener);
+    }
+
+    private GridBagConstraints changeGbc(int row, int col, int rowSpan, int colSpan, double weightX, double weightY) {
+        return GamePanel.changeGbc(gbc, row, col, rowSpan, colSpan, weightX, weightY);
     }
 
     @Override

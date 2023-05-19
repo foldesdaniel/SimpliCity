@@ -3,9 +3,9 @@ package simplicity.Model.Placeables;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import simplicity.Model.Game.FieldType;
 import simplicity.Model.Game.ForestType;
 import simplicity.Model.GameModel;
-import simplicity.Model.Game.FieldType;
 import simplicity.Model.GameTime.Date;
 
 import java.awt.*;
@@ -31,7 +31,7 @@ public class Forest extends Placeable implements Serializable {
     }
 
     public Forest(Point position) {
-        this(position, new Date(0,0,0)); // need default plant time
+        this(position, new Date(0, 0, 0)); // need default plant time
     }
 
     @Override
@@ -42,9 +42,9 @@ public class Forest extends Placeable implements Serializable {
     @Override
     public Image getImage(Placeable left, Placeable right, Placeable up, Placeable down) {
         Image forestImg;
-        if(this.getPosition() == GameModel.NO_SELECTION){
+        if (this.getPosition() == GameModel.NO_SELECTION) {
             forestImg = GameModel.FOREST_NONE;
-        }else{
+        } else {
             ForestType type = ForestType.calc(left, right, up, down);
             switch (type) {
                 case DOWN_TO_LEFT -> forestImg = GameModel.FOREST_DOWN_TO_LEFT;
@@ -75,7 +75,7 @@ public class Forest extends Placeable implements Serializable {
     }
 
     @Override
-    public boolean roadConnects(){
+    public boolean roadConnects() {
         return false;
     }
 

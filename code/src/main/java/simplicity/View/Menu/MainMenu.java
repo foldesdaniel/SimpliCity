@@ -3,25 +3,17 @@ package simplicity.View.Menu;
 import simplicity.Model.GameModel;
 import simplicity.Model.Listeners.MenuEventListener;
 import simplicity.Model.Listeners.StartStopGameListener;
-import simplicity.Model.Persistence.Persistence;
 import simplicity.Model.Persistence.SaveEntries;
 import simplicity.Model.Persistence.SaveEntry;
 import simplicity.View.GameWindow;
 import simplicity.View.Style.CFont;
 import simplicity.View.Style.MenuScrollBarUI;
-import simplicity.View.Style.ScrollBarUI;
 
 import javax.swing.*;
-import javax.swing.text.DateFormatter;
 import java.awt.*;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.io.File;
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.time.format.DateTimeFormatter;
-import java.time.temporal.TemporalAccessor;
-import java.time.temporal.TemporalField;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
@@ -49,11 +41,11 @@ public class MainMenu extends JPanel {
         displayButtons();
     }
 
-    public void addMenuEventListener(MenuEventListener menuEventListener){
+    public void addMenuEventListener(MenuEventListener menuEventListener) {
         this.menuEventListeners.add(menuEventListener);
     }
 
-    public void addStartGameListener(StartStopGameListener startGameListener){
+    public void addStartGameListener(StartStopGameListener startGameListener) {
         this.startGameListeners.add(startGameListener);
     }
 
@@ -66,7 +58,7 @@ public class MainMenu extends JPanel {
         this.repaint();
 
         int windowHeight = this.getHeight();
-        int gap = windowHeight/32;
+        int gap = windowHeight / 32;
 
         JPanel mainMenuPanel = new JPanel();
         mainMenuPanel.setLayout(new BoxLayout(mainMenuPanel, BoxLayout.Y_AXIS));
@@ -75,7 +67,7 @@ public class MainMenu extends JPanel {
 
         // Title
         JLabel title = new JLabel();
-        title.setFont(CFont.get(Font.BOLD,72));
+        title.setFont(CFont.get(Font.BOLD, 72));
         title.setAlignmentX(Component.CENTER_ALIGNMENT);
         title.setIcon(new ImageIcon(GameModel.LOGO_IMG));
         mainMenuPanel.add(title);
@@ -123,7 +115,7 @@ public class MainMenu extends JPanel {
         this.repaint();
 
         int windowHeight = this.getHeight();
-        int gap = windowHeight/40;
+        int gap = windowHeight / 40;
 
         JPanel newGamePanel = new JPanel();
         newGamePanel.setLayout(new BoxLayout(newGamePanel, BoxLayout.Y_AXIS));
@@ -171,7 +163,7 @@ public class MainMenu extends JPanel {
         this.repaint();
 
         int windowHeight = this.getHeight();
-        int gap = windowHeight/32;
+        int gap = windowHeight / 32;
 
         JPanel loadMenuPanel = new JPanel();
         loadMenuPanel.setLayout(new BoxLayout(loadMenuPanel, BoxLayout.Y_AXIS));
@@ -189,28 +181,28 @@ public class MainMenu extends JPanel {
         entries.sort(new Comparator<SaveEntry>() {
             @Override
             public int compare(SaveEntry o1, SaveEntry o2) {
-                return (int)(o2.getModifyDate() - o1.getModifyDate());
+                return (int) (o2.getModifyDate() - o1.getModifyDate());
             }
         });
-        if(entries.size() > 0){
+        if (entries.size() > 0) {
             JPanel saveBoxes = new JPanel();
             saveBoxes.setOpaque(false);
             saveBoxes.setLayout(new BoxLayout(saveBoxes, BoxLayout.Y_AXIS));
-            for(SaveEntry entry : entries){
-                JPanel saveBox = new JPanel(){
+            for (SaveEntry entry : entries) {
+                JPanel saveBox = new JPanel() {
                     @Override
                     protected void paintComponent(Graphics _g) {
                         super.paintComponent(_g);
                         Graphics2D g = (Graphics2D) _g;
                         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                        g.setColor(new Color(0,0,0,128));
+                        g.setColor(new Color(0, 0, 0, 128));
                         g.fillRoundRect(0, 0, getWidth(), getHeight(), 20, 20);
                     }
                 };
                 saveBox.add(Box.createVerticalGlue());
                 saveBox.setOpaque(false);
                 saveBox.setLayout(new BoxLayout(saveBox, BoxLayout.Y_AXIS));
-                Dimension saveBoxSize = new Dimension(Math.min((int)Math.round(GameWindow.getWindowWidth()*0.7),672), 50);
+                Dimension saveBoxSize = new Dimension(Math.min((int) Math.round(GameWindow.getWindowWidth() * 0.7), 672), 50);
                 saveBox.setSize(saveBoxSize);
                 saveBox.setMinimumSize(saveBoxSize);
                 saveBox.setMaximumSize(new Dimension(saveBoxSize.width, 200));
@@ -253,10 +245,10 @@ public class MainMenu extends JPanel {
                 });
                 loadButton.setAlignmentX(Component.CENTER_ALIGNMENT);
                 JButton deleteButton = new JButton("Delete");
-                deleteButton.setBackground(new Color(150,70,70));
+                deleteButton.setBackground(new Color(150, 70, 70));
                 deleteButton.setFont(CFont.get(Font.BOLD, 20));
                 deleteButton.addActionListener(e -> {
-                    switch(GameModel.showDialog("Delete?", "Are you sure you want to delete " + entry.getCityName())){
+                    switch (GameModel.showDialog("Delete?", "Are you sure you want to delete " + entry.getCityName())) {
                         case JOptionPane.YES_OPTION:
                             GameModel.showMessage("Not yet", "Feature not implemented yet");
                             break;
@@ -291,7 +283,7 @@ public class MainMenu extends JPanel {
             scrollPane.getVerticalScrollBar().setUI(new MenuScrollBarUI());
             scrollPane.getVerticalScrollBar().setUnitIncrement(8);
             loadMenuPanel.add(scrollPane);
-        }else{
+        } else {
             JLabel noSaveLabel = new JLabel("There are no saved games yet");
             noSaveLabel.setFont(CFont.get(Font.BOLD, 22));
             noSaveLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -314,32 +306,31 @@ public class MainMenu extends JPanel {
     /**
      * Displays the actual game panel
      */
-    private void startGame(String _cityName){
+    private void startGame(String _cityName) {
         String cityName = _cityName.trim();
-        if(cityName.length() > 0){
+        if (cityName.length() > 0) {
             GameModel.reset().setCityName(cityName);
             startGame(true);
-        }else{
+        } else {
             GameModel.showError("Input error", "Your city name cannot be empty");
         }
     }
-    private void startGame(boolean newGame){
-        for(StartStopGameListener l : startGameListeners) l.onGameStart(newGame);
+
+    private void startGame(boolean newGame) {
+        for (StartStopGameListener l : startGameListeners) l.onGameStart(newGame);
     }
 
     /**
      * Displays the settings page after selecting Settings.
      *
-     * @param displayResolutions
-     *            If the window is in Windowed Fullscreen state at the moment
-     *            then it will not display the pickable resolutions, instead it
-     *            will disable that ComboBox.
-     * @param firstTime
-     *            Will be true if we called this method from the simplicity.Main Menu page,
-     *            so we can show the currently used display type and resolution.
-     *            Will be false if we called this method inside this method,
-     *            so we can show the changes we made previously (not the currently
-     *            used display type and resolution).
+     * @param displayResolutions If the window is in Windowed Fullscreen state at the moment
+     *                           then it will not display the pickable resolutions, instead it
+     *                           will disable that ComboBox.
+     * @param firstTime          Will be true if we called this method from the simplicity.Main Menu page,
+     *                           so we can show the currently used display type and resolution.
+     *                           Will be false if we called this method inside this method,
+     *                           so we can show the changes we made previously (not the currently
+     *                           used display type and resolution).
      */
     private void displaySettings(boolean displayResolutions, boolean firstTime) {
         this.removeAll();
@@ -348,7 +339,7 @@ public class MainMenu extends JPanel {
 
         int windowWidth = this.getWidth();
         int windowHeight = this.getHeight();
-        int gap = windowHeight/40;
+        int gap = windowHeight / 40;
 
         JPanel settingsMenu = new JPanel();
         settingsMenu.setLayout(new BoxLayout(settingsMenu, BoxLayout.Y_AXIS));
@@ -369,8 +360,7 @@ public class MainMenu extends JPanel {
         if (!firstTime) {
             display = displayResolutions ? "Windowed" : "Windowed Fullscreen";
             res_type.setSelectedItem(display);
-        }
-        else {
+        } else {
             int fullScreenWidth = Toolkit.getDefaultToolkit().getScreenSize().width;
             display = (windowWidth == fullScreenWidth) ? "Windowed Fullscreen" : "Windowed";
             res_type.setSelectedItem(display);
@@ -378,7 +368,7 @@ public class MainMenu extends JPanel {
         res_type.addItemListener(new ItemListener() {
             @Override
             public void itemStateChanged(ItemEvent e) {
-                if(e.getStateChange() == ItemEvent.SELECTED) {
+                if (e.getStateChange() == ItemEvent.SELECTED) {
                     Object selected = res_type.getSelectedItem();
                     displaySettings("Windowed".equals(selected), false);
                 }
@@ -388,7 +378,7 @@ public class MainMenu extends JPanel {
         settingsMenu.add(Box.createRigidArea(new Dimension(0, gap)));
 
         //Resolutions
-        options = new String[] {"960x540", "1280x720", "1600x900"};
+        options = new String[]{"960x540", "1280x720", "1600x900"};
         MenuComboBox resolutions = new MenuComboBox(display.equals("Windowed") ? options : new String[]{});
         resolutions.setAlignmentX(Component.CENTER_ALIGNMENT);
         resolutions.setEnabled(display.equals("Windowed"));
@@ -412,8 +402,7 @@ public class MainMenu extends JPanel {
                 int newHeight = parseInt(res.split("x")[1]);
                 this.setWindowSize(newWidth, newHeight, false);
             });
-        }
-        else apply_btn.addActionListener(e -> this.setWindowSize(windowWidth, windowHeight, true));
+        } else apply_btn.addActionListener(e -> this.setWindowSize(windowWidth, windowHeight, true));
         settingsMenu.add(apply_btn);
         settingsMenu.add(Box.createRigidArea(new Dimension(0, gap)));
 
@@ -432,16 +421,14 @@ public class MainMenu extends JPanel {
     /**
      * Sets simplicity.Main Menu window size.
      *
-     * @param width
-     *            simplicity.Main Menu window will be resized to this width.
-     * @param height
-     *            simplicity.Main Menu window will be resized to this height.
+     * @param width  simplicity.Main Menu window will be resized to this width.
+     * @param height simplicity.Main Menu window will be resized to this height.
      */
     private void setWindowSize(int width, int height, boolean fullscreen) {
-        if(fullscreen){
-            for(MenuEventListener l : menuEventListeners) l.changedFullscreen();
-        }else{
-            for(MenuEventListener l : menuEventListeners) l.changedWindowed(width, height);
+        if (fullscreen) {
+            for (MenuEventListener l : menuEventListeners) l.changedFullscreen();
+        } else {
+            for (MenuEventListener l : menuEventListeners) l.changedWindowed(width, height);
         }
         updateMenuSize();
         displayButtons();
@@ -451,20 +438,20 @@ public class MainMenu extends JPanel {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         Image img = GameModel.BACKGROUND_IMG;
-        Dimension originalImgSize = new Dimension(img.getWidth(null),img.getHeight(null));
+        Dimension originalImgSize = new Dimension(img.getWidth(null), img.getHeight(null));
         double imgRatio = originalImgSize.width / (double) originalImgSize.height;
         double ratio = this.getWidth() / (double) this.getHeight();
-        int imgWidth = (int)Math.ceil(
-            (imgRatio > ratio) ? this.getHeight()*imgRatio : this.getWidth()
+        int imgWidth = (int) Math.ceil(
+                (imgRatio > ratio) ? this.getHeight() * imgRatio : this.getWidth()
         );
-        int imgHeight = (int)Math.ceil(
-            (imgRatio > ratio) ? this.getHeight() : this.getWidth()/imgRatio
+        int imgHeight = (int) Math.ceil(
+                (imgRatio > ratio) ? this.getHeight() : this.getWidth() / imgRatio
         );
         // background image will always be centered and cover the panel
-        g.drawImage(img, (this.getWidth()/2)-(imgWidth/2), (this.getHeight()/2)-(imgHeight/2), imgWidth, imgHeight, null);
+        g.drawImage(img, (this.getWidth() / 2) - (imgWidth / 2), (this.getHeight() / 2) - (imgHeight / 2), imgWidth, imgHeight, null);
     }
 
-    private void updateMenuSize(){
+    private void updateMenuSize() {
         int windowWidth = GameWindow.getWindowWidth();
         int windowHeight = GameWindow.getWindowHeight();
         this.setSize(new Dimension(windowWidth, windowHeight));

@@ -1,10 +1,13 @@
 package simplicity.View.Listeners;
 
-import java.awt.event.*;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionListener;
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
 
 public abstract class MouseAdapter implements java.awt.event.MouseListener, MouseMotionListener, MouseWheelListener {
 
-    public MouseAdapter(){
+    public MouseAdapter() {
 
     }
 

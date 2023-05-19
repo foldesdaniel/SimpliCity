@@ -2,13 +2,10 @@ package simplicity;
 
 import com.formdev.flatlaf.FlatDarculaLaf;
 import simplicity.Model.GameModel;
-import simplicity.Model.Persistence.Persistence;
-import simplicity.Model.Placeables.Placeable;
 import simplicity.View.GameWindow;
 
 import javax.swing.*;
 import java.awt.*;
-import java.io.IOException;
 
 public class Main {
 
@@ -23,7 +20,6 @@ public class Main {
         GameWindow gameWindow = new GameWindow();
         gameWindow.setVisible(true);
     }
-
 
 
 }

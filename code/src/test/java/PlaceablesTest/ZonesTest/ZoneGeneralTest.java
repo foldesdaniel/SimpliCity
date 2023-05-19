@@ -176,7 +176,7 @@ public class ZoneGeneralTest {
         p2.moveIn(residential);
 
         residential.deleteData();
-        for(int i = 0; i < residential.getPeople().size(); i++) {
+        for (int i = 0; i < residential.getPeople().size(); i++) {
             assertNull(residential.getPeople().get(i).getEducation());
             assertNull(residential.getPeople().get(i).getWorkplace());
         }

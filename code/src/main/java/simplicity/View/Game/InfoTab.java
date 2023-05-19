@@ -21,10 +21,10 @@ public class InfoTab extends JPanel implements PeopleChangeListener, MoralChange
 
     private final JLabel emptyLabel;
     private final Component boxGap = Box.createRigidArea(new Dimension(0, 16));
+    private final Dimension defaultImageSize = new Dimension(32, 32);
     private Placeable lastInfo = null;
-    private final Dimension defaultImageSize = new Dimension(32,32);
 
-    public InfoTab(){
+    public InfoTab() {
         this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         this.emptyLabel = new JLabel("Empty selection");
         this.emptyLabel.setFont(CFont.get(Font.PLAIN, 20));
@@ -32,7 +32,7 @@ public class InfoTab extends JPanel implements PeopleChangeListener, MoralChange
         GameModel.getInstance().addPeopleChangeListener(this);
     }
 
-    public void init(){
+    public void init() {
         this.removeAll();
         this.setAlignmentX(Component.CENTER_ALIGNMENT);
         this.add(this.boxGap);
@@ -42,12 +42,12 @@ public class InfoTab extends JPanel implements PeopleChangeListener, MoralChange
     public void updateInfo(Placeable _f) {
         this.removeAll();
         this.setAlignmentX(Component.LEFT_ALIGNMENT);
-        if(this.lastInfo != null && this.lastInfo instanceof Zone z){
+        if (this.lastInfo != null && this.lastInfo instanceof Zone z) {
             z.removePeopleChangeListener(this);
         }
         Placeable f = _f instanceof PlaceableTemp ff ? ff.getPlaceable() : _f;
         this.lastInfo = f;
-        if(this.lastInfo != null && this.lastInfo instanceof Zone z){
+        if (this.lastInfo != null && this.lastInfo instanceof Zone z) {
             z.addPeopleChangeListener(this);
         }
         if (f == null) {
@@ -70,29 +70,29 @@ public class InfoTab extends JPanel implements PeopleChangeListener, MoralChange
             infoText += "Size: " + size.width + "x" + size.height + "<br>";
             infoText += "Tax: " + tax + "<br>";
             infoText += "Build price: " + buildPrice + "<br>";
-            if(f instanceof Zone ff){
+            if (f instanceof Zone ff) {
                 infoText += "Capacity: " + ff.getPeople().size() + "/" + ff.getMaxPeople() + "<br>";
                 ArrayList<Person> people = ff.getPeople();
-                if(ff instanceof Residential fff) infoText += "Mood: " + fff.calculateZoneMood() + "<br>";
+                if (ff instanceof Residential fff) infoText += "Mood: " + fff.calculateZoneMood() + "<br>";
                 infoText += "People:<br><ul style=\"padding:0;\">";
-                if(people.size() == 0){
+                if (people.size() == 0) {
                     infoText += "There are no people here";
-                }else{
-                    for(int i=0;i<people.size();i++){
+                } else {
+                    for (int i = 0; i < people.size(); i++) {
                         Person person = people.get(i);
                         infoText += "<li>" + person.getAge().getYear() + "yo (mood: " + person.getMood() + ")";
-                        if(ff instanceof Residential fff){
+                        if (ff instanceof Residential fff) {
                             infoText += "<ul><li>";
-                            if(person.getEducation() != null){
+                            if (person.getEducation() != null) {
                                 infoText += "School: " + person.getEducation();
-                            }else if(person.getWorkplace() != null){
+                            } else if (person.getWorkplace() != null) {
                                 infoText += "Workplace: " + person.getWorkplace();
-                            }else{
+                            } else {
                                 infoText += "No school or workplace";
                             }
                             infoText += "<li>Education level: " + person.getEducationLevel() + "</li>";
                             infoText += "</li></ul>";
-                        }else if(ff instanceof Workplace || ff instanceof Education){
+                        } else if (ff instanceof Workplace || ff instanceof Education) {
                             infoText += "<ul><li>";
                             infoText += "Home: " + person.getHome();
                             infoText += "</li></ul>";
@@ -101,7 +101,7 @@ public class InfoTab extends JPanel implements PeopleChangeListener, MoralChange
                     }
                 }
                 infoText += "</ul>";
-            }else if(f instanceof Forest ff){
+            } else if (f instanceof Forest ff) {
                 int age = ff.getAge();
                 infoText += "Age: " + age + (age == 1 ? " year" : " years");
             }
@@ -127,10 +127,10 @@ public class InfoTab extends JPanel implements PeopleChangeListener, MoralChange
 
         private final Placeable p;
 
-        InfoIcon(Placeable p){
+        InfoIcon(Placeable p) {
             this.p = p;
-            double x = p.getSize().width / (double)p.getSize().height;
-            Dimension imageSize = new Dimension((int)Math.round(x*32),32);
+            double x = p.getSize().width / (double) p.getSize().height;
+            Dimension imageSize = new Dimension((int) Math.round(x * 32), 32);
 
             this.setPreferredSize(imageSize);
             this.setSize(imageSize);

@@ -1,7 +1,5 @@
 package simplicity.View.Game;
 
-import com.formdev.flatlaf.ui.FlatScrollBarUI;
-import simplicity.Model.GameModel;
 import simplicity.Model.Listeners.ModeChangeListener;
 import simplicity.Model.Placeables.Placeable;
 import simplicity.View.Components.ControlPanelTabButton;
@@ -10,8 +8,6 @@ import simplicity.View.Style.ScrollBarUI;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-import javax.swing.plaf.ColorUIResource;
-import javax.swing.plaf.basic.BasicScrollBarUI;
 import java.awt.*;
 
 public class ControlPanel extends JPanel {
@@ -21,8 +17,8 @@ public class ControlPanel extends JPanel {
     private final InfoTab infoTab;
     private final BuildTab buildTab;
     private final JPanel container;
-    private boolean infoTabShowing = true;
     private final Font font;
+    private boolean infoTabShowing = true;
 
     public ControlPanel() {
         infoTab = new InfoTab();
@@ -33,7 +29,7 @@ public class ControlPanel extends JPanel {
         gbc.insets = new Insets(0, 24, 0, 24);
         this.setLayout(new GridBagLayout());
         JPanel btnContainer = new JPanel();
-        GridLayout gridLayout = new GridLayout(1,2);
+        GridLayout gridLayout = new GridLayout(1, 2);
         gridLayout.setHgap(8);
         btnContainer.setLayout(gridLayout);
         font = CFont.get(Font.PLAIN, 22);
@@ -47,9 +43,9 @@ public class ControlPanel extends JPanel {
         container.add(infoTab);
         btnContainer.add(infoBtn);
         btnContainer.add(buildBtn);
-        btnContainer.setBorder(new EmptyBorder(8,0,0,0));
+        btnContainer.setBorder(new EmptyBorder(8, 0, 0, 0));
         this.add(btnContainer, GamePanel.changeGbc(gbc, 0, 0, 1, 1, 1, 0));
-        JScrollPane scrollPane = new JScrollPane(container,JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        JScrollPane scrollPane = new JScrollPane(container, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         scrollPane.setBorder(BorderFactory.createEmptyBorder());
         scrollPane.getVerticalScrollBar().setUI(new ScrollBarUI());
         scrollPane.getHorizontalScrollBar().setUI(new ScrollBarUI());
@@ -88,7 +84,7 @@ public class ControlPanel extends JPanel {
         //}
     }
 
-    public ModeChangeListener getModeListener(){
+    public ModeChangeListener getModeListener() {
         return buildTab;
     }
 

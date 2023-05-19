@@ -124,7 +124,7 @@ public class GameModelTest {
     }
 
     @Test
-    public void testRemoveRoad() throws NoSuchFieldException, IllegalAccessException {
+    public void testRemoveRoad() {
         gameModel.placeRoad(new Point(2, 2));
         gameModel.removeRoad(new Point(2, 2));
         assertFalse(gameModel.grid(2, 2) instanceof Road);
@@ -305,8 +305,8 @@ public class GameModelTest {
         for (int i = 2; i <= 5; ++i)
             gameModel.placeRoad(new Point(1, i));
         Person p = new Person();
-        p.moveIn((Residential) gameModel.grid(1,1));
-        p.goToWork((Service) gameModel.grid(1,6));
+        p.moveIn((Residential) gameModel.grid(1, 1));
+        p.goToWork((Service) gameModel.grid(1, 6));
         assertEquals(5, gameModel.getWorkplaceDistance(p, "workplace"));
     }
 
@@ -317,8 +317,8 @@ public class GameModelTest {
         for (int i = 2; i <= 5; ++i)
             gameModel.placeRoad(new Point(1, i));
         Person p = new Person();
-        p.moveIn((Residential) gameModel.grid(1,1));
-        p.goToWork((Service) gameModel.grid(1,6));
+        p.moveIn((Residential) gameModel.grid(1, 1));
+        p.goToWork((Service) gameModel.grid(1, 6));
         int prevmood = p.getMood();
         gameModel.boostPersonMoodBasedOnDistance(p, "workplace");
         assertTrue(p.getMood() > prevmood);
@@ -457,6 +457,28 @@ public class GameModelTest {
 
         gameModel.boostMood(person, -15);
         assertEquals(personMood - 10, person.getMood());
+    }
+
+    @Test
+    public void testCleanUpAfterPerson() {
+        Residential residential = new Residential(new Point(0, 0));
+        School school = new School(new Point(2, 2));
+        Industrial industrial = new Industrial(new Point(4, 4));
+        Person person = new Person();
+        person.moveIn(residential);
+        person.goToSchool(school);
+        Person person1 = new Person();
+        person1.moveIn(residential);
+        person1.goToWork(industrial);
+        gameModel.getPeople().add(person);
+        gameModel.getPeople().add(person1);
+
+        gameModel.cleanUpAfterPerson(person);
+        gameModel.cleanUpAfterPerson(person1);
+
+        assertEquals(0, gameModel.getPeople().size());
+        assertEquals(0, school.getPeople().size());
+        assertEquals(0, industrial.getPeople().size());
     }
 
 }

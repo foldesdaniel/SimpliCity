@@ -21,7 +21,6 @@ public class School extends Education implements InGameTimeTickListener, Seriali
     private final InGameTime inGameTime;
 
     /**
-     *
      * @param position the current position in the grid
      */
     public School(Point position) {
@@ -54,7 +53,7 @@ public class School extends Education implements InGameTimeTickListener, Seriali
         if (studentIds.size() > 0) {
             studentIds.sort(Collections.reverseOrder());
             studentIds.forEach(index -> this.getArrivalDates().remove((int) index));
-            studentIds.forEach(index -> this.removePerson((int) index));
+            studentIds.forEach(index -> this.removePerson(index));
         }
     }
 

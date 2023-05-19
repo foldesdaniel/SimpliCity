@@ -9,13 +9,12 @@ public class MenuComboBox extends JComboBox {
     /**
      * Constructor with initialized values.
      *
-     * @param list
-     *            This ComboBox will contain these elements.
+     * @param list This ComboBox will contain these elements.
      */
     public MenuComboBox(String[] list) {
         super(list);
         this.setFont(CFont.get());
-        Dimension buttonSize = new Dimension(300,50); // TODO: media query-like sizing based on resolution
+        Dimension buttonSize = new Dimension(300, 50); // TODO: media query-like sizing based on resolution
         this.setPreferredSize(buttonSize);
         this.setMinimumSize(buttonSize);
         this.setMaximumSize(buttonSize);

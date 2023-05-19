@@ -11,17 +11,16 @@ import java.awt.event.MouseMotionAdapter;
 
 public class BuildTile extends JPanel {
 
-    private Placeable placeable;
+    public static final int MINIMUM_WIDTH = 96;
     private final WrapLabel nameLabel;
     private final Dimension defaultImageSize = new Dimension(32, 32);
-    private boolean isHovering = false;
     private final Cursor cursorNormal = Cursor.getDefaultCursor();
     private final Cursor cursorHand = Cursor.getPredefinedCursor(Cursor.HAND_CURSOR);
+    private Placeable placeable;
+    private boolean isHovering = false;
     private boolean isDragging = false;
     private Point dragStart;
     private boolean tempNoHover = false;
-
-    public static final int MINIMUM_WIDTH = 96;
 
     public BuildTile(Class pl) {
         this.placeable = newInstance(pl);
@@ -31,7 +30,7 @@ public class BuildTile extends JPanel {
         this.nameLabel = new WrapLabel(this.placeable.getDisplayName());
         this.nameLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         //this.nameLabel.setBaseHeight();
-        this.nameLabel.setSize(new Dimension(this.getPreferredSize().width,this.nameLabel.getPreferredSize().height));
+        this.nameLabel.setSize(new Dimension(this.getPreferredSize().width, this.nameLabel.getPreferredSize().height));
         this.updateNameLabel();
         JPanel container = new JPanel();
         container.setLayout(new BoxLayout(container, BoxLayout.Y_AXIS));
@@ -50,14 +49,15 @@ public class BuildTile extends JPanel {
             @Override
             public void mouseClicked(MouseEvent e) {
                 //if(!GamePanel.isPlacing()) {
-                    GamePanel.setPlacing(placeable);
-                    placeable = newInstance(pl);
-                    setCursor(cursorNormal);
-                    img.setCursor(cursorNormal);
-                    tempNoHover = true;
-                    repaint();
+                GamePanel.setPlacing(placeable);
+                placeable = newInstance(pl);
+                setCursor(cursorNormal);
+                img.setCursor(cursorNormal);
+                tempNoHover = true;
+                repaint();
                 //}
             }
+
             @Override
             public void mouseReleased(MouseEvent e) {
                 if (isDragging) {
@@ -69,15 +69,17 @@ public class BuildTile extends JPanel {
                     }
                 }
             }
+
             @Override
             public void mouseEntered(MouseEvent e) {
                 isHovering = true;
                 //if(!GamePanel.isPlacing()){
-                    setCursor(cursorHand);
-                    img.setCursor(cursorHand);
+                setCursor(cursorHand);
+                img.setCursor(cursorHand);
                 //}
                 repaint();
             }
+
             @Override
             public void mouseExited(MouseEvent e) {
                 isHovering = false;
@@ -87,7 +89,7 @@ public class BuildTile extends JPanel {
         this.addMouseMotionListener(new MouseMotionAdapter() {
             @Override
             public void mouseDragged(MouseEvent e) {
-                if(!isDragging){
+                if (!isDragging) {
                     isDragging = true;
                     dragStart = e.getPoint();
                 }
@@ -97,15 +99,15 @@ public class BuildTile extends JPanel {
     }
 
     public static Placeable newInstance(Class pl) {
-        try{
+        try {
             return (Placeable) pl.getConstructor(Point.class).newInstance(GameModel.NO_SELECTION);
-        }catch(Exception ex){
+        } catch (Exception ex) {
             ex.printStackTrace();
             return null;
         }
     }
 
-    public void updateNameLabel(){
+    public void updateNameLabel() {
         this.nameLabel.fitHeight(this.getPreferredSize().width);
     }
 
@@ -113,7 +115,7 @@ public class BuildTile extends JPanel {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         //if(isHovering && !GamePanel.isPlacing()){
-        if(isHovering && !tempNoHover){
+        if (isHovering && !tempNoHover) {
             g.drawImage(GameModel.TILE_HOVER_IMG, 0, 0, this.getWidth(), this.getHeight(), null);
         }
         tempNoHover = false;
@@ -121,13 +123,13 @@ public class BuildTile extends JPanel {
 
     class BuildTileImage extends JPanel {
 
-        BuildTileImage(){
+        BuildTileImage() {
             int pw = placeable.getSize().width;
             int ph = placeable.getSize().height;
             Dimension imageSize = (pw > ph) ? (
-                new Dimension(defaultImageSize.width, (int)Math.round((ph/(double)pw)*defaultImageSize.height))
+                    new Dimension(defaultImageSize.width, (int) Math.round((ph / (double) pw) * defaultImageSize.height))
             ) : (
-                new Dimension((int)Math.round((pw/(double)ph)*defaultImageSize.width), defaultImageSize.height)
+                    new Dimension((int) Math.round((pw / (double) ph) * defaultImageSize.width), defaultImageSize.height)
             );
             this.setPreferredSize(imageSize);
             this.setSize(imageSize);

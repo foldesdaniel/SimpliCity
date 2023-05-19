@@ -14,7 +14,7 @@ public class Persistence {
      */
     public static void save(Object obj, String filename) throws IOException {
         File f = new File(pathToSavedGamesDir);
-        if(!f.exists()) f.mkdirs();
+        if (!f.exists()) f.mkdirs();
         String fullPathToFile = pathToSavedGamesDir + filename;
         if (filename.startsWith("__test")) fullPathToFile = filename;
 
@@ -33,7 +33,7 @@ public class Persistence {
      * used to deserialize SaveEntries
      */
     public static SaveEntries loadEntries() {
-        try{
+        try {
             String fullPathToFile = pathToSavedGamesDir + "saveentries.txt";
             //if (filename.startsWith("__test")) fullPathToFile = filename;
             FileInputStream fileInputStream = new FileInputStream(fullPathToFile);
@@ -41,7 +41,7 @@ public class Persistence {
             SaveEntries obj = (SaveEntries) objectInputStream.readObject();
             objectInputStream.close();
             return obj;
-        }catch(Exception ex){
+        } catch (Exception ex) {
             return null;
         }
     }
