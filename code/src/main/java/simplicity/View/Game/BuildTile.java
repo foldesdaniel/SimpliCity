@@ -111,7 +111,7 @@ public class BuildTile extends JPanel {
 
     @Override
     protected void paintComponent(Graphics g) {
-        //super.paintComponent(g);
+        super.paintComponent(g);
         //if(isHovering && !GamePanel.isPlacing()){
         if(isHovering && !tempNoHover){
             g.drawImage(GameModel.TILE_HOVER_IMG, 0, 0, this.getWidth(), this.getHeight(), null);

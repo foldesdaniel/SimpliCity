@@ -31,13 +31,27 @@ public class TopRightBar extends JPanel implements InGameTimeListener {
         nameContainer.setOpaque(false);
         this.add(nameContainer, BorderLayout.LINE_START);
         timeLabel = new JLabel();
-        timeLabel.setFont(font);
+        timeLabel.setFont(CFont.get(Font.PLAIN,20));
         timeLabel.setHorizontalAlignment(SwingConstants.CENTER);
         this.add(timeLabel);
         inGameTime.setInGameTimeListener(this);
         JPanel timeControls = new JPanel();
         timeControls.setLayout(new BoxLayout(timeControls, BoxLayout.X_AXIS));
         timeControls.setOpaque(false);
+        JButton btn0 = new JButton("Finances");
+        btn0.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String bts = GameModel.getInstance().getFinance().builtToString();
+                String ysts = GameModel.getInstance().getFinance().yearlySpendToString();
+                String its = GameModel.getInstance().getFinance().incomeToString();
+                if(bts.length() == 0) bts = "No data on record\n";
+                if(ysts.length() == 0) ysts = "No data on record\n";
+                if(its.length() == 0) its = "No data on record\n";
+                String bigStr = "Building expenses:\n" + bts + "\nYearly maintenance expenses:\n" + ysts + "\nIncome:\n" + its;
+                GameModel.showMessage("Finances", bigStr);
+            }
+        });
         JButton btn1 = new JButton("⏹");
         btn1.addActionListener(new ActionListener() {
             @Override
@@ -85,6 +99,7 @@ public class TopRightBar extends JPanel implements InGameTimeListener {
                 inGameTime.startInGameTime(InGameSpeeds.ULTRASUPERSONIC_DEV_ONLY);
             }
         });
+        btn0.setFont(font);
         btn2.setFont(font);
         btn3.setFont(font);
         btn4.setFont(font);
@@ -96,6 +111,7 @@ public class TopRightBar extends JPanel implements InGameTimeListener {
         btn3.setPreferredSize(btnSize);
         btn4.setPreferredSize(btnSize);
         btn5.setPreferredSize(btnSize);
+        timeControls.add(btn0);
         timeControls.add(btn1);
         timeControls.add(btn2);
         timeControls.add(btn3);
@@ -108,7 +124,8 @@ public class TopRightBar extends JPanel implements InGameTimeListener {
 
     @Override
     public void timeChanged(int inGameYear, int inGameDay, int inGameHour) {
-        timeLabel.setText("Year: " + inGameYear + ", day: " + inGameDay + ", hour: " + inGameHour);
+        java.time.LocalDate ld = java.time.Year.of(2023+inGameYear).atDay(inGameDay+1);
+        timeLabel.setText(ld.toString().replace("-", ".") + ". " + String.format("%02d", inGameHour) + ":00");
     }
 
 

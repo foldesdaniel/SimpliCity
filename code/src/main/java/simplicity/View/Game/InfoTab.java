@@ -102,7 +102,8 @@ public class InfoTab extends JPanel implements PeopleChangeListener, MoralChange
                 }
                 infoText += "</ul>";
             }else if(f instanceof Forest ff){
-                infoText += "Age: " + ff.getAge() + " years";
+                int age = ff.getAge();
+                infoText += "Age: " + age + (age == 1 ? " year" : " years");
             }
             infoText += "</html>";
             JLabel infoLabel = new JLabel(infoText);

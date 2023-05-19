@@ -3,6 +3,7 @@ package simplicity.Model;
 import lombok.Getter;
 import lombok.Setter;
 import simplicity.Model.Algorithm.NodeCount;
+import simplicity.Model.Algorithm.OpenSimplex2S;
 import simplicity.Model.Education.EducationLevel;
 import simplicity.Model.Education.School;
 import simplicity.Model.Education.University;
@@ -115,7 +116,8 @@ public class GameModel implements InGameTimeTickListener, Serializable {
         this.finance = new Finance(35000);
         generateNextDisasterDate();
         //this.initGrid();
-        this.fillForest(115);
+        //this.fillForest(-0.25);
+        this.fillForest(-0.125);
         inGameTime.addInGameTimeTickListener(this);
         //inGameTime.startInGameTime(InGameSpeeds.ULTRASONIC_DEV_ONLY);
         inGameTime.startInGameTime(InGameSpeeds.NORMAL);
@@ -322,25 +324,13 @@ public class GameModel implements InGameTimeTickListener, Serializable {
         }
     }
 
-    public void fillForest(int threshold) {
+    public void fillForest(double threshold) {
         this.grid = new Placeable[GRID_SIZE][GRID_SIZE];
-        double mean = 0;
-        double sigma = 30;
-        double variance = sigma * sigma;
-        double a = 0.0;
-        double b;
-        for (int i = 0; i < GRID_SIZE; i++) {
-            for (int j = 0; j < GRID_SIZE; j++) {
-                while (a == 0.0) a = Math.random();
-                b = Math.random();
-                double x = Math.sqrt(-2 * Math.log(a)) * Math.cos(2 * Math.PI * b);
-                double noise = mean + Math.sqrt(variance) * x;
-                int gray = 128;
-                double c = gray + noise;
-                if (c > 255) c = 255;
-                if (c < 0) c = 0;
-                int nc = (int) Math.round(c);
-                this.grid[i][j] = nc < threshold ? new Forest(new Point(i,j)) : null;
+        int seed = (int)(Math.random()*10000+1);
+        for(int i=0;i<20;i++){
+            for(int j=0;j<20;j++){
+                float cell = OpenSimplex2S.noise2(seed,j,i);
+                this.grid[i][j] = (cell < threshold) ? new Forest(new Point(i,j)) : null;
             }
         }
     }
