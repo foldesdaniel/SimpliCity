@@ -94,7 +94,7 @@ public class GameModel implements InGameTimeTickListener, Serializable {
     private final ArrayList<MoralChangeListener> moralListeners = new ArrayList<>();
     private final ArrayList<PeopleChangeListener> peopleChangeListeners = new ArrayList<>();
     private final ArrayList<WealthChangeListener> wealthListeners = new ArrayList<>();
-    private final ArrayList<ForestListener> forestListeners = new ArrayList<>();
+    private static final ArrayList<ForestListener> forestListeners = new ArrayList<>();
     @Getter
     private final ArrayList<Animation> animations = new ArrayList<>();
     @Getter
@@ -117,7 +117,8 @@ public class GameModel implements InGameTimeTickListener, Serializable {
         generateNextDisasterDate();
         //this.initGrid();
         //this.fillForest(-0.25);
-        this.fillForest(-0.125);
+        //this.fillForest(-0.125);
+        this.fillForest(0.125);
         inGameTime.addInGameTimeTickListener(this);
         //inGameTime.startInGameTime(InGameSpeeds.ULTRASONIC_DEV_ONLY);
         inGameTime.startInGameTime(InGameSpeeds.NORMAL);
@@ -1662,8 +1663,8 @@ public class GameModel implements InGameTimeTickListener, Serializable {
         this.wealthListeners.add(l);
     }
 
-    public void addForestListener(ForestListener l) {
-        this.forestListeners.add(l);
+    public static void addForestListener(ForestListener l) {
+        forestListeners.add(l);
     }
 
     public int getCurrentWealth() {
@@ -1920,7 +1921,7 @@ public class GameModel implements InGameTimeTickListener, Serializable {
                 if (grid[i][j] != null && grid[i][j] instanceof Forest) {
                     int elapsed = this.inGameTime.getInGameYear() - ((Forest) grid[i][j]).getPlantTime().getYear();
                     ((Forest) grid[i][j]).setAge(elapsed);
-                    for (ForestListener l : this.forestListeners) l.onForestAgeUp();
+                    for (ForestListener l : forestListeners) l.onForestAgeUp();
                     if (elapsed <= 10) boostForestMood(grid[i][j].getPosition(), 1);
                     else {
                         int maintenanceCost = ((Forest) grid[i][j]).getMaintenanceCost();

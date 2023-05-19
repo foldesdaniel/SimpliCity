@@ -38,7 +38,7 @@ public class TopRightBar extends JPanel implements InGameTimeListener {
         JPanel timeControls = new JPanel();
         timeControls.setLayout(new BoxLayout(timeControls, BoxLayout.X_AXIS));
         timeControls.setOpaque(false);
-        JButton btn0 = new JButton("Finances");
+        JButton btn0 = new JButton("Fin.");
         btn0.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {

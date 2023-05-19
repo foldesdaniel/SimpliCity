@@ -22,8 +22,6 @@ import java.util.ArrayList;
 
 public class PlayingFieldView extends JPanel implements MouseListener, MouseMotionListener, MouseWheelListener, AnimationTickListener, ForestListener {
 
-    // TODO: move to GameModel
-    //private Placeable[][] grid;
     private final int gridSize;
     private final int defaultFieldSize = 32;
     private int fieldSize;
@@ -44,7 +42,7 @@ public class PlayingFieldView extends JPanel implements MouseListener, MouseMoti
         this.addMouseMotionListener(this);
         this.addMouseWheelListener(this);
         Animation.addAnimationTickListener(this);
-        // GameModel.getInstance().addForestListener(this);
+        GameModel.addForestListener(this);
     }
 
     @Override
