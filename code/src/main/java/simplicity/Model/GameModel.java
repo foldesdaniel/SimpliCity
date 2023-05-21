@@ -33,6 +33,9 @@ import java.util.Queue;
 import java.util.Timer;
 import java.util.*;
 
+/**
+ * The game logic
+ */
 public class GameModel implements InGameTimeTickListener, Serializable {
 
     public static final String GAME_TITLE = "SimpliCity";
@@ -82,6 +85,7 @@ public class GameModel implements InGameTimeTickListener, Serializable {
     public static final Image FIRE_ANIM_7 = ResourceLoader.loadImage("fire_anim_7.png");
     public static final Image FIRE_ANIM_8 = ResourceLoader.loadImage("fire_anim_8.png");
     public static final Font CUSTOM_FONT = ResourceLoader.loadFont("vt323.ttf");
+
     public static final Color BG_DARK = new Color(61, 63, 65); // default flatlaf dark
     public static final Point NO_SELECTION = new Point(-1, -1);
     public static final int DRAG_THRESHOLD = 5;
@@ -89,6 +93,7 @@ public class GameModel implements InGameTimeTickListener, Serializable {
     private static final ArrayList<StartStopGameListener> stopGameListeners = new ArrayList<>();
     private static final ArrayList<ForestListener> forestListeners = new ArrayList<>();
     private static GameModel instance;
+
     @Getter
     private final InGameTime inGameTime = InGameTimeManager.getInstance().getInGameTime();
     private final ArrayList<MoralChangeListener> moralListeners = new ArrayList<>();
@@ -151,18 +156,40 @@ public class GameModel implements InGameTimeTickListener, Serializable {
         return getInstance();
     }
 
+    /**
+     * Displays a confirm dialog
+     *
+     * @param title   popup title
+     * @param message popup message
+     * @return the chosen option
+     */
     public static int showDialog(String title, String message) {
         return JOptionPane.showConfirmDialog(null, message, title + " | SimpliCity", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
     }
 
+    /**
+     * Displays a simple popup
+     *
+     * @param title   popup title
+     * @param message popup message
+     */
     public static void showMessage(String title, String message) {
         JOptionPane.showMessageDialog(null, message, title + " | SimpliCity", JOptionPane.WARNING_MESSAGE);
     }
 
+    /**
+     * Displays an error popup
+     *
+     * @param title   popup title
+     * @param message popup message
+     */
     public static void showError(String title, String message) {
         JOptionPane.showMessageDialog(null, message, title + " | SimpliCity", JOptionPane.ERROR_MESSAGE);
     }
 
+    /**
+     * Displays a popup that tells you that you can't manage a city very well
+     */
     public static void showGameOverDialog() {
         JOptionPane.showMessageDialog(null, "You have been fired as the mayor! Click OK to return to menu", "Uh oh! | SimpliCity", JOptionPane.ERROR_MESSAGE);
     }
@@ -328,6 +355,11 @@ public class GameModel implements InGameTimeTickListener, Serializable {
         }
     }
 
+    /**
+     * Fills the grid with Forest objects using {@link OpenSimplex2S#noise2}
+     *
+     * @param threshold threshold
+     */
     public void fillForest(double threshold) {
         this.grid = new Placeable[GRID_SIZE][GRID_SIZE];
         int seed = (int) (Math.random() * 10000 + 1);
@@ -339,6 +371,12 @@ public class GameModel implements InGameTimeTickListener, Serializable {
         }
     }
 
+    /**
+     * Creates a boolean matrix representing the available free
+     * spaces on the grid (taking Placeable sizes into account)
+     *
+     * @return matrix
+     */
     private boolean[][] freeSpaces() {
         boolean[][] spaces = new boolean[GRID_SIZE][GRID_SIZE];
         for (int i = 0; i < GRID_SIZE; i++) {
@@ -363,6 +401,13 @@ public class GameModel implements InGameTimeTickListener, Serializable {
         return spaces;
     }
 
+    /**
+     * Calculates if the given Placeable can be placed at the given position
+     *
+     * @param p        the Placeable
+     * @param position position on grid
+     * @return if there's enough space for the Placeable
+     */
     public boolean canPlace(Placeable p, Point position) {
         int x = position.x;
         int y = position.y;
@@ -372,7 +417,6 @@ public class GameModel implements InGameTimeTickListener, Serializable {
         boolean[][] freeSpaces = this.freeSpaces();
         for (int i = 0; i < p.getSize().height; i++) {
             for (int j = 0; j < p.getSize().width; j++) {
-                //if (grid[x + j][y - i] != null) {
                 if (!freeSpaces[y - i][x + j]) {
                     return false;
                 }
@@ -381,6 +425,13 @@ public class GameModel implements InGameTimeTickListener, Serializable {
         return true;
     }
 
+    /**
+     * Fills the grid with PlaceableTemps based on the
+     * given position and the size of the Placeable
+     *
+     * @param p        Placeable
+     * @param position position on grid
+     */
     private void fillTemps(Placeable p, Point position) {
         Dimension size = p.getSize();
         if (size.width == 1 && size.height == 1) return;
@@ -393,6 +444,13 @@ public class GameModel implements InGameTimeTickListener, Serializable {
         }
     }
 
+    /**
+     * Removes the PlaceableTemps from the grid based on
+     * the given position and the size of the Placeable
+     *
+     * @param p        Placeable
+     * @param position position on grid
+     */
     private void deleteTemps(Placeable p, Point position) {
         Dimension size = p.getSize();
         if (size.width == 1 && size.height == 1) return;
@@ -404,8 +462,6 @@ public class GameModel implements InGameTimeTickListener, Serializable {
             }
         }
     }
-
-    //todo : place/remove road, forest, service, residential, school, university and finish industrial
 
     /**
      * used to place a Stadium on the grid
@@ -644,7 +700,6 @@ public class GameModel implements InGameTimeTickListener, Serializable {
      */
     public void removeIndustrial(Point position, boolean forceRemove) {
         //check if it can be removed
-        //if (!forceRemove) return;
 
         Industrial industrial = ((Industrial) grid[position.x][position.y]);
         if (((Industrial) grid[position.x][position.y]).getPeople().size() > 0 && !forceRemove) {
@@ -1290,7 +1345,6 @@ public class GameModel implements InGameTimeTickListener, Serializable {
         while (!queue.isEmpty()) {
             NodeCount nc = queue.remove();
             position = nc.position;
-            //System.out.println("Position : " + position.x + " " + position.y);
 
             if (!visited.contains(new Point(position.x + 1, position.y)) && position.x + 1 < GRID_SIZE && grid[position.x + 1][position.y] != null) {
                 if (grid[position.x + 1][position.y].getType() == FieldType.ROAD) {
@@ -1342,7 +1396,7 @@ public class GameModel implements InGameTimeTickListener, Serializable {
     }
 
     /**
-     * used to boost a persons mood, depending on how far their occupation is
+     * used to boost a person's mood, depending on how far their occupation is
      *
      * @param person Person
      * @param type   the Placeable we are measuring the distance to - work, school, uni, etc.
@@ -1473,9 +1527,6 @@ public class GameModel implements InGameTimeTickListener, Serializable {
      * @return 1 if there are more people working in Industrial zone, 0 if more in Service zone
      */
     public int workersRatio() {
-        //return 1 if we need service workers
-        //return 0 if we need industrial workers
-
         int industrialCount = 0;
         int serviceCount = 0;
 
@@ -1790,7 +1841,6 @@ public class GameModel implements InGameTimeTickListener, Serializable {
                     lp = p;
                 }
             }
-            //TODO lp could be null
             if (lp != null) {
                 if (lp.getWorkplace() != null) lp.getWorkplace().removePerson(lp);
                 if (lp.getHome() != null) lp.getHome().removePerson(lp);
@@ -1891,7 +1941,6 @@ public class GameModel implements InGameTimeTickListener, Serializable {
                 }
             }
         }
-        //TODO: ??? finance class : implement show yearly maintenance cost ???
         finance.removeMoney(sum);
     }
 
@@ -1959,10 +2008,21 @@ public class GameModel implements InGameTimeTickListener, Serializable {
         removeIndustrial(position, true);
     }
 
+    /**
+     * Plays the given Animation
+     *
+     * @param anim Animation to play
+     */
     public void playAnim(Animation anim) {
         addAnimation(anim);
     }
 
+    /**
+     * Plays the given Animation for a duration
+     *
+     * @param duration duration in milliseconds
+     * @param anim     Animation to play
+     */
     public void playAnim(Animation anim, int duration) {
         playAnim(anim);
         Timer animTimer = new Timer();
@@ -1975,11 +2035,21 @@ public class GameModel implements InGameTimeTickListener, Serializable {
         animTimer.schedule(animTask, duration);
     }
 
+    /**
+     * Adds an Animation to the animation list
+     *
+     * @param anim animation to add
+     */
     private void addAnimation(Animation anim) {
         animations.add(anim);
         anim.start();
     }
 
+    /**
+     * Stops playing an Animation
+     *
+     * @param anim animation to stop
+     */
     public void stopAnimation(Animation anim) {
         animations.remove(anim);
         anim.stop();
@@ -2015,7 +2085,6 @@ public class GameModel implements InGameTimeTickListener, Serializable {
      */
     public void saveGame() {
         try {
-            //Persistence.save(this, "gm" + +saveCount++ + ".txt");
             SaveEntry.createOrUpdateEntry(getCityName(), this);
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -2028,7 +2097,6 @@ public class GameModel implements InGameTimeTickListener, Serializable {
     @Override
     public void timeTick() {
         if (isGameOver) return;
-//        System.out.println("Time: Y: " + inGameTime.getInGameYear() + " D: " + inGameTime.getInGameDay() + " H: " + inGameTime.getInGameHour());
         if (this.inGameTime.getInGameHour() > 0) {
             calculateCityMood();
             removeDepressedPeople();

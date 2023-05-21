@@ -106,12 +106,7 @@ public class GamePanel extends JPanel implements FieldClickListener {
         mainPanel.setPreferredSize(windowSize);
         mainPanel.setBackground(new Color(255, 0, 0, 150));
 
-        /* menuBar.setPreferredSize(new Dimension(menuBar.getWidth(), menuBar.getHeight()));
-        topLeftBar.setPreferredSize(new Dimension(topLeftBar.getWidth(), topLeftBar.getHeight()));
-        topRightBar.setPreferredSize(new Dimension(topRightBar.getWidth(), topRightBar.getHeight())); */
         controlPanel.setPreferredSize(new Dimension((int) Math.round(this.getWidth() * 0.25), controlPanel.getHeight()));
-        /* playingField.setPreferredSize(new Dimension(playingField.getWidth(), playingField.getHeight()));
-        bottomBar.setPreferredSize(new Dimension(bottomBar.getWidth(), bottomBar.getHeight())); */
 
         addModeListener(this.controlPanel.getModeListener());
         this.add(mainPanel);
