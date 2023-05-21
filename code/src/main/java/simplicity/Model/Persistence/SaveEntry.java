@@ -36,12 +36,14 @@ public class SaveEntry implements Serializable {
         Persistence.save(data, entry.fileName);
     }
 
-    private static void removeEntry(String cityName) throws Exception {
+    public static void removeEntry(String cityName) {
         SaveEntry entry = findEntry(cityName);
-        if (entry == null) {
-            throw new Exception("Save not found");
-        }
+        if (entry == null) return;
+        new java.io.File("saves/" + entry.getFileName()).delete();
         SaveEntries.getInstance().remove(entry);
+        try{
+            Persistence.saveEntries();
+        }catch (IOException ex){}
     }
 
     private static void updateEntry(String cityName, GameModel data) throws IOException {
@@ -50,7 +52,6 @@ public class SaveEntry implements Serializable {
             entry.numberOfSaves++;
             long before = entry.modifyDate;
             entry.modifyDate = (new java.util.Date()).getTime();
-            System.out.println("updated " + cityName + ", modified from " + before + " to " + entry.modifyDate);
             Persistence.save(data, entry.fileName);
         }
     }

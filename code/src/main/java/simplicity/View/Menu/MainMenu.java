@@ -249,7 +249,10 @@ public class MainMenu extends JPanel {
                 deleteButton.setFont(CFont.get(Font.BOLD, 20));
                 deleteButton.addActionListener(e -> {
                     switch (GameModel.showDialog("Delete?", "Are you sure you want to delete " + entry.getCityName())) {
-                        case JOptionPane.YES_OPTION -> GameModel.showMessage("Not yet", "Feature not implemented yet");
+                        case JOptionPane.YES_OPTION -> {
+                            SaveEntry.removeEntry(entry.getCityName());
+                            displayLoad();
+                        }
                         default -> {
                         }
                     }

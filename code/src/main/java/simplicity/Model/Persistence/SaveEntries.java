@@ -29,7 +29,7 @@ public class SaveEntries implements Serializable {
     }
 
     public void remove(SaveEntry s) {
-        getInstance().saveEntries.add(s);
+        getInstance().saveEntries.remove(s);
     }
 
     public ArrayList<SaveEntry> getSaveEntries() {

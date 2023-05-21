@@ -41,7 +41,7 @@ public class GameModel implements InGameTimeTickListener, Serializable {
     public static final String GAME_TITLE = "SimpliCity";
     public static final Image LOGO_IMG = ResourceLoader.loadImage("logo.png");
     public static final Image LOGO_SMALL_IMG = ResourceLoader.loadImage("logo_small.png");
-    public static final Image BACKGROUND_IMG = ResourceLoader.loadImage("bg_temp.jpg");
+    public static final Image BACKGROUND_IMG = ResourceLoader.loadImage("bg.jpg");
     public static final Image MISSING_IMG = ResourceLoader.loadImage("missing.png");
     public static final Image GRASS_IMG = ResourceLoader.loadImage("grass.png");
     public static final Image SELECTION_IMG = ResourceLoader.loadImage("selection.png");
@@ -117,10 +117,10 @@ public class GameModel implements InGameTimeTickListener, Serializable {
     private boolean isGameOver = false;
 
     public GameModel() {
-        this.finance = new Finance(35000);
+        this.finance = new Finance(100000);
         generateNextDisasterDate();
         // this.initGrid();
-        this.fillForest(0.16);
+        this.fillForest(-0.125);
         inGameTime.addInGameTimeTickListener(this);
         inGameTime.startInGameTime(InGameSpeeds.NORMAL);
     }
@@ -1785,7 +1785,7 @@ public class GameModel implements InGameTimeTickListener, Serializable {
      * @return if the city mood if over a certain threshold
      */
     public boolean isMoodGoodEnough() {
-        return this.cityMood >= 30;
+        return this.cityMood >= 20;
     }
 
     /**
@@ -1943,6 +1943,7 @@ public class GameModel implements InGameTimeTickListener, Serializable {
                     ((Forest) grid[i][j]).setAge(elapsed);
                     for (ForestListener l : forestListeners) l.onForestAgeUp();
                     if (elapsed <= 10) boostForestMood(grid[i][j].getPosition(), 1);
+                    if (elapsed == 10) finance.removeYearlySpend(((Forest) grid[i][j]).getMaintenanceCost(), "Erdő fenntartási díj");
                     else {
                         int maintenanceCost = ((Forest) grid[i][j]).getMaintenanceCost();
                         finance.removeYearlySpend(maintenanceCost, "Erdő fenntartási díj");
@@ -2087,14 +2088,13 @@ public class GameModel implements InGameTimeTickListener, Serializable {
             calculateCityMood();
             removeDepressedPeople();
         }
-        if (this.inGameTime.getInGameDay() > 0 && this.inGameTime.getInGameDay() % 20 == 0 && this.inGameTime.getInGameHour() == 0) {
+        if (this.inGameTime.getInGameDay() > 0 && this.inGameTime.getInGameHour() == 0) {
             if (isMoodGoodEnough()) {
                 welcomeNewInhabitants();
                 findOccupation();
             } else {
                 departInhabitants();
             }
-
         }
         if (this.inGameTime.getInGameYear() > 0 && this.inGameTime.getInGameDay() == 0 && this.inGameTime.getInGameHour() == 0) {
             changeMoodOfPeople();

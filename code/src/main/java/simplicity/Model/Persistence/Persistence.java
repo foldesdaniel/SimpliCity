@@ -23,6 +23,16 @@ public class Persistence {
         objectOutputStream.writeObject(obj);
         objectOutputStream.close();
 
+        saveEntries();
+    }
+
+    /**
+     * used to serialize SaveEntries
+     */
+    public static void saveEntries() throws IOException {
+        File f = new File(pathToSavedGamesDir);
+        if (!f.exists()) f.mkdirs();
+
         FileOutputStream fileOutputStream2 = new FileOutputStream(pathToSavedGamesDir + "saveentries.txt");
         ObjectOutputStream objectOutputStream2 = new ObjectOutputStream(fileOutputStream2);
         objectOutputStream2.writeObject(SaveEntries.getInstance());
