@@ -38,7 +38,7 @@ public class GameModelTest {
 
     @Test
     public void testGameModelConstructor() {
-        assertEquals(35000, gameModel.getCurrentWealth());
+        assertEquals(100000, gameModel.getCurrentWealth());
     }
 
     @Test
@@ -48,12 +48,12 @@ public class GameModelTest {
         assertTrue(gameModel.grid(2, 1) instanceof PlaceableTemp);
         assertTrue(gameModel.grid(3, 2) instanceof PlaceableTemp);
         assertTrue(gameModel.grid(3, 1) instanceof PlaceableTemp);
-        assertEquals(32000, gameModel.getCurrentWealth());
+        assertEquals(97000, gameModel.getCurrentWealth());
         assertEquals("-$3000 Stadium építés\n", gameModel.getFinance().builtToString());
         assertEquals("-$500 Stadium fenntartási díj\n", gameModel.getFinance().yearlySpendToString());
 
         gameModel.placeStadium(new Point(2, 2));
-        assertEquals(32000, gameModel.getCurrentWealth());
+        assertEquals(97000, gameModel.getCurrentWealth());
     }
 
     @Test
@@ -71,12 +71,12 @@ public class GameModelTest {
     public void testPlacePolice() {
         gameModel.placePolice(new Point(2, 2));
         assertTrue(gameModel.grid(2, 2) instanceof Police);
-        assertEquals(33000, gameModel.getCurrentWealth());
+        assertEquals(98000, gameModel.getCurrentWealth());
         assertEquals("-$2000 Rendőrség építés\n", gameModel.getFinance().builtToString());
         assertEquals("-$500 Rendőrség fenntartási díj\n", gameModel.getFinance().yearlySpendToString());
 
         gameModel.placePolice(new Point(2, 2));
-        assertEquals(33000, gameModel.getCurrentWealth());
+        assertEquals(98000, gameModel.getCurrentWealth());
     }
 
     @Test
@@ -91,11 +91,11 @@ public class GameModelTest {
     public void testPlaceIndustrial() {
         gameModel.placeIndustrial(new Point(2, 2));
         assertTrue(gameModel.grid(2, 2) instanceof Industrial);
-        assertEquals(29000, gameModel.getCurrentWealth());
+        assertEquals(94000, gameModel.getCurrentWealth());
         assertEquals("-$6000 Ipari zóna kijelölés\n", gameModel.getFinance().builtToString());
 
         gameModel.placeIndustrial(new Point(2, 2));
-        assertEquals(29000, gameModel.getCurrentWealth());
+        assertEquals(94000, gameModel.getCurrentWealth());
     }
 
     @Test
@@ -116,12 +116,12 @@ public class GameModelTest {
     public void testPlaceRoad() {
         gameModel.placeRoad(new Point(2, 2));
         assertTrue(gameModel.grid(2, 2) instanceof Road);
-        assertEquals(34400, gameModel.getCurrentWealth());
+        assertEquals(99400, gameModel.getCurrentWealth());
         assertEquals("-$600 Út építés\n", gameModel.getFinance().builtToString());
         assertEquals("-$100 Út fenntartási díj\n", gameModel.getFinance().yearlySpendToString());
 
         gameModel.placeRoad(new Point(2, 2));
-        assertEquals(34400, gameModel.getCurrentWealth());
+        assertEquals(99400, gameModel.getCurrentWealth());
     }
 
     @Test
@@ -146,12 +146,12 @@ public class GameModelTest {
     public void testPlaceForest() {
         gameModel.placeForest(new Point(2, 2));
         assertTrue(gameModel.grid(2, 2) instanceof Forest);
-        assertEquals(30000, gameModel.getCurrentWealth());
+        assertEquals(95000, gameModel.getCurrentWealth());
         assertEquals("-$5000 Erdő építés\n", gameModel.getFinance().builtToString());
         assertEquals("-$500 Erdő fenntartási díj\n", gameModel.getFinance().yearlySpendToString());
 
         gameModel.placeForest(new Point(2, 2));
-        assertEquals(30000, gameModel.getCurrentWealth());
+        assertEquals(95000, gameModel.getCurrentWealth());
     }
 
     @Test
@@ -169,12 +169,12 @@ public class GameModelTest {
         assertTrue(gameModel.grid(2, 1) instanceof PlaceableTemp);
         assertTrue(gameModel.grid(3, 2) instanceof PlaceableTemp);
         assertTrue(gameModel.grid(3, 1) instanceof PlaceableTemp);
-        assertEquals(26000, gameModel.getCurrentWealth());
+        assertEquals(91000, gameModel.getCurrentWealth());
         assertEquals("-$9000 Egyetem építés\n", gameModel.getFinance().builtToString());
         assertEquals("-$1900 Egyetem fenntartási díj\n", gameModel.getFinance().yearlySpendToString());
 
         gameModel.placeForest(new Point(2, 2));
-        assertEquals(26000, gameModel.getCurrentWealth());
+        assertEquals(91000, gameModel.getCurrentWealth());
     }
 
     @Test
@@ -193,12 +193,12 @@ public class GameModelTest {
         gameModel.placeSchool(new Point(2, 2));
         assertTrue(gameModel.grid(2, 2) instanceof School);
         assertTrue(gameModel.grid(3, 2) instanceof PlaceableTemp);
-        assertEquals(28000, gameModel.getCurrentWealth());
+        assertEquals(93000, gameModel.getCurrentWealth());
         assertEquals("-$7000 Iskola építés\n", gameModel.getFinance().builtToString());
         assertEquals("-$1500 Iskola fenntartási díj\n", gameModel.getFinance().yearlySpendToString());
 
         gameModel.placeSchool(new Point(2, 2));
-        assertEquals(28000, gameModel.getCurrentWealth());
+        assertEquals(93000, gameModel.getCurrentWealth());
     }
 
     @Test
@@ -214,11 +214,11 @@ public class GameModelTest {
     public void testPlaceService() {
         gameModel.placeService(new Point(2, 2));
         assertTrue(gameModel.grid(2, 2) instanceof Service);
-        assertEquals(26000, gameModel.getCurrentWealth());
+        assertEquals(91000, gameModel.getCurrentWealth());
         assertEquals("-$9000 Szolgáltatási zóna kijelölés\n", gameModel.getFinance().builtToString());
 
         gameModel.placeService(new Point(2, 2));
-        assertEquals(26000, gameModel.getCurrentWealth());
+        assertEquals(91000, gameModel.getCurrentWealth());
     }
 
     @Test
@@ -232,11 +232,11 @@ public class GameModelTest {
     public void testPlaceResidential() {
         gameModel.placeResidential(new Point(2, 2));
         assertTrue(gameModel.grid(2, 2) instanceof Residential);
-        assertEquals(30000, gameModel.getCurrentWealth());
+        assertEquals(95000, gameModel.getCurrentWealth());
         assertEquals("-$5000 Lakóhely zóna kijelölés\n", gameModel.getFinance().builtToString());
 
         gameModel.placeResidential(new Point(2, 2));
-        assertEquals(30000, gameModel.getCurrentWealth());
+        assertEquals(95000, gameModel.getCurrentWealth());
     }
 
     @Test
@@ -377,7 +377,7 @@ public class GameModelTest {
 
         gameModel.newYearMaintenanceCost();
         //26900 because of the cost of placing
-        assertEquals(26900, gameModel.getCurrentWealth());
+        assertEquals(91900, gameModel.getCurrentWealth());
     }
 
     @Test
@@ -403,7 +403,7 @@ public class GameModelTest {
 
     @Test
     public void testGetCurrentWealth() {
-        assertEquals(35000, gameModel.getCurrentWealth());
+        assertEquals(100000, gameModel.getCurrentWealth());
     }
 
     @Test
@@ -416,7 +416,7 @@ public class GameModelTest {
         new Person().moveIn((Residential) gameModel.grid(2, 2));
         gameModel.newYearTaxCollection();
         //cost of 3 buildings: 20000
-        assertEquals(15600, gameModel.getCurrentWealth());
+        assertEquals(80600, gameModel.getCurrentWealth());
     }
 
     @Test
