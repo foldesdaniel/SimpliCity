@@ -141,11 +141,9 @@ public class GameModel implements InGameTimeTickListener, Serializable {
      * used to set the instance of the GameModel singleton class after a save
      *
      * @param inst GameModel instance received from loading a save
-     * @return GameModel instance
      */
-    public static GameModel loadInstance(GameModel inst) {
+    public static void loadInstance(GameModel inst) {
         instance = inst;
-        return instance;
     }
 
     /**
@@ -752,17 +750,6 @@ public class GameModel implements InGameTimeTickListener, Serializable {
         int maintenanceCost = new Road(GameModel.NO_SELECTION).getMaintenanceCost();
         finance.addBuilt(price, "Út építés");
         finance.addYearlySpend(maintenanceCost, "Út fenntartási díj");
-
-        //recalculating mood for every person
-        for (int i = 0; i < GRID_SIZE; ++i) {
-            for (int j = 0; j < GRID_SIZE; ++j) {
-                if (grid[i][j] != null && grid[i][j].getType() == FieldType.ZONE_RESIDENTIAL) {
-                    for (Person p : ((Residential) grid[i][j]).getPeople()) {
-                        //calculateMood(p); TODO
-                    }
-                }
-            }
-        }
         for (WealthChangeListener l : this.wealthListeners) l.onWealthChange();
     }
 
@@ -1469,21 +1456,9 @@ public class GameModel implements InGameTimeTickListener, Serializable {
                             temp = current;
                         }
                         if (workersRatio() == 1) { //we need service workers
-                            if (current.getType() == FieldType.ZONE_SERVICE) {
-                                if (((Service) current).areSpacesLeft() && isPath(convertToNumMatrix(person.getHome(), temp, null)) && !((Service) current).getPeople().contains(person)) {
-                                    person.goToWork(((Service) current));
-                                    boostPersonMoodBasedOnDistance(person, type);
-                                    return;
-                                }
-                            }
+                            if (giveServiceJob(person, type, current, temp)) return;
                         } else { //we need industrial workers
-                            if (current.getType() == FieldType.ZONE_INDUSTRIAL) {
-                                if (((Industrial) current).areSpacesLeft() && isPath(convertToNumMatrix(person.getHome(), temp, null)) && !((Industrial) current).getPeople().contains(person)) {
-                                    person.goToWork(((Industrial) current));
-                                    boostPersonMoodBasedOnDistance(person, type);
-                                    return;
-                                }
-                            }
+                            if (giveIndustrialJob(person, type, current, temp)) return;
                         }
                     }
                 }
@@ -1501,27 +1476,37 @@ public class GameModel implements InGameTimeTickListener, Serializable {
                         }
 
                         if (workersRatio() == 1) { //we need NOT service workers
-                            if (current.getType() == FieldType.ZONE_INDUSTRIAL) {
-                                if (((Industrial) current).areSpacesLeft() && isPath(convertToNumMatrix(person.getHome(), temp, null)) && !((Industrial) current).getPeople().contains(person)) {
-                                    person.goToWork(((Industrial) current));
-                                    boostPersonMoodBasedOnDistance(person, type);
-                                    return;
-                                }
-                            }
+                            if (giveIndustrialJob(person, type, current, temp)) return;
                         } else { //we need NOT industrial workers
-                            if (current.getType() == FieldType.ZONE_SERVICE) {
-                                if (((Service) current).areSpacesLeft() && isPath(convertToNumMatrix(person.getHome(), temp, null)) && !((Service) current).getPeople().contains(person)) {
-                                    person.goToWork(((Service) current));
-                                    boostPersonMoodBasedOnDistance(person, type);
-                                    return;
-                                }
-                            }
+                            if (giveServiceJob(person, type, current, temp)) return;
                         }
                     }
                 }
             }
         }
 
+    }
+
+    private boolean giveIndustrialJob(Person person, String type, Placeable current, Placeable temp) {
+        if (current.getType() == FieldType.ZONE_INDUSTRIAL) {
+            if (((Industrial) current).areSpacesLeft() && isPath(convertToNumMatrix(person.getHome(), temp, null)) && !((Industrial) current).getPeople().contains(person)) {
+                person.goToWork(((Industrial) current));
+                boostPersonMoodBasedOnDistance(person, type);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean giveServiceJob(Person person, String type, Placeable current, Placeable temp) {
+        if (current.getType() == FieldType.ZONE_SERVICE) {
+            if (((Service) current).areSpacesLeft() && isPath(convertToNumMatrix(person.getHome(), temp, null)) && !((Service) current).getPeople().contains(person)) {
+                person.goToWork(((Service) current));
+                boostPersonMoodBasedOnDistance(person, type);
+                return true;
+            }
+        }
+        return false;
     }
 
     /**

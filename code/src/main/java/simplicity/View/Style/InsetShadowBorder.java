@@ -9,8 +9,8 @@ import java.awt.*;
  */
 public class InsetShadowBorder implements Border {
 
+    private final int gap;
     private int size;
-    private int gap;
 
     public InsetShadowBorder(int size, int gap) {
         this.size = size;
@@ -19,10 +19,6 @@ public class InsetShadowBorder implements Border {
 
     public InsetShadowBorder(int size) {
         this(size, 0);
-    }
-
-    public InsetShadowBorder() {
-        this(16, 0);
     }
 
     @Override

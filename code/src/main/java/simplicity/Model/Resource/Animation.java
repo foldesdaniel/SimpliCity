@@ -22,10 +22,7 @@ public class Animation {
     @Getter
     private final int speed;
     private final ArrayList<Image> list;
-    private final long startTime;
     private int currentImage;
-    @Getter
-    private boolean started;
     @Getter
     private boolean ended;
 
@@ -41,8 +38,6 @@ public class Animation {
         this.speed = speed;
         this.list = new ArrayList<>(Arrays.asList(images));
         this.currentImage = -1;
-        this.startTime = System.currentTimeMillis();
-        this.started = false;
         this.ended = false;
     }
 
@@ -78,12 +73,9 @@ public class Animation {
 
     /**
      * Changes image to the next
-     *
-     * @return
      */
-    private Image next() {
+    private void next() {
         this.currentImage = (this.currentImage >= list.size() - 1) ? 0 : this.currentImage + 1;
-        return this.getCurrentImage();
     }
 
     /**

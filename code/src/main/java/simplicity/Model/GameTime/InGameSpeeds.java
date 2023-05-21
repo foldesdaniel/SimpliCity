@@ -14,5 +14,5 @@ public enum InGameSpeeds {
     ULTRASUPERSONIC_DEV_ONLY(1);
 
     @Getter
-    private int speed;
+    private final int speed;
 }

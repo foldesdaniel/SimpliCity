@@ -366,7 +366,6 @@ public class PlayingFieldView extends JPanel implements MouseListener, MouseMoti
                 dragStart = e.getPoint();
                 dragOffset = new Point(offsetX, offsetY);
             }
-            Point defaultOffset = this.getDefaultOffset();
             Point dragPointer = new Point(e.getPoint().x - dragStart.x, e.getPoint().y - dragStart.y);
             int newOffsetX = dragOffset.x + dragPointer.x;
             int newOffsetY = dragOffset.y + dragPointer.y;
@@ -449,7 +448,7 @@ public class PlayingFieldView extends JPanel implements MouseListener, MouseMoti
         final int MIN_FIELD_SIZE = Math.max(SCROLL_STEP, (int) Math.round(this.getHeight() * 0.793 / GameModel.GRID_SIZE));
         final int MAX_FIELD_SIZE = Math.max(64, MIN_FIELD_SIZE);
         int rot = e.getWheelRotation();
-        int amount = (rot < 0 ? 1 : (rot > 0 ? -1 : 0)) * SCROLL_STEP;
+        int amount = (Integer.compare(0, rot)) * SCROLL_STEP;
         if ((amount > 0 && fieldSize < MAX_FIELD_SIZE) || (amount < 0 && fieldSize > MIN_FIELD_SIZE)) {
             fieldSize = Math.min(Math.max(fieldSize + amount, MIN_FIELD_SIZE), MAX_FIELD_SIZE);
             if (doesGridFitHorizontally()) isGridDraggedX = false;

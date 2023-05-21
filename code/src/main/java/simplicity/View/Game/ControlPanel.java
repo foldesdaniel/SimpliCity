@@ -22,8 +22,6 @@ public class ControlPanel extends JPanel {
     private final InfoTab infoTab;
     private final BuildTab buildTab;
     private final JPanel container;
-    private final Font font;
-    private boolean infoTabShowing = true;
 
     public ControlPanel() {
         infoTab = new InfoTab();
@@ -37,7 +35,7 @@ public class ControlPanel extends JPanel {
         GridLayout gridLayout = new GridLayout(1, 2);
         gridLayout.setHgap(8);
         btnContainer.setLayout(gridLayout);
-        font = CFont.get(Font.PLAIN, 22);
+        Font font = CFont.get(Font.PLAIN, 22);
         infoBtn = new ControlPanelTabButton("Info");
         buildBtn = new ControlPanelTabButton("Build");
         infoBtn.setFont(font);
@@ -73,8 +71,6 @@ public class ControlPanel extends JPanel {
      * Hides the build tab and shows the info tab
      */
     public void showInfoTab() {
-        //if(!infoTabShowing){
-        this.infoTabShowing = true;
         infoBtn.select();
         buildBtn.unselect();
         container.removeAll();
@@ -82,22 +78,18 @@ public class ControlPanel extends JPanel {
         container.repaint();
         container.add(infoTab);
         infoBtn.requestFocus();
-        //}
     }
 
     /**
      * Hides the info tab and shows the build tab
      */
     public void showBuildTab() {
-        //if(infoTabShowing){
-        this.infoTabShowing = false;
         infoBtn.unselect();
         buildBtn.select();
         container.removeAll();
         container.revalidate();
         container.repaint();
         container.add(buildTab);
-        //}
     }
 
     public ModeChangeListener getModeListener() {

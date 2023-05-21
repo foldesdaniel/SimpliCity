@@ -25,7 +25,6 @@ public class InfoTab extends JPanel implements PeopleChangeListener, MoralChange
 
     private final JLabel emptyLabel;
     private final Component boxGap = Box.createRigidArea(new Dimension(0, 16));
-    private final Dimension defaultImageSize = new Dimension(32, 32);
     private Placeable lastInfo = null;
 
     public InfoTab() {
@@ -49,7 +48,7 @@ public class InfoTab extends JPanel implements PeopleChangeListener, MoralChange
     /**
      * Updates the Placeable and displays its details
      *
-     * @param _f
+     * @param _f Placeable's info to update
      */
     public void updateInfo(Placeable _f) {
         this.removeAll();
@@ -71,54 +70,54 @@ public class InfoTab extends JPanel implements PeopleChangeListener, MoralChange
             this.add(icon);
             this.add(Box.createRigidArea(new Dimension(0, 4)));
             Point position = f.getPosition();
-            Image img = f.getImage();
             String name = f.getDisplayName();
             Dimension size = f.getDisplaySize();
             int tax = f.calculateTax();
             int buildPrice = f.getBuildPrice();
-            String infoText = "<html>";
-            infoText += "<b>" + name + "</b><br>";
-            infoText += "Position: (" + position.x + "," + position.y + ")<br>";
-            infoText += "Size: " + size.width + "x" + size.height + "<br>";
-            infoText += "Tax: " + tax + "<br>";
-            infoText += "Build price: " + buildPrice + "<br>";
+            StringBuilder infoText = new StringBuilder("<html>");
+            infoText.append("<b>").append(name).append("</b><br>");
+            infoText.append("Position: (").append(position.x).append(",").append(position.y).append(")<br>");
+            infoText.append("Size: ").append(size.width).append("x").append(size.height).append("<br>");
+            infoText.append("Tax: ").append(tax).append("<br>");
+            infoText.append("Build price: ").append(buildPrice).append("<br>");
             if (f instanceof Zone ff) {
-                infoText += "Capacity: " + ff.getPeople().size() + "/" + ff.getMaxPeople() + "<br>";
+                infoText.append("Capacity: ").append(ff.getPeople().size()).append("/").append(ff.getMaxPeople()).append("<br>");
                 ArrayList<Person> people = ff.getPeople();
-                if (ff instanceof Residential fff) infoText += "Mood: " + fff.calculateZoneMood() + "<br>";
-                infoText += "People:<br><ul style=\"padding:0;\">";
+                if (ff instanceof Residential fff)
+                    infoText.append("Mood: ").append(fff.calculateZoneMood()).append("<br>");
+                infoText.append("People:<br><ul style=\"padding:0;\">");
                 if (people.size() == 0) {
-                    infoText += "There are no people here";
+                    infoText.append("There are no people here");
                 } else {
                     for (int i = 0; i < people.size(); i++) {
                         Person person = people.get(i);
-                        infoText += "<li>" + person.getAge().getYear() + "yo (mood: " + person.getMood() + ")";
+                        infoText.append("<li>").append(person.getAge().getYear()).append("yo (mood: ").append(person.getMood()).append(")");
                         if (ff instanceof Residential fff) {
-                            infoText += "<ul><li>";
+                            infoText.append("<ul><li>");
                             if (person.getEducation() != null) {
-                                infoText += "School: " + person.getEducation();
+                                infoText.append("School: ").append(person.getEducation());
                             } else if (person.getWorkplace() != null) {
-                                infoText += "Workplace: " + person.getWorkplace();
+                                infoText.append("Workplace: ").append(person.getWorkplace());
                             } else {
-                                infoText += "No school or workplace";
+                                infoText.append("No school or workplace");
                             }
-                            infoText += "<li>Education level: " + person.getEducationLevel() + "</li>";
-                            infoText += "</li></ul>";
+                            infoText.append("<li>Education level: ").append(person.getEducationLevel()).append("</li>");
+                            infoText.append("</li></ul>");
                         } else if (ff instanceof Workplace || ff instanceof Education) {
-                            infoText += "<ul><li>";
-                            infoText += "Home: " + person.getHome();
-                            infoText += "</li></ul>";
+                            infoText.append("<ul><li>");
+                            infoText.append("Home: ").append(person.getHome());
+                            infoText.append("</li></ul>");
                         }
-                        infoText += "</li>";
+                        infoText.append("</li>");
                     }
                 }
-                infoText += "</ul>";
+                infoText.append("</ul>");
             } else if (f instanceof Forest ff) {
                 int age = ff.getAge();
-                infoText += "Age: " + age + (age == 1 ? " year" : " years");
+                infoText.append("Age: ").append(age).append(age == 1 ? " year" : " years");
             }
-            infoText += "</html>";
-            JLabel infoLabel = new JLabel(infoText);
+            infoText.append("</html>");
+            JLabel infoLabel = new JLabel(infoText.toString());
             infoLabel.setFont(CFont.get(Font.PLAIN, 20));
             infoLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
             this.add(infoLabel);
@@ -139,7 +138,7 @@ public class InfoTab extends JPanel implements PeopleChangeListener, MoralChange
      * A panel that gets the Image of the parent's
      * Placeable, sizes it appropriately and displays it
      */
-    class InfoIcon extends JPanel {
+    static class InfoIcon extends JPanel {
 
         private final Placeable p;
 

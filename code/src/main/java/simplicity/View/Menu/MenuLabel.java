@@ -18,10 +18,4 @@ public class MenuLabel extends JLabel {
         this.setHorizontalAlignment(SwingConstants.CENTER);
     }
 
-    /**
-     * Constructor.
-     */
-    public MenuLabel() {
-        this("");
-    }
 }

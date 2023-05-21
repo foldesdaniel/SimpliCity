@@ -15,7 +15,6 @@ import java.awt.event.MouseEvent;
  */
 public class ControlPanelTabButton extends JButton {
 
-    private final Color normalColor = GameModel.BG_DARK;
     private boolean selected = false;
     private boolean hovering = false;
 
@@ -25,7 +24,7 @@ public class ControlPanelTabButton extends JButton {
                 new MatteBorder(2, 2, 0, 2, new Color(255, 255, 255, 64)),
                 new EmptyBorder(5, 5, 5, 5)
         ));
-        this.setBackground(normalColor);
+        this.setBackground(GameModel.BG_DARK);
         this.setFocusPainted(false);
         this.setContentAreaFilled(false);
         this.setRolloverEnabled(false);

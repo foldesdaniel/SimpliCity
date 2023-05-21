@@ -22,8 +22,8 @@ import static java.lang.Integer.parseInt;
 
 public class MainMenu extends JPanel {
 
-    private ArrayList<MenuEventListener> menuEventListeners;
-    private ArrayList<StartStopGameListener> startGameListeners;
+    private final ArrayList<MenuEventListener> menuEventListeners;
+    private final ArrayList<StartStopGameListener> startGameListeners;
 
     /**
      * Constructor
@@ -249,11 +249,9 @@ public class MainMenu extends JPanel {
                 deleteButton.setFont(CFont.get(Font.BOLD, 20));
                 deleteButton.addActionListener(e -> {
                     switch (GameModel.showDialog("Delete?", "Are you sure you want to delete " + entry.getCityName())) {
-                        case JOptionPane.YES_OPTION:
-                            GameModel.showMessage("Not yet", "Feature not implemented yet");
-                            break;
-                        default:
-                            break;
+                        case JOptionPane.YES_OPTION -> GameModel.showMessage("Not yet", "Feature not implemented yet");
+                        default -> {
+                        }
                     }
                 });
                 deleteButton.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -353,7 +351,7 @@ public class MainMenu extends JPanel {
         settingsMenu.add(Box.createRigidArea(new Dimension(0, gap)));
 
         //Resolution type
-        String options[] = {"Windowed Fullscreen", "Windowed"};
+        String[] options = {"Windowed Fullscreen", "Windowed"};
         MenuComboBox res_type = new MenuComboBox(options);
         res_type.setAlignmentX(Component.CENTER_ALIGNMENT);
         String display;

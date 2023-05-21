@@ -18,14 +18,16 @@ public class GameWindow extends JFrame implements MenuEventListener, StartStopGa
     private static int windowWidth;
     @Getter
     private static int windowHeight;
-    private MainMenu mainMenu;
+    private final MainMenu mainMenu;
     private GamePanel gamePanel;
 
     public GameWindow() {
         this.setIconImage(GameModel.LOGO_SMALL_IMG);
         try {
             Taskbar.getTaskbar().setIconImage(GameModel.LOGO_SMALL_IMG);
-        } catch (UnsupportedOperationException ex) {}
+        } catch (UnsupportedOperationException ex) {
+            ex.printStackTrace();
+        }
         SaveEntries.loadEntries();
         this.setTitle(GameModel.GAME_TITLE);
         this.setUndecorated(true);
@@ -38,16 +40,6 @@ public class GameWindow extends JFrame implements MenuEventListener, StartStopGa
         mainMenu.addMenuEventListener(this);
         mainMenu.addStartGameListener(this);
         this.add(mainMenu, BorderLayout.CENTER);
-
-        /*System.setProperty("apple.laf.useScreenMenuBar", "true");
-        JMenu menuCategory1 = new JMenu("File");
-        JMenuItem menuItem1 = new JMenuItem("opt1");
-        JMenuItem menuItem2 = new JMenuItem("opt2");
-        menuCategory1.add(menuItem1);
-        menuCategory1.add(menuItem2);
-        JMenuBar menuBar = new JMenuBar();
-        menuBar.add(menuCategory1);
-        this.setJMenuBar(menuBar);*/ // it's a little broken on macOS
 
         this.pack();
     }

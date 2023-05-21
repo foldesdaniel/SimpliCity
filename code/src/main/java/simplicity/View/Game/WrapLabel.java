@@ -12,7 +12,7 @@ import java.awt.*;
  */
 public class WrapLabel extends JTextPane {
 
-    private int baseHeight;
+    private final int baseHeight;
 
     /**
      * {@code text} defaults to ""

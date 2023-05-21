@@ -18,7 +18,7 @@ public class SaveEntry implements Serializable {
     @Getter
     private int numberOfSaves;
     @Getter
-    private String fileName;
+    private final String fileName;
 
     private SaveEntry(String cityName) {
         this.cityName = cityName;
@@ -30,11 +30,10 @@ public class SaveEntry implements Serializable {
         this.fileName = trimmedName + "_" + md5(model.getCityName() + this.saveDate) + ".txt";
     }
 
-    private static SaveEntry createEntry(String cityName, GameModel data) throws IOException {
+    private static void createEntry(String cityName, GameModel data) throws IOException {
         SaveEntry entry = new SaveEntry(cityName);
         SaveEntries.getInstance().add(entry);
         Persistence.save(data, entry.fileName);
-        return entry;
     }
 
     private static void removeEntry(String cityName) throws Exception {

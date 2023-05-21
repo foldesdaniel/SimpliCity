@@ -21,11 +21,4 @@ public class MenuButton extends JButton {
         this.setMaximumSize(buttonSize);
     }
 
-    /**
-     * Constructor.
-     */
-    public MenuButton() {
-        this.setText("");
-    }
-
 }

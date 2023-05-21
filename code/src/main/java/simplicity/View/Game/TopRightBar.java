@@ -21,8 +21,8 @@ import java.awt.event.ActionListener;
 public class TopRightBar extends JPanel implements InGameTimeListener {
 
     private final InGameTime inGameTime = InGameTimeManager.getInstance().getInGameTime();
-    private JLabel nameLabel;
-    private JLabel timeLabel;
+    private final JLabel nameLabel;
+    private final JLabel timeLabel;
 
     public TopRightBar() {
         Font font = CFont.get();

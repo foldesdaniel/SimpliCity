@@ -24,7 +24,6 @@ public class GamePanel extends JPanel implements FieldClickListener {
     private static Placeable placee;
     @Getter
     private static boolean deleteMode = false;
-    private final JMenuBar menuBar;
     private final TopLeftBar topLeftBar;
     private final TopRightBar topRightBar;
     private final ControlPanel controlPanel;
@@ -40,7 +39,6 @@ public class GamePanel extends JPanel implements FieldClickListener {
         this.setPreferredSize(windowSize);
         this.setLayout(new FlowLayout(FlowLayout.LEFT, 0, 0));
 
-        menuBar = new JMenuBar();
         topLeftBar = new TopLeftBar();
         topRightBar = new TopRightBar();
         controlPanel = new ControlPanel();
@@ -48,28 +46,25 @@ public class GamePanel extends JPanel implements FieldClickListener {
         bottomBar = new BottomBar();
 
         KeyboardFocusManager kbmanager = KeyboardFocusManager.getCurrentKeyboardFocusManager();
-        kbmanager.addKeyEventDispatcher(new KeyEventDispatcher() {
-            @Override
-            public boolean dispatchKeyEvent(KeyEvent e) {
-                if (e.getID() == KeyEvent.KEY_PRESSED) {
-                    if (e.getKeyCode() == KeyEvent.VK_ESCAPE || e.getKeyCode() == KeyEvent.VK_E) {
-                        if (isPlacing) {
-                            stopPlacing();
-                        } else if (deleteMode) {
-                            stopDeleteMode();
-                        }
-                    } else if (e.getKeyCode() == KeyEvent.VK_Q) {
-                        if (deleteMode) {
-                            stopDeleteMode();
-                        } else {
-                            startDeleteMode();
-                        }
+        kbmanager.addKeyEventDispatcher(e -> {
+            if (e.getID() == KeyEvent.KEY_PRESSED) {
+                if (e.getKeyCode() == KeyEvent.VK_ESCAPE || e.getKeyCode() == KeyEvent.VK_E) {
+                    if (isPlacing) {
+                        stopPlacing();
+                    } else if (deleteMode) {
+                        stopDeleteMode();
                     }
-                    repaint();
-                    for (GameKeyListener l : keyListeners) l.onKeyPressed(e);
+                } else if (e.getKeyCode() == KeyEvent.VK_Q) {
+                    if (deleteMode) {
+                        stopDeleteMode();
+                    } else {
+                        startDeleteMode();
+                    }
                 }
-                return false;
+                repaint();
+                for (GameKeyListener l : keyListeners) l.onKeyPressed(e);
             }
+            return false;
         });
 
         this.gbc = new GridBagConstraints();

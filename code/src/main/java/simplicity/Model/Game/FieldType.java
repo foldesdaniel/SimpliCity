@@ -13,7 +13,7 @@ public enum FieldType {
     POLICE("Police station"),
     FOREST("Forest");
 
-    private String displayName;
+    private final String displayName;
 
     FieldType(String displayName) {
         this.displayName = displayName;

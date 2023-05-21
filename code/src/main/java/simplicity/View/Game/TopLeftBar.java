@@ -15,7 +15,7 @@ import java.util.ArrayList;
  */
 public class TopLeftBar extends JPanel {
 
-    private ArrayList<StartStopGameListener> stopGameListeners;
+    private final ArrayList<StartStopGameListener> stopGameListeners;
 
     public TopLeftBar() {
         this.stopGameListeners = new ArrayList<>();
@@ -29,15 +29,15 @@ public class TopLeftBar extends JPanel {
         backToMenuBtn.addActionListener((e) -> {
             int answer = GameModel.showDialog("Save game?", "Would you like to save your current progress?");
             switch (answer) {
-                case JOptionPane.YES_OPTION:
+                case JOptionPane.YES_OPTION -> {
                     GameModel.getInstance().saveGame();
                     for (StartStopGameListener l : stopGameListeners) l.onGameStop();
-                    break;
-                case JOptionPane.NO_OPTION:
+                }
+                case JOptionPane.NO_OPTION -> {
                     for (StartStopGameListener l : stopGameListeners) l.onGameStop();
-                    break;
-                default:
-                    break;
+                }
+                default -> {
+                }
             }
         });
         saveBtn.addActionListener((e) -> {
