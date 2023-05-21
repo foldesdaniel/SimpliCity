@@ -33,6 +33,7 @@ public class GameModelTest {
     @BeforeEach
     public void generateModel() {
         gameModel = new GameModel();
+        gameModel.initGrid();
     }
 
     @Test

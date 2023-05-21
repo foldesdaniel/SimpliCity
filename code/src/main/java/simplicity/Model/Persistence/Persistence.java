@@ -4,7 +4,7 @@ import java.io.*;
 
 public class Persistence {
 
-    private static final String pathToSavedGamesDir = "code/SavedGames/";
+    private static final String pathToSavedGamesDir = "saves/";
 
     /**
      * used to serialize a specific object

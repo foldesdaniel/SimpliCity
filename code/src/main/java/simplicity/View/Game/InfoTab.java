@@ -119,7 +119,7 @@ public class InfoTab extends JPanel implements PeopleChangeListener, MoralChange
             }
             infoText += "</html>";
             JLabel infoLabel = new JLabel(infoText);
-            infoLabel.setFont(CFont.get());
+            infoLabel.setFont(CFont.get(Font.PLAIN, 20));
             infoLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
             this.add(infoLabel);
         }

@@ -363,8 +363,8 @@ public class GameModel implements InGameTimeTickListener, Serializable {
     public void fillForest(double threshold) {
         this.grid = new Placeable[GRID_SIZE][GRID_SIZE];
         int seed = (int) (Math.random() * 10000 + 1);
-        for (int i = 0; i < 20; i++) {
-            for (int j = 0; j < 20; j++) {
+        for (int i = 0; i < GRID_SIZE; i++) {
+            for (int j = 0; j < GRID_SIZE; j++) {
                 float cell = OpenSimplex2S.noise2(seed, j, i);
                 this.grid[i][j] = (cell < threshold) ? new Forest(new Point(i, j)) : null;
             }
