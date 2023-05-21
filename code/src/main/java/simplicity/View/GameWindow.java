@@ -22,6 +22,10 @@ public class GameWindow extends JFrame implements MenuEventListener, StartStopGa
     private GamePanel gamePanel;
 
     public GameWindow() {
+        this.setIconImage(GameModel.LOGO_SMALL_IMG);
+        try {
+            Taskbar.getTaskbar().setIconImage(GameModel.LOGO_SMALL_IMG);
+        } catch (UnsupportedOperationException ex) {}
         SaveEntries.loadEntries();
         this.setTitle(GameModel.GAME_TITLE);
         this.setUndecorated(true);

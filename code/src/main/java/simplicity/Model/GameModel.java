@@ -40,6 +40,7 @@ public class GameModel implements InGameTimeTickListener, Serializable {
 
     public static final String GAME_TITLE = "SimpliCity";
     public static final Image LOGO_IMG = ResourceLoader.loadImage("logo.png");
+    public static final Image LOGO_SMALL_IMG = ResourceLoader.loadImage("logo_small.png");
     public static final Image BACKGROUND_IMG = ResourceLoader.loadImage("bg_temp.jpg");
     public static final Image MISSING_IMG = ResourceLoader.loadImage("missing.png");
     public static final Image GRASS_IMG = ResourceLoader.loadImage("grass.png");
