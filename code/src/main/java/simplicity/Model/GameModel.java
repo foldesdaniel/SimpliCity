@@ -113,12 +113,9 @@ public class GameModel implements InGameTimeTickListener, Serializable {
     public GameModel() {
         this.finance = new Finance(35000);
         generateNextDisasterDate();
-        this.initGrid();
-        //this.fillForest(-0.25);
-        //this.fillForest(-0.125);
-//        this.fillForest(0.125);
+        // this.initGrid();
+        this.fillForest(0.16);
         inGameTime.addInGameTimeTickListener(this);
-        //inGameTime.startInGameTime(InGameSpeeds.ULTRASONIC_DEV_ONLY);
         inGameTime.startInGameTime(InGameSpeeds.NORMAL);
     }
 
@@ -312,7 +309,11 @@ public class GameModel implements InGameTimeTickListener, Serializable {
      * @return returns the Placeable in the given position in the grid
      */
     public Placeable grid(int i, int j) {
-        return this.grid[i][j];
+        try {
+            return this.grid[i][j];
+        } catch (ArrayIndexOutOfBoundsException ex) {
+            return null;
+        }
     }
 
     /**

@@ -8,6 +8,7 @@ import simplicity.Model.Listeners.InGameTimeListener;
 import simplicity.View.Style.CFont;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -41,14 +42,32 @@ public class TopRightBar extends JPanel implements InGameTimeListener {
         btn0.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String bts = GameModel.getInstance().getFinance().builtToString();
-                String ysts = GameModel.getInstance().getFinance().yearlySpendToString();
-                String its = GameModel.getInstance().getFinance().incomeToString();
-                if (bts.length() == 0) bts = "No data on record\n";
-                if (ysts.length() == 0) ysts = "No data on record\n";
-                if (its.length() == 0) its = "No data on record\n";
-                String bigStr = "Building expenses:\n" + bts + "\nYearly maintenance expenses:\n" + ysts + "\nIncome:\n" + its;
-                GameModel.showMessage("Finances", bigStr);
+                String bts = GameModel.getInstance().getFinance().builtToString().replace("\n", "<br>");
+                String ysts = GameModel.getInstance().getFinance().yearlySpendToString().replace("\n", "<br>");
+                String its = GameModel.getInstance().getFinance().incomeToString().replace("\n", "<br>");
+                if (bts.length() == 0) bts = "No data on record<br>";
+                if (ysts.length() == 0) ysts = "No data on record<br>";
+                if (its.length() == 0) its = "No data on record<br>";
+                String bigStr = "<html># " + formatTime(inGameTime) + "<br><br><u>Building expenses:</u><br>" + bts + "<br><u>Yearly maintenance expenses:</u><br>" + ysts + "<br><u>Income:</u><br>" + its + "</html>";
+                JLabel finLabel = new JLabel(bigStr);
+                finLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+                finLabel.setHorizontalAlignment(SwingConstants.CENTER);
+                finLabel.setFont(CFont.get(Font.PLAIN, 20));
+                finLabel.setBorder(new EmptyBorder(10, 10, 10, 10));
+                JDialog jd = new JDialog();
+                JPanel jdPanel = new JPanel();
+                jdPanel.setOpaque(false);
+                jdPanel.setLayout(new BoxLayout(jdPanel, BoxLayout.Y_AXIS));
+                jdPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+                JScrollPane scrollPane = new JScrollPane(finLabel, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+                scrollPane.getVerticalScrollBar().setUnitIncrement(8);
+                scrollPane.setAlignmentX(Component.CENTER_ALIGNMENT);
+                scrollPane.getViewport().setAlignmentX(Component.CENTER_ALIGNMENT);
+                jdPanel.add(scrollPane);
+                jd.add(jdPanel);
+                jd.pack();
+                jd.setLocationRelativeTo(null);
+                jd.setVisible(true);
             }
         });
         JButton btn1 = new JButton("⏹");
@@ -121,10 +140,18 @@ public class TopRightBar extends JPanel implements InGameTimeListener {
         timeChanged(0, 0, 0);
     }
 
+    private String formatTime(int inGameYear, int inGameDay, int inGameHour) {
+        java.time.LocalDate ld = java.time.Year.of(2023 + inGameYear).atDay(inGameDay + 1);
+        return ld.toString().replace("-", ".") + ". " + String.format("%02d", inGameHour) + ":00";
+    }
+
+    private String formatTime(InGameTime igt) {
+        return formatTime(igt.getInGameYear(), igt.getInGameDay(), igt.getInGameHour());
+    }
+
     @Override
     public void timeChanged(int inGameYear, int inGameDay, int inGameHour) {
-        java.time.LocalDate ld = java.time.Year.of(2023 + inGameYear).atDay(inGameDay + 1);
-        timeLabel.setText(ld.toString().replace("-", ".") + ". " + String.format("%02d", inGameHour) + ":00");
+        timeLabel.setText(formatTime(inGameYear, inGameDay, inGameHour));
     }
 
 
