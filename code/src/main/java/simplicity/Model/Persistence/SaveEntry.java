@@ -7,6 +7,10 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.security.MessageDigest;
 
+/**
+ * The class storing additional
+ * information about a saved game
+ */
 public class SaveEntry implements Serializable {
 
     @Getter
@@ -30,32 +34,59 @@ public class SaveEntry implements Serializable {
         this.fileName = trimmedName + "_" + md5(model.getCityName() + this.saveDate) + ".txt";
     }
 
+    /**
+     * Creates a new SaveEntry with the given parameters
+     *
+     * @param cityName unique city name
+     * @param data     current game data
+     * @throws IOException when persistence fails us
+     */
     private static void createEntry(String cityName, GameModel data) throws IOException {
         SaveEntry entry = new SaveEntry(cityName);
         SaveEntries.getInstance().add(entry);
         Persistence.save(data, entry.fileName);
     }
 
+    /**
+     * Removes a SaveEntry
+     *
+     * @param cityName unique city name
+     */
     public static void removeEntry(String cityName) {
         SaveEntry entry = findEntry(cityName);
         if (entry == null) return;
         new java.io.File("saves/" + entry.getFileName()).delete();
         SaveEntries.getInstance().remove(entry);
-        try{
+        try {
             Persistence.saveEntries();
-        }catch (IOException ex){}
+        } catch (IOException ex) {
+        }
     }
 
+    /**
+     * Updates an existing SaveEntry
+     *
+     * @param cityName unique city name
+     * @param data     current game data
+     * @throws IOException when persistence fails us
+     */
     private static void updateEntry(String cityName, GameModel data) throws IOException {
         SaveEntry entry = findEntry(cityName);
         if (entry != null) {
             entry.numberOfSaves++;
-            long before = entry.modifyDate;
             entry.modifyDate = (new java.util.Date()).getTime();
             Persistence.save(data, entry.fileName);
         }
     }
 
+    /**
+     * If a SaveEntry exists with the given name then
+     * updates it, creates a new one if it doesn't
+     *
+     * @param cityName unique city name
+     * @param data     current game data
+     * @throws IOException when persistence fails us
+     */
     public static void createOrUpdateEntry(String cityName, GameModel data) throws IOException {
         SaveEntry entry = findEntry(cityName);
         if (entry == null) {
@@ -65,6 +96,12 @@ public class SaveEntry implements Serializable {
         }
     }
 
+    /**
+     * Tries to find a SaveEntry with the given name
+     *
+     * @param cityName the given city name
+     * @return the SaveEntry if successful, null if not
+     */
     private static SaveEntry findEntry(String cityName) {
         for (SaveEntry i : SaveEntries.getInstance().getSaveEntries()) {
             if (i.cityName.equals(cityName)) {
@@ -74,6 +111,12 @@ public class SaveEntry implements Serializable {
         return null;
     }
 
+    /**
+     * Hashes the given string
+     *
+     * @param str string to be hashed
+     * @return md5 hash
+     */
     public static String md5(String str) {
         try {
             MessageDigest md = MessageDigest.getInstance("MD5");
