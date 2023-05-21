@@ -102,7 +102,7 @@ public class SaveEntry implements Serializable {
      * @param cityName the given city name
      * @return the SaveEntry if successful, null if not
      */
-    private static SaveEntry findEntry(String cityName) {
+    public static SaveEntry findEntry(String cityName) {
         for (SaveEntry i : SaveEntries.getInstance().getSaveEntries()) {
             if (i.cityName.equals(cityName)) {
                 return i;

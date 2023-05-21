@@ -310,8 +310,12 @@ public class MainMenu extends JPanel {
     private void startGame(String _cityName) {
         String cityName = _cityName.trim();
         if (cityName.length() > 0) {
-            GameModel.reset().setCityName(cityName);
-            startGame(true);
+            if (SaveEntry.findEntry(cityName) == null) {
+                GameModel.reset().setCityName(cityName);
+                startGame(true);
+            } else {
+                GameModel.showError("Input error", "This name is already taken");
+            }
         } else {
             GameModel.showError("Input error", "Your city name cannot be empty");
         }
