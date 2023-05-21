@@ -20,7 +20,6 @@ public class GameWindow extends JFrame implements MenuEventListener, StartStopGa
     private static int windowHeight;
     private MainMenu mainMenu;
     private GamePanel gamePanel;
-    private GameModel gameModel;
 
     public GameWindow() {
         SaveEntries.loadEntries();

@@ -16,6 +16,11 @@ import simplicity.View.Style.WrapLayout;
 import javax.swing.*;
 import java.awt.*;
 
+/**
+ * A panel within the control panel that displays all
+ * the available buildings and zones, and allows you
+ * to enter/exit both build and delete mode.
+ */
 public class BuildTab extends JPanel implements ModeChangeListener {
 
     private static final String startDeleteText = "Enter delete mode";

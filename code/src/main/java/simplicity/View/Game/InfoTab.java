@@ -17,6 +17,10 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
 
+/**
+ * A panel displaying all the details
+ * about a given Placeable
+ */
 public class InfoTab extends JPanel implements PeopleChangeListener, MoralChangeListener {
 
     private final JLabel emptyLabel;
@@ -32,6 +36,9 @@ public class InfoTab extends JPanel implements PeopleChangeListener, MoralChange
         GameModel.getInstance().addPeopleChangeListener(this);
     }
 
+    /**
+     * Initializes the info tab (displaying no info)
+     */
     public void init() {
         this.removeAll();
         this.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -39,6 +46,11 @@ public class InfoTab extends JPanel implements PeopleChangeListener, MoralChange
         this.add(this.emptyLabel);
     }
 
+    /**
+     * Updates the Placeable and displays its details
+     *
+     * @param _f
+     */
     public void updateInfo(Placeable _f) {
         this.removeAll();
         this.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -123,6 +135,10 @@ public class InfoTab extends JPanel implements PeopleChangeListener, MoralChange
         updateInfo(this.lastInfo);
     }
 
+    /**
+     * A panel that gets the Image of the parent's
+     * Placeable, sizes it appropriately and displays it
+     */
     class InfoIcon extends JPanel {
 
         private final Placeable p;

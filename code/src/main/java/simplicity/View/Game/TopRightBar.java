@@ -13,6 +13,11 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+/**
+ * The top right part of the game area.
+ * Contains info about the current
+ * city, and also time controls
+ */
 public class TopRightBar extends JPanel implements InGameTimeListener {
 
     private final InGameTime inGameTime = InGameTimeManager.getInstance().getInGameTime();
@@ -140,11 +145,25 @@ public class TopRightBar extends JPanel implements InGameTimeListener {
         timeChanged(0, 0, 0);
     }
 
+    /**
+     * Formats given time to a readable format
+     *
+     * @param inGameYear in game year
+     * @param inGameDay  in game day
+     * @param inGameHour in game hour
+     * @return formatted time
+     */
     private String formatTime(int inGameYear, int inGameDay, int inGameHour) {
         java.time.LocalDate ld = java.time.Year.of(2023 + inGameYear).atDay(inGameDay + 1);
         return ld.toString().replace("-", ".") + ". " + String.format("%02d", inGameHour) + ":00";
     }
 
+    /**
+     * Formats {@link InGameTime} to a readable format
+     *
+     * @param igt InGameTime instance
+     * @return formatted time
+     */
     private String formatTime(InGameTime igt) {
         return formatTime(igt.getInGameYear(), igt.getInGameDay(), igt.getInGameHour());
     }

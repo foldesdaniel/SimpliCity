@@ -9,6 +9,10 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 
+/**
+ * A clickable panel that creates a Placeable
+ * instance and lets you put it on the map
+ */
 public class BuildTile extends JPanel {
 
     public static final int MINIMUM_WIDTH = 96;
@@ -22,14 +26,15 @@ public class BuildTile extends JPanel {
     private Point dragStart;
     private boolean tempNoHover = false;
 
+    /**
+     * Constructor
+     *
+     * @param pl the class of the Placeable type that it will create
+     */
     public BuildTile(Class pl) {
         this.placeable = newInstance(pl);
-        //this.setMinimumSize(new Dimension(96, 10));
-        //String displayName = "<html><p style=\"text-align:center;margin:0;padding:0;background-color:rgb(200,255,200)\">" + this.placeable.getDisplayName().replaceAll(" ","<br>") + "</p></html>";
-        //this.nameLabel = new JLabel(displayName);
         this.nameLabel = new WrapLabel(this.placeable.getDisplayName());
         this.nameLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-        //this.nameLabel.setBaseHeight();
         this.nameLabel.setSize(new Dimension(this.getPreferredSize().width, this.nameLabel.getPreferredSize().height));
         this.updateNameLabel();
         JPanel container = new JPanel();
@@ -40,7 +45,6 @@ public class BuildTile extends JPanel {
         container.add(img);
         container.add(this.nameLabel);
         container.setOpaque(false);
-        //container.setBackground(new Color(200,255,200));
         this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         this.add(Box.createVerticalGlue());
         this.add(container);
@@ -98,6 +102,12 @@ public class BuildTile extends JPanel {
         // this.repaint();
     }
 
+    /**
+     * Creates a new instance from the given Placeable class
+     *
+     * @param pl the Placeable class you want to create an instance from
+     * @return the created instance
+     */
     public static Placeable newInstance(Class pl) {
         try {
             return (Placeable) pl.getConstructor(Point.class).newInstance(GameModel.NO_SELECTION);
@@ -121,6 +131,10 @@ public class BuildTile extends JPanel {
         tempNoHover = false;
     }
 
+    /**
+     * A panel that gets the Image of the parent's
+     * Placeable, sizes it appropriately and displays it
+     */
     class BuildTileImage extends JPanel {
 
         BuildTileImage() {

@@ -15,10 +15,10 @@ import java.net.URL;
 public class ResourceLoader {
 
     /**
-     * Betölt egy képet a projektmappából
+     * Loads an image from the project folder
      *
-     * @param resName a fájl neve
-     * @return a képet tartalmazó Image objektum
+     * @param resName file name
+     * @return the Image object
      */
     public static Image loadImage(String resName) {
         URL url = ResourceLoader.class.getClassLoader().getResource(resName);
@@ -30,6 +30,13 @@ public class ResourceLoader {
         }
     }
 
+    /**
+     * Rotates an Image by a given amount
+     *
+     * @param img     Image object
+     * @param degrees degrees to be rotated by
+     * @return rotated Image
+     */
     public static BufferedImage rotateImage(Image img, int degrees) {
         if (img == null) return null;
         double rotationRequired = Math.toRadians(degrees);
@@ -40,6 +47,12 @@ public class ResourceLoader {
         return op.filter((BufferedImage) img, null);
     }
 
+    /**
+     * Loads a font type from the project folder
+     *
+     * @param fileName font path
+     * @return the loaded font
+     */
     public static Font loadFont(String fileName) {
         try {
             InputStream fontRes = ResourceLoader.class.getClassLoader().getResourceAsStream(fileName);

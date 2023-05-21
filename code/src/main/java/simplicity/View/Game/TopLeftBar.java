@@ -9,6 +9,10 @@ import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.util.ArrayList;
 
+/**
+ * The top left part of the game area.
+ * Contains buttons allowing you to save and/or exit the game
+ */
 public class TopLeftBar extends JPanel {
 
     private ArrayList<StartStopGameListener> stopGameListeners;

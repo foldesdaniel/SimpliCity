@@ -13,6 +13,10 @@ import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 
+/**
+ * The main panel that wraps together all the visual elements
+ * and UI logic related to the game itself (not the menu)
+ */
 public class GamePanel extends JPanel implements FieldClickListener {
 
     private static final ArrayList<ModeChangeListener> modeListeners = new ArrayList<>();
@@ -110,7 +114,6 @@ public class GamePanel extends JPanel implements FieldClickListener {
         bottomBar.setPreferredSize(new Dimension(bottomBar.getWidth(), bottomBar.getHeight())); */
 
         addModeListener(this.controlPanel.getModeListener());
-        //this.playingField.addModeListener(this.controlPanel.getModeListener());
         this.add(mainPanel);
         this.setBackground(new Color(0, 255, 0));
         this.repaint();
@@ -120,6 +123,12 @@ public class GamePanel extends JPanel implements FieldClickListener {
         modeListeners.add(l);
     }
 
+    /**
+     * Exits building mode (depending on the parameter) and returns the current Placeable-to-be-placed
+     *
+     * @param restart if we want to continue building immediately after placing an object
+     * @return the Placeable to be placed
+     */
     public static Placeable stopPlacing(boolean restart) {
         Placeable p = placee;
         isPlacing = restart;
@@ -128,14 +137,28 @@ public class GamePanel extends JPanel implements FieldClickListener {
         return p;
     }
 
+    /**
+     * {@code restart} defaults to false
+     *
+     * @see GamePanel#stopPlacing(boolean)
+     */
     public static Placeable stopPlacing() {
         return stopPlacing(false);
     }
 
+    /**
+     * @return if in building mode
+     */
     public static boolean isPlacing() {
         return isPlacing;
     }
 
+    /**
+     * Enters building mode with the given Placeable.
+     * Called by a {@link BuildTile} object
+     *
+     * @param p sets the Placeable that will be placed
+     */
     public static void setPlacing(Placeable p) {
         if (deleteMode) stopDeleteMode();
         isPlacing = true;
@@ -143,21 +166,42 @@ public class GamePanel extends JPanel implements FieldClickListener {
         for (ModeChangeListener l : modeListeners) l.onBuildModeChanged(isPlacing);
     }
 
+    /**
+     * @return the current Placeable-to-be-placed
+     */
     public static Placeable getPlacee() {
         return placee;
     }
 
+    /**
+     * Enters delete mode
+     */
     public static void startDeleteMode() {
         if (isPlacing) stopPlacing();
         deleteMode = true;
         for (ModeChangeListener l : modeListeners) l.onDeleteModeChanged(deleteMode);
     }
 
+    /**
+     * Exits delete mode
+     */
     public static void stopDeleteMode() {
         deleteMode = false;
         for (ModeChangeListener l : modeListeners) l.onDeleteModeChanged(deleteMode);
     }
 
+    /**
+     * Sets up GridBagConstraints options for the next element
+     *
+     * @param gbc     the GridBagConstraints object
+     * @param row     which row
+     * @param col     which column
+     * @param rowSpan rowspan
+     * @param colSpan colspan
+     * @param weightX width %
+     * @param weightY height %
+     * @return the changed GridBagConstraints object
+     */
     public static GridBagConstraints changeGbc(GridBagConstraints gbc, int row, int col, int rowSpan, int colSpan, double weightX, double weightY) {
         gbc.fill = GridBagConstraints.BOTH;
         gbc.anchor = GridBagConstraints.CENTER;

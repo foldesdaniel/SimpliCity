@@ -6,7 +6,6 @@ import simplicity.Model.GameModel;
 import simplicity.Model.Listeners.AnimationTickListener;
 import simplicity.Model.Listeners.FieldClickListener;
 import simplicity.Model.Listeners.ForestListener;
-import simplicity.Model.Listeners.ModeChangeListener;
 import simplicity.Model.Placeables.*;
 import simplicity.Model.Placeables.Zones.Industrial;
 import simplicity.Model.Placeables.Zones.Residential;
@@ -17,14 +16,16 @@ import simplicity.View.Style.InsetShadowBorder;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.util.ArrayList;
 
+/**
+ * The panel that handles the drawing of the
+ * map based on the model, and other UI events
+ */
 public class PlayingFieldView extends JPanel implements MouseListener, MouseMotionListener, MouseWheelListener, AnimationTickListener, ForestListener {
 
     private static final int SCROLL_STEP = 4;
     private final int gridSize;
     private final int defaultFieldSize = 32;
-    private final ArrayList<ModeChangeListener> modeListeners;
     private int fieldSize;
     private Point hoverField;
     private int offsetX;
@@ -39,7 +40,6 @@ public class PlayingFieldView extends JPanel implements MouseListener, MouseMoti
 
     public PlayingFieldView() {
         this.setBorder(new InsetShadowBorder(16));
-        this.modeListeners = new ArrayList<>();
         this.gridSize = GameModel.GRID_SIZE;
         this.fieldSize = defaultFieldSize;
         this.hoverField = GameModel.NO_SELECTION;
@@ -57,24 +57,26 @@ public class PlayingFieldView extends JPanel implements MouseListener, MouseMoti
         this.repaint();
     }
 
-    public void addModeListener(ModeChangeListener l) {
-        this.modeListeners.add(l);
-    }
-
+    /**
+     * @return if the grid (with its current size) fits the panel horizontally
+     */
     private boolean doesGridFitHorizontally() {
         int panelWidth = this.getWidth();
         return fieldSize * gridSize <= panelWidth;
     }
 
+    /**
+     * @return if the grid (with its current size) fits the panel vertically
+     */
     private boolean doesGridFitVertically() {
         int panelHeight = this.getHeight();
         return fieldSize * gridSize <= panelHeight;
     }
 
-    private boolean doesGridFit() {
-        return doesGridFitHorizontally() && doesGridFitVertically();
-    }
-
+    /**
+     * @return the coordinates that the X and Y offsets
+     * need to be in order for the grid to be centered
+     */
     private Point getDefaultOffset() {
         int panelWidth = this.getWidth();
         int panelHeight = this.getHeight();
@@ -195,11 +197,7 @@ public class PlayingFieldView extends JPanel implements MouseListener, MouseMoti
             } else {
                 g.drawImage(GameModel.SELECTION_IMG, offsetX + (fieldSize * hoverField.x) - selOffsetX - placeHolderOffsetX, offsetY + (fieldSize * hoverField.y) - selOffsetY + placeHolderOffsetY, multSizeX, multSizeY, null);
             }
-
-            // g.drawRect(offsetX + (fieldSize * hoverField.x), offsetY + (fieldSize * hoverField.y), fieldSize, fieldSize);
         }
-        // g.drawRoundRect(offsetX, offsetY, fieldSize * gridSize, fieldSize * gridSize, 24, 24);
-        // g.drawRoundRect(offsetX + 1, offsetY + 1, fieldSize * gridSize - 2, fieldSize * gridSize - 2, 24, 22);
     }
 
     @Override
@@ -211,6 +209,11 @@ public class PlayingFieldView extends JPanel implements MouseListener, MouseMoti
         this.fieldClickListener = fieldClickListener;
     }
 
+    /**
+     * Executes the click functions based on the kind of click it detects
+     *
+     * @param e the event to be processed
+     */
     @Override
     public void mouseClicked(MouseEvent e) {
         if (SwingUtilities.isLeftMouseButton(e)) {
@@ -220,6 +223,9 @@ public class PlayingFieldView extends JPanel implements MouseListener, MouseMoti
         }
     }
 
+    /**
+     * Tries to place a Placeable on the current selection
+     */
     private void placingClick() {
         GameModel model = GameModel.getInstance();
         Placeable placee = GamePanel.stopPlacing(true);
@@ -245,7 +251,10 @@ public class PlayingFieldView extends JPanel implements MouseListener, MouseMoti
         this.repaint();
     }
 
-    private void isDeleteClick() {
+    /**
+     * Tries to delete a Placeable on the current selection
+     */
+    private void deleteClick() {
         GameModel model = GameModel.getInstance();
         Placeable h = model.grid(hoverField.x, hoverField.y);
         if (h == null) return;
@@ -273,26 +282,32 @@ public class PlayingFieldView extends JPanel implements MouseListener, MouseMoti
         this.repaint();
     }
 
+    /**
+     * Handles the left click event
+     *
+     * @param e the event to be processed
+     */
     private void mouseLeftClicked(MouseEvent e) {
         boolean fieldHit = hoverField != GameModel.NO_SELECTION;
         if (GamePanel.isPlacing()) {
             this.placingClick();
         } else if (GamePanel.isDeleteMode()) {
-            this.isDeleteClick();
+            this.deleteClick();
         } else {
             fieldClickListener.fieldClicked(fieldHit ? GameModel.getInstance().grid(hoverField.x, hoverField.y) : null);
         }
-        // this.repaint();
     }
 
+    /**
+     * Handles the right click event
+     *
+     * @param e the event to be processed
+     */
     private void mouseRightClicked(MouseEvent e) {
         if (GamePanel.isPlacing()) {
             GamePanel.stopPlacing();
         } else if (GamePanel.isDeleteMode()) {
             GamePanel.stopDeleteMode();
-        } else {
-            boolean fieldHit = hoverField != GameModel.NO_SELECTION;
-            // ...
         }
         this.repaint();
     }
@@ -301,6 +316,11 @@ public class PlayingFieldView extends JPanel implements MouseListener, MouseMoti
     public void mousePressed(MouseEvent e) {
     }
 
+    /**
+     * Determines by the length of the drag whether it counts as a click or not
+     *
+     * @param e the event to be processed
+     */
     @Override
     public void mouseReleased(MouseEvent e) {
         if (SwingUtilities.isRightMouseButton(e) && isDraggingGrid) {
@@ -317,8 +337,6 @@ public class PlayingFieldView extends JPanel implements MouseListener, MouseMoti
             double distance = Math.sqrt(Math.pow(dragPointer.x, 2) + Math.pow(dragPointer.y, 2));
             if (distance <= GameModel.DRAG_THRESHOLD) {
                 mouseLeftClicked(e);
-            } else {
-                // System.out.println("actual drag");
             }
         }
     }
@@ -335,6 +353,9 @@ public class PlayingFieldView extends JPanel implements MouseListener, MouseMoti
         }
     }
 
+    /**
+     * @param e the event to be processed
+     */
     @Override
     public void mouseDragged(MouseEvent e) {
         if (SwingUtilities.isRightMouseButton(e)) {
@@ -355,7 +376,7 @@ public class PlayingFieldView extends JPanel implements MouseListener, MouseMoti
             boolean canDragY = newOffsetY > -(fieldSize * gridSize - feleY) && newOffsetY < feleY;
             if (canDragX && !doesGridFitHorizontally()) offsetX = newOffsetX;
             if (canDragY && !doesGridFitVertically()) offsetY = newOffsetY;
-            this.updateHover(e.getX(), e.getY(), false, false);
+            this.updateHover(e.getX(), e.getY(), false);
             this.repaint();
         } else {
             if (!isLeftDragging) {
@@ -363,16 +384,24 @@ public class PlayingFieldView extends JPanel implements MouseListener, MouseMoti
                 dragStart = e.getPoint();
                 this.onHoverChange();
             }
-            this.updateHover(e.getX(), e.getY(), true, true);
+            this.updateHover(e.getX(), e.getY(), true);
         }
     }
 
     @Override
     public void mouseMoved(MouseEvent e) {
-        this.updateHover(e.getX(), e.getY(), false, true);
+        this.updateHover(e.getX(), e.getY(), true);
     }
 
-    private void updateHover(int x, int y, boolean dragged, boolean repaint) {
+    /**
+     * Updates the current selection coordinates
+     * based on the cursor location
+     *
+     * @param x       mouse position x
+     * @param y       mouse position y
+     * @param repaint if it should repaint after update
+     */
+    private void updateHover(int x, int y, boolean repaint) {
         int xOffset = x - offsetX;
         int yOffset = y - offsetY;
         Point newHoverField = new Point(
@@ -387,7 +416,6 @@ public class PlayingFieldView extends JPanel implements MouseListener, MouseMoti
                 hoverField = newHoverField;
                 this.onHoverChange();
                 if (repaint) this.repaint();
-                // System.out.println(x + " " + y);
             }
         } else if (hoverField != GameModel.NO_SELECTION) {
             hoverField = GameModel.NO_SELECTION;
@@ -395,19 +423,27 @@ public class PlayingFieldView extends JPanel implements MouseListener, MouseMoti
         }
     }
 
+    /**
+     * Handles hovering over different Placeables while dragging
+     */
     private void onHoverChange() {
         boolean fieldHit = hoverField != GameModel.NO_SELECTION;
         if (isLeftDragging) {
             if (GamePanel.isPlacing()) {
                 this.placingClick();
             } else if (GamePanel.isDeleteMode()) {
-                this.isDeleteClick();
+                this.deleteClick();
             } else {
                 fieldClickListener.fieldClicked(fieldHit ? GameModel.getInstance().grid(hoverField.x, hoverField.y) : null);
             }
         }
     }
 
+    /**
+     * Handles zooming
+     *
+     * @param e the event to be processed
+     */
     @Override
     public void mouseWheelMoved(MouseWheelEvent e) {
         final int MIN_FIELD_SIZE = Math.max(SCROLL_STEP, (int) Math.round(this.getHeight() * 0.793 / GameModel.GRID_SIZE));
@@ -418,7 +454,7 @@ public class PlayingFieldView extends JPanel implements MouseListener, MouseMoti
             fieldSize = Math.min(Math.max(fieldSize + amount, MIN_FIELD_SIZE), MAX_FIELD_SIZE);
             if (doesGridFitHorizontally()) isGridDraggedX = false;
             if (doesGridFitVertically()) isGridDraggedY = false;
-            this.updateHover(e.getX(), e.getY(), false, false);
+            this.updateHover(e.getX(), e.getY(), false);
             this.repaint();
         }
     }

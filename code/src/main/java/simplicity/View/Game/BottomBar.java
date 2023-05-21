@@ -9,6 +9,11 @@ import simplicity.View.Style.CFont;
 import javax.swing.*;
 import java.awt.*;
 
+/**
+ * The bottom part of the game area.
+ * It is used to display information about the population,
+ * overall mood/moral and the financial situation of the city
+ */
 public class BottomBar extends JPanel implements MoralChangeListener, PeopleChangeListener, WealthChangeListener {
 
     // will implement listeners to change info about civilian count, moral, etc

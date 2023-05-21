@@ -10,6 +10,11 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 
+/**
+ * A left part of the game area.
+ * It stores the info and build panels, and the
+ * buttons that allow you to switch between them
+ */
 public class ControlPanel extends JPanel {
 
     private final ControlPanelTabButton infoBtn;
@@ -54,11 +59,19 @@ public class ControlPanel extends JPanel {
         this.add(scrollPane, GamePanel.changeGbc(gbc, 1, 0, 1, 1, 1, 1));
     }
 
+    /**
+     * Updates the info tab with the given Placeable's info
+     *
+     * @param f the Placeable we want to see the details of
+     */
     public void updateInfo(Placeable f) {
         infoTab.updateInfo(f);
         showInfoTab();
     }
 
+    /**
+     * Hides the build tab and shows the info tab
+     */
     public void showInfoTab() {
         //if(!infoTabShowing){
         this.infoTabShowing = true;
@@ -72,6 +85,9 @@ public class ControlPanel extends JPanel {
         //}
     }
 
+    /**
+     * Hides the info tab and shows the build tab
+     */
     public void showBuildTab() {
         //if(infoTabShowing){
         this.infoTabShowing = false;

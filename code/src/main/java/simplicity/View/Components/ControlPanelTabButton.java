@@ -10,6 +10,9 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
+/**
+ * A modified JButton used in the control panel
+ */
 public class ControlPanelTabButton extends JButton {
 
     private final Color normalColor = GameModel.BG_DARK;
