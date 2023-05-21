@@ -2063,7 +2063,9 @@ public class GameModel implements InGameTimeTickListener, Serializable {
             }
         }
         if (toBeRemoved.size() > 0) this.people.removeAll(toBeRemoved);
-        for (PeopleChangeListener l : peopleChangeListeners) l.onPeopleCountChange();
+        for (int i = 0; i < peopleChangeListeners.size(); i++) {
+            peopleChangeListeners.get(i).onPeopleCountChange();
+        }
 
     }
 
