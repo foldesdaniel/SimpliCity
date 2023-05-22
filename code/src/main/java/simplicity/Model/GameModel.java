@@ -1815,7 +1815,7 @@ public class GameModel implements InGameTimeTickListener, Serializable {
      * used to make people leave the city
      * number of people departing based on the city mood and the people who have the lowest mood
      */
-    private void departInhabitants() {
+    public void departInhabitants() {
         double outgoingPeople = Math.ceil(this.people.size() * ((100 - cityMood - 30) / 100.0));
         //remove outgoingPeople amount of people from this.people who have the lowest mood
         for (int i = 0; i < outgoingPeople; i++) {
@@ -1943,7 +1943,8 @@ public class GameModel implements InGameTimeTickListener, Serializable {
                     ((Forest) grid[i][j]).setAge(elapsed);
                     for (ForestListener l : forestListeners) l.onForestAgeUp();
                     if (elapsed <= 10) boostForestMood(grid[i][j].getPosition(), 1);
-                    if (elapsed == 10) finance.removeYearlySpend(((Forest) grid[i][j]).getMaintenanceCost(), "Erdő fenntartási díj");
+                    if (elapsed == 10)
+                        finance.removeYearlySpend(((Forest) grid[i][j]).getMaintenanceCost(), "Erdő fenntartási díj");
                     else {
                         int maintenanceCost = ((Forest) grid[i][j]).getMaintenanceCost();
                         finance.removeYearlySpend(maintenanceCost, "Erdő fenntartási díj");
