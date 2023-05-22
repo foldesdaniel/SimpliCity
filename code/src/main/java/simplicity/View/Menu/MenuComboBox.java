@@ -14,7 +14,7 @@ public class MenuComboBox extends JComboBox {
     public MenuComboBox(String[] list) {
         super(list);
         this.setFont(CFont.get());
-        Dimension buttonSize = new Dimension(300, 50); // TODO: media query-like sizing based on resolution
+        Dimension buttonSize = new Dimension(300, 50);
         this.setPreferredSize(buttonSize);
         this.setMinimumSize(buttonSize);
         this.setMaximumSize(buttonSize);

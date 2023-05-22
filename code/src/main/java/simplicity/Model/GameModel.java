@@ -472,7 +472,7 @@ public class GameModel implements InGameTimeTickListener, Serializable {
         if (!canPlace(pl, position)) return;
         grid[position.x][position.y] = pl;
         fillTemps(pl, position);
-        int r = new Stadium(GameModel.NO_SELECTION).getRadius(); // TODO: placeholder radius
+        int r = new Stadium(GameModel.NO_SELECTION).getRadius();
         int price = new Stadium(GameModel.NO_SELECTION).getBuildPrice();
         int maintenanceCost = new Stadium(GameModel.NO_SELECTION).getMaintenanceCost();
         finance.removeMoney(price);
@@ -801,8 +801,6 @@ public class GameModel implements InGameTimeTickListener, Serializable {
             else {
                 this.finance.removeMoney(toBeDestroyed.getBuildPrice());
                 for (WealthChangeListener l : this.wealthListeners) l.onWealthChange();
-                //TODO one-time mood change
-                //find new job or find new home
                 ArrayList<Person> affectedPeople = new ArrayList<>();
                 for (Person person : this.people) {
                     if (person.getEducation() != null && !canRoadBeDestroyed(person.getHome(), person.getEducation(), toBeDestroyed)) {
@@ -1390,7 +1388,6 @@ public class GameModel implements InGameTimeTickListener, Serializable {
      * @param type   the Placeable we are measuring the distance to - work, school, uni, etc.
      */
     public void boostPersonMoodBasedOnDistance(Person person, String type) {
-        //TODO: when object is deleted then recalculate the distance boost
         if (getWorkplaceDistance(person, type) < 6) boostMood(person, 4);
         else if (getWorkplaceDistance(person, type) < 12) boostMood(person, -2);
         else boostMood(person, -7);
@@ -1541,7 +1538,6 @@ public class GameModel implements InGameTimeTickListener, Serializable {
         int forestMood = calculateForestMood(person.getHome().getPosition());
         person.setBoostMood(forestMood);
         for (MoralChangeListener l : this.moralListeners) l.onMoralChanged();
-        //todo : searchForForest
     }
 
     /**
